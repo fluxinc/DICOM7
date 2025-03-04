@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderORM", "OrderORM.csproj", "{070860C7-3610-4637-BF4C-E099506DB827}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{070860C7-3610-4637-BF4C-E099506DB827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070860C7-3610-4637-BF4C-E099506DB827}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070860C7-3610-4637-BF4C-E099506DB827}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070860C7-3610-4637-BF4C-E099506DB827}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
