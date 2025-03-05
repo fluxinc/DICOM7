@@ -1,6 +1,6 @@
 # OrderORM
 
-A medical order management system that bridges DICOM worklists and HL7 messaging systems. This application queries DICOM worklists for scheduled procedures and generates HL7 ORM messages to forward to compatible receivers.
+Order ORM queries DICOM Modality Worklist at a set interval, generates HL7 ORM orders, and sends them to a receiver.
 
 ## License
 
