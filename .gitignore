@@ -65,3 +65,4 @@ config.local.yaml
 
 installer/Output/*
 *_codebase.txt
+.stignore
