@@ -12,25 +12,29 @@ namespace OrderORM
 
         public static void SavePendingMessage(string studyInstanceUid, string ormMessage, string cacheFolder, int attemptCount = 1)
         {
-            string pendingFilename = Path.Combine(cacheFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
-            string attemptsFilename = Path.Combine(cacheFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
-            
+            // Normalize the path to ensure proper handling of separators
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
+            string attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
+
             File.WriteAllText(pendingFilename, ormMessage);
             File.WriteAllText(attemptsFilename, attemptCount.ToString());
-            
+
             Console.WriteLine($"{DateTime.Now} - Saved pending ORM to retry queue: '{pendingFilename}' (attempt {attemptCount}, will retry indefinitely)");
         }
 
         public static void RemovePendingMessage(string studyInstanceUid, string cacheFolder)
         {
-            string pendingFilename = Path.Combine(cacheFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
-            string attemptsFilename = Path.Combine(cacheFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
-            
+            // Normalize the path to ensure proper handling of separators
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
+            string attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
+
             if (File.Exists(pendingFilename))
             {
                 File.Delete(pendingFilename);
             }
-            
+
             if (File.Exists(attemptsFilename))
             {
                 File.Delete(attemptsFilename);
@@ -39,13 +43,17 @@ namespace OrderORM
 
         public static bool IsPendingRetry(string studyInstanceUid, string cacheFolder)
         {
-            string pendingFilename = Path.Combine(cacheFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
+            // Normalize the path to ensure proper handling of separators
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
             return File.Exists(pendingFilename);
         }
 
         public static int GetAttemptCount(string studyInstanceUid, string cacheFolder)
         {
-            string attemptsFilename = Path.Combine(cacheFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
+            // Normalize the path to ensure proper handling of separators
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
             if (File.Exists(attemptsFilename))
             {
                 string countStr = File.ReadAllText(attemptsFilename);
@@ -60,8 +68,11 @@ namespace OrderORM
         public static IEnumerable<PendingOrmMessage> GetPendingMessages(string cacheFolder, DateTime cutoffTime)
         {
             var pendingMessages = new List<PendingOrmMessage>();
-            
-            foreach (var pendingFile in Directory.GetFiles(cacheFolder, $"*{PENDING_SUFFIX}"))
+
+            // Normalize the path to ensure proper handling of separators
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+
+            foreach (var pendingFile in Directory.GetFiles(normalizedFolder, $"*{PENDING_SUFFIX}"))
             {
                 try
                 {
@@ -71,8 +82,8 @@ namespace OrderORM
                         string fileName = Path.GetFileName(pendingFile);
                         string studyInstanceUid = fileName.Substring(0, fileName.Length - PENDING_SUFFIX.Length);
                         string ormMessage = File.ReadAllText(pendingFile);
-                        int attemptCount = GetAttemptCount(studyInstanceUid, cacheFolder);
-                        
+                        int attemptCount = GetAttemptCount(studyInstanceUid, normalizedFolder);
+
                         pendingMessages.Add(new PendingOrmMessage
                         {
                             StudyInstanceUid = studyInstanceUid,
@@ -86,7 +97,7 @@ namespace OrderORM
                     Console.WriteLine($"{DateTime.Now} - ERROR processing pending file {pendingFile}: {ex.Message}");
                 }
             }
-            
+
             return pendingMessages;
         }
     }

@@ -4,7 +4,6 @@ namespace OrderORM
 {
     public class Config
     {
-        public string OrmTemplatePath { get; set; }
         public CacheConfig Cache { get; set; }
         public DicomConfig Dicom { get; set; }
         public HL7Config HL7 { get; set; }
@@ -29,7 +28,9 @@ namespace OrderORM
 
     public class HL7Config
     {
-        public string ReceiverHost { get; set; }
+    public string SenderName { get; set; }
+    public string ReceiverName { get; set; }
+    public string ReceiverHost { get; set; }
         public int ReceiverPort { get; set; }
     }
 
@@ -48,7 +49,7 @@ namespace OrderORM
         public int DaysAfter { get; set; }
         public string Date { get; set; }
     }
-    
+
     public class RetryConfig
     {
         public int RetryIntervalMinutes { get; set; } = 5;

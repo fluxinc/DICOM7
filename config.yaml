@@ -1,7 +1,6 @@
-OrmTemplatePath: ormTemplate.xml
 Cache:
-  Folder: ./cache
-  RetentionDays: 7
+  Folder:
+  RetentionDays: 1
 Dicom:
   ScuAeTitle: ORDERORM
   ScpHost: worklist.fluxinc.ca
@@ -12,10 +11,13 @@ HL7:
   ReceiverPort: 7777
 Query:
   PatientName:
-  ScheduledStationAeTitle: 
+  ScheduledStationAeTitle:
   ScheduledProcedureStepStartDate:
-    Mode: today
+    Mode: range # today, range, specific
+    DaysBefore: 1
+    DaysAfter: 1
+    Date: 2023-03-01
   Modality: MR
 QueryInterval: 60
 Retry:
-  RetryIntervalMinutes: 5
+  RetryIntervalMinutes: 1
