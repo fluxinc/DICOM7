@@ -47,10 +47,12 @@ Dicom:
   ScpPort: DICOM worklist server port
   ScpAeTitle: DICOM worklist server AE title
 HL7:
+  SenderName: HL7 sender application name
+  ReceiverName: HL7 receiver application name
+  ReceiverFacility: HL7 receiver facility name
   ReceiverHost: HL7 receiver host
   ReceiverPort: HL7 receiver port
 Query:
-  PatientName: Optional filter for patient name
   ScheduledStationAeTitle: Optional filter for specific station
   ScheduledProcedureStepStartDate: Date configuration
   Modality: Optional filter for specific modality

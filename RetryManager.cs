@@ -1,111 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using Serilog;
 
-namespace OrderORM
+namespace OrderORM;
+
+public class RetryManager
 {
-    public class RetryManager
+    private const string PENDING_SUFFIX = ".pending";
+    private const string ATTEMPTS_SUFFIX = ".attempts";
+
+    public static void SavePendingMessage(string studyInstanceUid, string ormMessage, string cacheFolder,
+        int attemptCount = 1)
     {
-        private const string PENDING_SUFFIX = ".pending";
-        private const string ATTEMPTS_SUFFIX = ".attempts";
+        // Normalize the path to ensure proper handling of separators
+        var normalizedFolder = Path.GetFullPath(cacheFolder);
+        var pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
+        var attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
 
-        public static void SavePendingMessage(string studyInstanceUid, string ormMessage, string cacheFolder, int attemptCount = 1)
-        {
-            // Normalize the path to ensure proper handling of separators
-            string normalizedFolder = Path.GetFullPath(cacheFolder);
-            string pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
-            string attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
+        File.WriteAllText(pendingFilename, ormMessage);
+        File.WriteAllText(attemptsFilename, attemptCount.ToString());
 
-            File.WriteAllText(pendingFilename, ormMessage);
-            File.WriteAllText(attemptsFilename, attemptCount.ToString());
+        Log.Information(
+            "Saved pending ORM to retry queue: \'{PendingFilename}\' (attempt {AttemptCount}, will retry indefinitely)", 
+            pendingFilename, attemptCount);
+    }
 
-            Console.WriteLine($"{DateTime.Now} - Saved pending ORM to retry queue: '{pendingFilename}' (attempt {attemptCount}, will retry indefinitely)");
-        }
+    public static void RemovePendingMessage(string studyInstanceUid, string cacheFolder)
+    {
+        // Normalize the path to ensure proper handling of separators
+        var normalizedFolder = Path.GetFullPath(cacheFolder);
+        var pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
+        var attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
 
-        public static void RemovePendingMessage(string studyInstanceUid, string cacheFolder)
-        {
-            // Normalize the path to ensure proper handling of separators
-            string normalizedFolder = Path.GetFullPath(cacheFolder);
-            string pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
-            string attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
+        if (File.Exists(pendingFilename)) File.Delete(pendingFilename);
 
-            if (File.Exists(pendingFilename))
+        if (File.Exists(attemptsFilename)) File.Delete(attemptsFilename);
+    }
+
+    public static bool IsPendingRetry(string studyInstanceUid, string cacheFolder)
+    {
+        // Normalize the path to ensure proper handling of separators
+        var normalizedFolder = Path.GetFullPath(cacheFolder);
+        var pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
+        return File.Exists(pendingFilename);
+    }
+
+    public static int GetAttemptCount(string studyInstanceUid, string cacheFolder)
+    {
+        // Normalize the path to ensure proper handling of separators
+        var normalizedFolder = Path.GetFullPath(cacheFolder);
+        var attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
+        if (!File.Exists(attemptsFilename)) return 1; // Default to 1 if file doesn't exist or can't be parsed
+        
+        var countStr = File.ReadAllText(attemptsFilename);
+        
+        return int.TryParse(countStr, out var count) ? count : 1; // Default to 1 if file doesn't exist or can't be parsed
+    }
+
+    public static IEnumerable<PendingOrmMessage> GetPendingMessages(string cacheFolder, DateTime cutoffTime)
+    {
+        var pendingMessages = new List<PendingOrmMessage>();
+
+        // Normalize the path to ensure proper handling of separators
+        var normalizedFolder = Path.GetFullPath(cacheFolder);
+
+        foreach (var pendingFile in Directory.GetFiles(normalizedFolder, $"*{PENDING_SUFFIX}"))
+            try
             {
-                File.Delete(pendingFilename);
-            }
-
-            if (File.Exists(attemptsFilename))
-            {
-                File.Delete(attemptsFilename);
-            }
-        }
-
-        public static bool IsPendingRetry(string studyInstanceUid, string cacheFolder)
-        {
-            // Normalize the path to ensure proper handling of separators
-            string normalizedFolder = Path.GetFullPath(cacheFolder);
-            string pendingFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{PENDING_SUFFIX}");
-            return File.Exists(pendingFilename);
-        }
-
-        public static int GetAttemptCount(string studyInstanceUid, string cacheFolder)
-        {
-            // Normalize the path to ensure proper handling of separators
-            string normalizedFolder = Path.GetFullPath(cacheFolder);
-            string attemptsFilename = Path.Combine(normalizedFolder, $"{studyInstanceUid}{ATTEMPTS_SUFFIX}");
-            if (File.Exists(attemptsFilename))
-            {
-                string countStr = File.ReadAllText(attemptsFilename);
-                if (int.TryParse(countStr, out int count))
+                // Only retry messages that have been waiting for at least the retry interval
+                if (File.GetLastWriteTime(pendingFile) < cutoffTime)
                 {
-                    return count;
-                }
-            }
-            return 1; // Default to 1 if file doesn't exist or can't be parsed
-        }
+                    var fileName = Path.GetFileName(pendingFile);
+                    var studyInstanceUid = fileName.Substring(0, fileName.Length - PENDING_SUFFIX.Length);
+                    var ormMessage = File.ReadAllText(pendingFile);
+                    var attemptCount = GetAttemptCount(studyInstanceUid, normalizedFolder);
 
-        public static IEnumerable<PendingOrmMessage> GetPendingMessages(string cacheFolder, DateTime cutoffTime)
-        {
-            var pendingMessages = new List<PendingOrmMessage>();
-
-            // Normalize the path to ensure proper handling of separators
-            string normalizedFolder = Path.GetFullPath(cacheFolder);
-
-            foreach (var pendingFile in Directory.GetFiles(normalizedFolder, $"*{PENDING_SUFFIX}"))
-            {
-                try
-                {
-                    // Only retry messages that have been waiting for at least the retry interval
-                    if (File.GetLastWriteTime(pendingFile) < cutoffTime)
+                    pendingMessages.Add(new PendingOrmMessage
                     {
-                        string fileName = Path.GetFileName(pendingFile);
-                        string studyInstanceUid = fileName.Substring(0, fileName.Length - PENDING_SUFFIX.Length);
-                        string ormMessage = File.ReadAllText(pendingFile);
-                        int attemptCount = GetAttemptCount(studyInstanceUid, normalizedFolder);
-
-                        pendingMessages.Add(new PendingOrmMessage
-                        {
-                            StudyInstanceUid = studyInstanceUid,
-                            OrmMessage = ormMessage,
-                            AttemptCount = attemptCount
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"{DateTime.Now} - ERROR processing pending file {pendingFile}: {ex.Message}");
+                        StudyInstanceUid = studyInstanceUid,
+                        OrmMessage = ormMessage,
+                        AttemptCount = attemptCount
+                    });
                 }
             }
+            catch (Exception ex)
+            {
+                Log.Error("Exception processing pending file {PendingFile}: {ExMessage}", pendingFile, ex.Message);
+            }
 
-            return pendingMessages;
-        }
+        return pendingMessages;
     }
+}
 
-    public class PendingOrmMessage
-    {
-        public string StudyInstanceUid { get; set; }
-        public string OrmMessage { get; set; }
-        public int AttemptCount { get; set; }
-    }
+public class PendingOrmMessage
+{
+    public string StudyInstanceUid { get; set; }
+    public string OrmMessage { get; set; }
+    public int AttemptCount { get; set; }
 }

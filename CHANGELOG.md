@@ -4,6 +4,16 @@ All notable changes to the OrderORM project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Integrated Serilog for structured logging with console and file outputs
+- Added new HL7 sender and receiver configuration options
+- Added Serilog and Newtonsoft.Json package dependencies
+
+### Changed
+- Enhanced error handling and logging across multiple components
+- Updated configuration structure with new HL7 sender and receiver details
+- Removed deprecated configuration options
+
 ## [1.0.2] - 2025-03-04
 
 ### Added

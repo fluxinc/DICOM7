@@ -1,21 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Serilog;
 
 namespace OrderORM
 {
     public class HL7Sender
     {
-        public static bool SendOrm(string ormMessage, string host, int port, string senderName = null)
+        public static bool SendOrm(Config config, string ormMessage, string host, int port, string senderName = null)
         {
             try
             {
-                Console.WriteLine($"{DateTime.Now} - Sending ORM to {host}:{port}");
+                Log.Information("Sending ORM to {Host}:{Port}", host, port);
 
                 // Replace template values with configured values
-                string processedMessage = ReplaceTemplateValues(ormMessage, host, senderName);
+                string processedMessage = ReplaceTemplateValues(config, ormMessage);
 
                 // Wrap message in MLLP envelope
                 string mllpMessage = $"\x0B{processedMessage}\x1C\x0D";
@@ -32,6 +36,8 @@ namespace OrderORM
                 var data = Encoding.ASCII.GetBytes(mllpMessage);
                 stream.Write(data, 0, data.Length);
 
+                Log.Information("Sent {ByteCount} bytes", data.Length);
+
                 try
                 {
                     // Try to read acknowledgment
@@ -40,34 +46,34 @@ namespace OrderORM
                     string response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
                     // Debug - log raw response
-                    Console.WriteLine($"{DateTime.Now} - Received response: '{response}'");
+                    Log.Information("Received response: {Response}", response);
 
                     if (response.Contains("AA") || response.Contains("ACK"))
                     {
-                        Console.WriteLine($"{DateTime.Now} - ORM sent successfully to {host}:{port}");
+                        Log.Information("ORM sent successfully to {Host}:{Port}", host, port);
                         return true;
                     }
 
                     if (string.IsNullOrWhiteSpace(response))
                     {
                         // Empty response but message was sent - consider successful
-                        Console.WriteLine($"{DateTime.Now} - Empty response from receiver, but message was sent. Considering successful.");
+                        Log.Information("Empty response from receiver, but message was sent. Considering successful");
                         return true;
                     }
 
-                    Console.WriteLine($"{DateTime.Now} - ERROR: HL7 server rejected message: {response}");
+                    Log.Error("HL7 server rejected message: {Response}", response);
                     return false;
                 }
                 catch (IOException ex)
                 {
                     // Timeout receiving response - message was sent, so consider it successful
-                    Console.WriteLine($"{DateTime.Now} - No ACK received (timeout), but message was sent. Considering successful.");
+                    Log.Information("No ACK received (timeout), but message was sent. Considering successful");
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{DateTime.Now} - ERROR sending ORM: {ex.Message}");
+                Log.Error(ex, "Error sending ORM to {Host}:{Port}", host, port);
                 return false;
             }
         }
@@ -79,43 +85,14 @@ namespace OrderORM
         /// <param name="receiverHost">The receiver host name</param>
         /// <param name="senderName">The sender application name (optional)</param>
         /// <returns>The processed HL7 message with template values replaced</returns>
-        private static string ReplaceTemplateValues(string message, string receiverHost, string senderName)
+        private static string ReplaceTemplateValues(Config config, string message)
         {
-            // Default sender name if not provided
-            if (string.IsNullOrEmpty(senderName))
-            {
-                // Try to get from config if available
-                try
-                {
-                    senderName = System.Configuration.ConfigurationManager.AppSettings["SenderName"] ?? "ORDERORM";
-                }
-                catch
-                {
-                    senderName = "ORDERORM";
-                }
-            }
-
-            // Extract receiver name from host if possible, otherwise use "RECEIVER"
-            string receiverName = "RECEIVER";
-            if (!string.IsNullOrEmpty(receiverHost))
-            {
-                // Use the hostname part without domain as receiver name if possible
-                try
-                {
-                    string hostPart = receiverHost.Split('.')[0].ToUpperInvariant();
-                    if (!string.IsNullOrEmpty(hostPart))
-                    {
-                        receiverName = hostPart;
-                    }
-                }
-                catch
-                {
-                    // If parsing fails, keep default
-                }
-            }
+            string senderName = string.IsNullOrEmpty(config.HL7.SenderName) ? "ORDERORM" : config.HL7.SenderName;
+            string receiverName =string.IsNullOrEmpty(config.HL7.ReceiverName) ? "RECEIVER_APPLICATION" : config.HL7.ReceiverName;
+            string receiverFacility =string.IsNullOrEmpty(config.HL7.ReceiverFacility) ? "RECEIVER_FACILITY" : config.HL7.ReceiverName;
 
             // Split the message into lines to handle each segment separately
-            string[] lines = message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
@@ -127,41 +104,42 @@ namespace OrderORM
                     string[] fields = line.Split('|');
 
                     // Check if we have enough fields to process
-                    if (fields.Length >= 5)
+                    if (fields.Length < 5) continue;
+                    
+                    // Field 3 is the sending application
+                    if (fields[2].Equals("ORDERORM", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Field 3 is the sending application
-                        if (fields[2].Equals("ORDERORM", StringComparison.OrdinalIgnoreCase))
-                        {
-                            fields[2] = senderName;
-                        }
-
-                        // Fields 4 and 5 are the receiving application and facility
-                        if (fields[3].Equals("RECEIVER", StringComparison.OrdinalIgnoreCase))
-                        {
-                            fields[3] = receiverName;
-                        }
-
-                        if (fields.Length >= 6 && fields[4].Equals("RECEIVER", StringComparison.OrdinalIgnoreCase))
-                        {
-                            fields[4] = receiverName;
-                        }
-
-                        // Reconstruct the MSH segment
-                        lines[i] = string.Join("|", fields);
+                        fields[2] = senderName;
                     }
+
+                    // Fields 4 and 5 are the receiving application and facility
+                    if (fields[3].Equals("RECEIVER_APPLICATION", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fields[3] = receiverName;
+                    }
+
+                    if (fields.Length >= 6 && fields[4].Equals("RECEIVER_FACILITY", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fields[4] = receiverFacility;
+                    }
+
+                    // Reconstruct the MSH segment
+                    lines[i] = string.Join("|", fields);
                 }
                 else
                 {
                     // For non-MSH segments, use regex replacement
                     lines[i] = Regex.Replace(line, @"\|ORDERORM\|", $"|{senderName}|", RegexOptions.IgnoreCase);
-                    lines[i] = Regex.Replace(lines[i], @"\|RECEIVER\|", $"|{receiverName}|", RegexOptions.IgnoreCase);
+                    lines[i] = Regex.Replace(lines[i], @"\|RECEIVER_APPLICATION\|", $"|{receiverName}|", RegexOptions.IgnoreCase);
+                    lines[i] = Regex.Replace(lines[i], @"\|RECEIVER_FACILITY\|", $"|{receiverFacility}|", RegexOptions.IgnoreCase);
                 }
             }
 
             // Reconstruct the message
             string result = string.Join("\r", lines);
 
-            Console.WriteLine($"{DateTime.Now} - Replaced template values: Sender={senderName}, Receiver={receiverName}");
+            Log.Information("Replaced template values: Sender={SenderName}, Receiver={ReceiverName}, Facility={Facility}", 
+                senderName, receiverName, receiverFacility);
 
             return result;
         }

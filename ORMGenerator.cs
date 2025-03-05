@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using FellowOakDicom;
+using Serilog;
 
 namespace OrderORM;
 
@@ -22,14 +23,12 @@ public class ORMGenerator
 
         if (!File.Exists(normalizedPath))
         {
-            Console.WriteLine(
-                $"{DateTime.Now} - NOTE: ORM template file not found at '{normalizedPath}', using default v23 ORM template");
-            Console.WriteLine(
-                $"{DateTime.Now} - NOTE: Place ormTemplate.hl7 in the same folder as your config.yaml file");
+            Log.Warning("Note: ORM template file not found at '{Path}', using default v23 ORM template", normalizedPath);
+            Log.Warning("Place ormTemplate.hl7 in the same folder as your config.yaml file");
             return GetDefaultV23OrmTemplate();
         }
 
-        Console.WriteLine($"{DateTime.Now} - Reading ORM template from '{normalizedPath}'");
+        Log.Information("Reading ORM template from '{Path}'", normalizedPath);
         return File.ReadAllText(normalizedPath);
     }
 
@@ -91,8 +90,7 @@ OBR|1|#{0008,0050}||#{0008,1030}|||#{ScheduledDateTime}|||||||||||||||||#{0040,0
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(
-                            $"{DateTime.Now} - Warning: Unable to get string value for tag ({groupStr},{elementStr}): {ex.Message}");
+                        Log.Warning("Unable to get string value for tag ({GroupStr},{ElementStr}): {Message}", groupStr, elementStr, ex.Message);
                     }
                 }
                 else
@@ -106,7 +104,7 @@ OBR|1|#{0008,0050}||#{0008,1030}|||#{ScheduledDateTime}|||||||||||||||||#{0040,0
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{DateTime.Now} - Error processing tag in template: {ex.Message}");
+                Log.Error("Error processing tag in template: {Message}", ex.Message);
                 return "";
             }
         });
@@ -208,7 +206,7 @@ OBR|1|#{0008,0050}||#{0008,1030}|||#{ScheduledDateTime}|||||||||||||||||#{0040,0
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"{DateTime.Now} - Error getting scheduled date/time: {ex.Message}");
+            Log.Error("Error getting scheduled date/time: {Message}", ex.Message);
             return FormatHl7DateTime(DateTime.Now.AddHours(24));
         }
     }
@@ -249,18 +247,18 @@ OBR|1|#{0008,0050}||#{0008,1030}|||#{ScheduledDateTime}|||||||||||||||||#{0040,0
                 catch (Exception ex)
                 {
                     // If we get an exception, the tag might not be a sequence
-                    Console.WriteLine($"{DateTime.Now} - Note: Tag (0040,0100) is not a sequence or could not be processed: {ex.Message}");
+                    Log.Warning("Tag (0040,0100) is not a sequence or could not be processed: {Message}", ex.Message);
                 }
             }
 
             // If we can't find it in the sequence, try to find it directly (though this is less likely)
             var directStepIDTag = new DicomTag(0x0040, 0x0009);
-            
+
             return dataset.Contains(directStepIDTag) ? dataset.GetSingleValueOrDefault(directStepIDTag, "") : "";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"{DateTime.Now} - Error getting Scheduled Procedure Step ID: {ex.Message}");
+            Log.Error("Error getting Scheduled Procedure Step ID: {Message}", ex.Message);
             return "";
         }
     }

@@ -30,13 +30,13 @@ namespace OrderORM
     {
     public string SenderName { get; set; }
     public string ReceiverName { get; set; }
+    public string ReceiverFacility { get; set; }
     public string ReceiverHost { get; set; }
         public int ReceiverPort { get; set; }
     }
 
     public class QueryConfig
     {
-        public string PatientName { get; set; }
         public string ScheduledStationAeTitle { get; set; }
         public DateConfig ScheduledProcedureStepStartDate { get; set; }
         public string Modality { get; set; }

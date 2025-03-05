@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace OrderORM
 {
@@ -34,14 +36,17 @@ namespace OrderORM
                 try
                 {
                     if (!Directory.Exists(tmp))
+                    {
                         Directory.CreateDirectory(tmp);
+                        Log.Information("Created common application folder: {Path}", tmp);
+                    }
 
                     _commonAppFolder = tmp;
                 }
                 catch (Exception e)
                 {
                     _commonAppFolder = null;
-                    Console.WriteLine("WARNING: CommonAppFolder doesn't seem to exist: `{0}`", e.Message);
+                    Log.Error(e, "Failed to create common application folder: {Path}", tmp);
                     throw;
                 }
 

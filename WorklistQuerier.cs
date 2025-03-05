@@ -7,6 +7,7 @@ using FellowOakDicom;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace OrderORM
 {
@@ -30,13 +31,12 @@ namespace OrderORM
     {
       var ds = new DicomDataset
       {
-        { DicomTag.PatientName, _config.Query.PatientName ?? "" },
-        // Add standard query attributes
-        { DicomTag.StudyInstanceUID, "" },
-        { DicomTag.AccessionNumber, "" },
+        { DicomTag.PatientName, "" },
         { DicomTag.PatientID, "" },
         { DicomTag.PatientBirthDate, "" },
         { DicomTag.PatientSex, "" },
+        { DicomTag.StudyInstanceUID, "" },
+        { DicomTag.AccessionNumber, "" },
         { DicomTag.ReferringPhysicianName, "" }
       };
 
@@ -66,7 +66,7 @@ namespace OrderORM
     {
       if (dateConfig == null)
       {
-        Console.WriteLine($"{DateTime.Now} - WARNING: ScheduledProcedureStepStartDate configuration is missing, using today's date");
+        Log.Warning($"ScheduledProcedureStepStartDate configuration is missing, using today's date");
         return DateTime.Today.ToString("yyyyMMdd");
       }
 
@@ -84,14 +84,9 @@ namespace OrderORM
           DateTime end = today.AddDays(daysAfter);
           return $"{start:yyyyMMdd}-{end:yyyyMMdd}";
         case "specific":
-          if (string.IsNullOrEmpty(dateConfig.Date))
-          {
-            Console.WriteLine($"{DateTime.Now} - WARNING: Specific date is missing, using today's date");
-            return today.ToString("yyyyMMdd");
-          }
-          return dateConfig.Date;
+          return string.IsNullOrEmpty(dateConfig.Date) ? "" : dateConfig.Date;
         default:
-          Console.WriteLine($"{DateTime.Now} - WARNING: Invalid date mode '{dateConfig.Mode}', using today's date");
+          Log.Warning("Invalid date mode \'DateConfigModee}\', using today\'s date", dateConfig.Mode);
           return today.ToString("yyyyMMdd");
       }
     }
@@ -120,18 +115,18 @@ namespace OrderORM
       {
         var dataset = response.Dataset;
         string studyInstanceUid = dataset.GetString(DicomTag.StudyInstanceUID);
-        Console.WriteLine($"{DateTime.Now} - Found order with StudyInstanceUID: {studyInstanceUid}");
+        Log.Information("Found order with StudyInstanceUID: {StudyInstanceUid}", studyInstanceUid);
         _findResponses.Add(dataset);
       }
       else if (response.Status == DicomStatus.Success)
       {
         _queryStatus = DicomStatus.Success;
-        Console.WriteLine($"{DateTime.Now} - C-FIND query completed successfully");
+        Log.Information($"C-FIND query completed successfully");
       }
       else
       {
         _queryStatus = response.Status;
-        Console.WriteLine($"{DateTime.Now} - C-FIND query status: 0x{response.Status.Code:x4}");
+        Log.Information("C-FIND query status: 0x{StatusCode}", response.Status.Code);
       }
     }
 
@@ -173,7 +168,7 @@ namespace OrderORM
 
         cfind.OnResponseReceived += OnFindResponseReceived;
 
-        Console.WriteLine($"{DateTime.Now} - Querying worklist at {_config.Dicom.ScpHost}:{_config.Dicom.ScpPort}");
+        Log.Information("Querying worklist at {DicomScpHost}:{DicomScpPort}", _config.Dicom.ScpHost, _config.Dicom.ScpPort);
 
         // Set up client event handlers before sending the request
         client.OnCStoreRequest = (request) => Task.FromResult(new DicomCStoreResponse(request, DicomStatus.Success));
@@ -187,26 +182,26 @@ namespace OrderORM
 
         if (success && _findResponses.Count > 0)
         {
-          Console.WriteLine($"{DateTime.Now} - Found {_findResponses.Count} orders to process");
+          Log.Information("Found {FindResponsesCount} orders to process", _findResponses.Count);
           foreach (var dataset in _findResponses)
           {
             string studyInstanceUid = dataset.GetString(DicomTag.StudyInstanceUID);
             if (CacheManager.IsAlreadySent(studyInstanceUid, _config.Cache.Folder))
             {
-              Console.WriteLine($"{DateTime.Now} - Skipping already sent order: {studyInstanceUid}");
+              Log.Information($"Skipping already sent order: {studyInstanceUid}");
               continue;
             }
 
-            Console.WriteLine($"{DateTime.Now} - Processing order: {studyInstanceUid}");
+            Log.Information("Processing order: {StudyInstanceUid}", studyInstanceUid);
             string ormMessage = ORMGenerator.ReplacePlaceholders(_ormTemplate, dataset);
-            if (HL7Sender.SendOrm(ormMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort, _config.Dicom.ScuAeTitle))
+            if (HL7Sender.SendOrm(_config, ormMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort, _config.Dicom.ScuAeTitle))
             {
               CacheManager.SaveToCache(studyInstanceUid, ormMessage, CacheManager.CacheFolder);
               // If this was a retry, remove from pending queue
               if (RetryManager.IsPendingRetry(studyInstanceUid, CacheManager.CacheFolder))
               {
                 RetryManager.RemovePendingMessage(studyInstanceUid, CacheManager.CacheFolder);
-                Console.WriteLine($"{DateTime.Now} - Successfully delivered previously failed message: {studyInstanceUid}");
+                Log.Information("Successfully delivered previously failed message: {StudyInstanceUid}", studyInstanceUid);
               }
             }
             else
@@ -222,16 +217,16 @@ namespace OrderORM
           }
         }
 
-        Console.WriteLine($"{DateTime.Now} - Query completed with {_findResponses.Count} results");
+        Log.Information("Query completed with {ResponsesCount} results", _findResponses.Count);
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"{DateTime.Now} - ERROR during query: {ex.Message}");
+        Log.Error("Error during query: {ExMessage}", ex.Message);
         if (ex.InnerException != null)
         {
-          Console.WriteLine($"{DateTime.Now} - Inner exception: {ex.InnerException.Message}");
+          Log.Error($"Inner exception: {ex.InnerException.Message}");
         }
-        Console.WriteLine($"{DateTime.Now} - Stack trace: {ex.StackTrace}");
+        Log.Error($"Stack trace: {ex.StackTrace}");
         _queryStatus = DicomStatus.ProcessingFailure;
       }
     }
@@ -256,18 +251,18 @@ namespace OrderORM
           return;
         }
 
-        Console.WriteLine($"{DateTime.Now} - Processing {pendingMessages.Count()} pending messages for retry");
+        Log.Information("Processing {Count} pending messages for retry", pendingMessages.Count());
 
         foreach (var pending in pendingMessages)
         {
-          Console.WriteLine($"{DateTime.Now} - Retrying ORM for study {pending.StudyInstanceUid} (attempt {pending.AttemptCount} of indefinite retries)");
+          Log.Information($"Retrying ORM for study {pending.StudyInstanceUid} (attempt {pending.AttemptCount} of indefinite retries)");
 
-          if (HL7Sender.SendOrm(pending.OrmMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort, _config.Dicom.ScuAeTitle))
+          if (HL7Sender.SendOrm(_config, pending.OrmMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort, _config.Dicom.ScuAeTitle))
           {
             // Success! Save to successful cache and remove from pending
             CacheManager.SaveToCache(pending.StudyInstanceUid, pending.OrmMessage, CacheManager.CacheFolder);
             RetryManager.RemovePendingMessage(pending.StudyInstanceUid, CacheManager.CacheFolder);
-            Console.WriteLine($"{DateTime.Now} - Successfully delivered previously failed message: {pending.StudyInstanceUid}");
+            Log.Information($"Successfully delivered previously failed message: {pending.StudyInstanceUid}");
           }
           else
           {
@@ -278,7 +273,7 @@ namespace OrderORM
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"{DateTime.Now} - ERROR processing pending messages: {ex.Message}");
+        Log.Error($"Error processing pending messages: {ex.Message}");
       }
     }
   }

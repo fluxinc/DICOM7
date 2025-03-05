@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Serilog;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace OrderORM
 {
-    public class CacheManager
+    public static class CacheManager
     {
         private static string _configuredCacheFolder;
 
@@ -58,7 +59,7 @@ namespace OrderORM
 
             if (!Directory.Exists(normalizedPath))
             {
-                Console.WriteLine($"{DateTime.Now} - Creating cache folder '{normalizedPath}'");
+                Log.Information($"Creating cache folder '{normalizedPath}'");
                 Directory.CreateDirectory(normalizedPath);
             }
         }
@@ -81,7 +82,7 @@ namespace OrderORM
                     deleted++;
                 }
             }
-            Console.WriteLine($"{DateTime.Now} - Cleaned up {deleted} old ORM files from '{normalizedPath}'");
+            Log.Information($"Cleaned up {deleted} old ORM files from '{normalizedPath}'");
         }
 
         public static bool IsAlreadySent(string studyInstanceUid, string cacheFolder = null)
@@ -104,7 +105,7 @@ namespace OrderORM
             string normalizedFolder = Path.GetFullPath(folderToUse);
             string filename = Path.Combine(normalizedFolder, $"{studyInstanceUid}.hl7");
             File.WriteAllText(filename, ormMessage);
-            Console.WriteLine($"{DateTime.Now} - Saved ORM to cache: '{filename}'");
+            Log.Information($"Saved ORM to cache: '{filename}'");
         }
     }
 }
