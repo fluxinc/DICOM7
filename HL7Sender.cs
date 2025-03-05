@@ -36,7 +36,7 @@ namespace OrderORM
                 var data = Encoding.ASCII.GetBytes(mllpMessage);
                 stream.Write(data, 0, data.Length);
 
-                Log.Information("Sent {ByteCount} bytes", data.Length);
+                Log.Debug("Sent {ByteCount} bytes", data.Length);
 
                 try
                 {
@@ -57,7 +57,7 @@ namespace OrderORM
                     if (string.IsNullOrWhiteSpace(response))
                     {
                         // Empty response but message was sent - consider successful
-                        Log.Information("Empty response from receiver, but message was sent. Considering successful");
+                        Log.Warning("Empty response from receiver, but message was sent. Considering successful");
                         return true;
                     }
 
@@ -67,7 +67,7 @@ namespace OrderORM
                 catch (IOException ex)
                 {
                     // Timeout receiving response - message was sent, so consider it successful
-                    Log.Information("No ACK received (timeout), but message was sent. Considering successful");
+                    Log.Warning("No ACK received (timeout), but message was sent. Considering successful");
                     return true;
                 }
             }
@@ -105,7 +105,7 @@ namespace OrderORM
 
                     // Check if we have enough fields to process
                     if (fields.Length < 5) continue;
-                    
+
                     // Field 3 is the sending application
                     if (fields[2].Equals("ORDERORM", StringComparison.OrdinalIgnoreCase))
                     {
@@ -138,7 +138,7 @@ namespace OrderORM
             // Reconstruct the message
             string result = string.Join("\r", lines);
 
-            Log.Information("Replaced template values: Sender={SenderName}, Receiver={ReceiverName}, Facility={Facility}", 
+            Log.Debug("Replaced template values: Sender={SenderName}, Receiver={ReceiverName}, Facility={Facility}",
                 senderName, receiverName, receiverFacility);
 
             return result;

@@ -1,7 +1,7 @@
 ; OrderORM Inno Setup Script
 
 #define MyAppName "OrderORM"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "Flux Inc"
 #define MyAppURL "https://fluxinc.co/"
 #define MyAppExeName "OrderORM.exe"

@@ -86,7 +86,7 @@ namespace OrderORM
         case "specific":
           return string.IsNullOrEmpty(dateConfig.Date) ? "" : dateConfig.Date;
         default:
-          Log.Warning("Invalid date mode \'DateConfigModee}\', using today\'s date", dateConfig.Mode);
+          Log.Warning("Invalid date mode `{DateConfigMode}`, using today\'s date", dateConfig.Mode);
           return today.ToString("yyyyMMdd");
       }
     }
@@ -188,7 +188,7 @@ namespace OrderORM
             string studyInstanceUid = dataset.GetString(DicomTag.StudyInstanceUID);
             if (CacheManager.IsAlreadySent(studyInstanceUid, _config.Cache.Folder))
             {
-              Log.Information($"Skipping already sent order: {studyInstanceUid}");
+              Log.Information("Skipping already sent order: {StudyInstanceUid}", studyInstanceUid);
               continue;
             }
 
@@ -221,12 +221,7 @@ namespace OrderORM
       }
       catch (Exception ex)
       {
-        Log.Error("Error during query: {ExMessage}", ex.Message);
-        if (ex.InnerException != null)
-        {
-          Log.Error($"Inner exception: {ex.InnerException.Message}");
-        }
-        Log.Error($"Stack trace: {ex.StackTrace}");
+        Log.Error(ex, "Error during query: {ExMessage}", ex.Message);
         _queryStatus = DicomStatus.ProcessingFailure;
       }
     }
@@ -273,7 +268,7 @@ namespace OrderORM
       }
       catch (Exception ex)
       {
-        Log.Error($"Error processing pending messages: {ex.Message}");
+        Log.Error(ex, $"Error processing pending messages");
       }
     }
   }
