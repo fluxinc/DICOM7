@@ -37,7 +37,6 @@ Source: "..\bin\Release\*.*"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "Input\WinSW-x64.exe"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "Input\OrderORM.WinSW.xml"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "Input\config.yaml"; DestDir: "{#MyAppDataDir}"; Flags: onlyifdoesntexist confirmoverwrite;
-Source: "Input\ormTemplate.example.hl7"; DestDir: "{#MyAppDataDir}";
 
 
 [Run]

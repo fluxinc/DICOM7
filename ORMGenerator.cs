@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using Efferent.HL7.V2;
 using FellowOakDicom;
 using Serilog;
 
@@ -20,29 +21,75 @@ public class ORMGenerator
     {
         // Make sure the path is properly normalized for the current OS
         var normalizedPath = Path.GetFullPath(path);
-
-        if (!File.Exists(normalizedPath))
+        if (!File.Exists(normalizedPath) )
         {
-            Log.Warning("Note: ORM template file not found at '{Path}', using default v23 ORM template", normalizedPath);
-            Log.Warning("Place ormTemplate.hl7 in the same folder as your config.yaml file");
-            return GetDefaultV23OrmTemplate();
+            Log.Information("Saving default v23 ORM template to '{Path}'", normalizedPath);
+            File.WriteAllText(normalizedPath, GetDefaultV23OrmMessage().SerializeMessage());
         }
 
         Log.Information("Reading ORM template from '{Path}'", normalizedPath);
-        return File.ReadAllText(normalizedPath);
+        var message = new Message(File.ReadAllText(normalizedPath));
+        try
+        {
+            message.ParseMessage();
+        } catch (Exception e) {
+            Log.Fatal(e, "Failed to parse ORM template from '{Path}':", normalizedPath);
+            Log.Error("Exiting.  Please check the template and restart the OrderORM");
+            Environment.Exit(1);
+        }
+
+        return message.SerializeMessage();
     }
 
     /// <summary>
     ///     Returns a default HL7 v2.3 ORM message template with DICOM tag placeholders
     /// </summary>
     /// <returns>A string containing the default ORM template</returns>
-    private static string GetDefaultV23OrmTemplate()
+    private static Message GetDefaultV23OrmMessage()
     {
-        return @"MSH|^~\&|ORDERORM|#{0008,0080}|RECEIVER_APPLICATION|RECEIVER_FACILITY|#{CurrentDateTime}||ORM^O01|#{0020,000D}|P|2.3
-PID|1||#{0010,0020}||#{0010,0010}|#{0010,0030}|#{0010,0040}
-PV1|1|O|||||||||||||||||#{0008,0050}
-ORC|NW|#{0008,0050}||#{0020,000D}|SC
-OBR|1|#{0008,0050}||#{0008,1030}|||#{ScheduledDateTime}|||||||||||||||||#{0040,0002}^#{0040,0003}||||||#{ScheduledProcedureStepID}";
+        var message = new Message();
+        message.AddSegmentMSH(
+            "ORDERORM",
+            "",
+            "RECEIVER_APPLICATION",
+            "RECEIVER_FACILITY",
+            "",
+            "ORM^O01",
+            "#{0020,000D}",
+            "P",
+            "2.3");
+        var enc = new HL7Encoding();
+        var pid = new Segment("PID", enc);
+        pid.AddNewField("1");                    // PID.1 Set ID
+        pid.AddNewField("#{0010,0020}", 2);     // PID.2 Patient ID
+        pid.AddNewField("#{0010,0020}", 3);     // PID.3 Patient ID (Alternate)
+        pid.AddNewField("#{0010,0010}", 5);     // PID.5 Patient Name
+        pid.AddNewField("#{0010,0030}", 7);     // PID.7 Date of Birth
+        pid.AddNewField("#{0010,0040}", 8);     // PID.8 Sex
+        message.AddNewSegment(pid);
+
+        var pv1 = new Segment("PV1", enc);
+        pv1.AddNewField("1");                    // PV1.1 Set ID
+        pv1.AddNewField("O");                    // PV1.2 Patient Class
+        pv1.AddNewField("#{0008,0050}", 19);    // PV1.19 Visit Number
+        pv1.AddNewField("#{0040,0002}#{0040,0003}", 44); // PV1.44 Admit Date/Time
+        message.AddNewSegment(pv1);
+
+        var orc = new Segment("ORC", enc);
+        orc.AddNewField("NW");                   // ORC.1 Order Control
+        orc.AddNewField("#{0008,0050}");        // ORC.2 Placer Order Number
+        orc.AddNewField("#{0020,000D}");        // ORC.3 Filler Order Number
+        orc.AddNewField("SC");                   // ORC.4 Order Status
+        message.AddNewSegment(orc);
+
+        var obr = new Segment("OBR", enc);
+        obr.AddNewField("1");                    // OBR.1 Set ID
+        obr.AddNewField("#{0008,0050}", 2);     // OBR.2 Placer Order Number
+        obr.AddNewField("#{0008,1030}", 4);     // OBR.4 Universal Service ID
+        obr.AddNewField("#{0040,0002}#{0040,0003}", 6); // OBR.6 Requested Date/Time
+        message.AddNewSegment(obr);
+
+        return message;
     }
 
     /// <summary>
