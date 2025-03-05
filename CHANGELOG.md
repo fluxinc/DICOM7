@@ -4,6 +4,11 @@ All notable changes to the OrderORM project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Added support for custom base path via `--path`command line argument
+
+
 ## [1.0.3] - 2025-03-04
 
 ### Added

@@ -8,31 +8,31 @@ namespace OrderORM
         public DicomConfig Dicom { get; set; }
         public HL7Config HL7 { get; set; }
         public QueryConfig Query { get; set; }
-        public int QueryInterval { get; set; } // In seconds
+        public int QueryInterval { get; set; } = 60; // In seconds
         public RetryConfig Retry { get; set; } = new RetryConfig(); // Default if not in config
     }
 
     public class CacheConfig
     {
         public string Folder { get; set; }
-        public int RetentionDays { get; set; }
+        public int RetentionDays { get; set; } = 3;
     }
 
     public class DicomConfig
     {
-        public string ScuAeTitle { get; set; }
-        public string ScpHost { get; set; }
-        public int ScpPort { get; set; }
-        public string ScpAeTitle { get; set; }
+        public string ScuAeTitle { get; set; } = "ORDERORM";
+        public string ScpHost { get; set; } = "worklist.fluxinc.ca";
+        public int ScpPort { get; set; } = 1070;
+        public string ScpAeTitle { get; set; } = "FLUX_WORKLIST";
     }
 
     public class HL7Config
     {
-    public string SenderName { get; set; }
-    public string ReceiverName { get; set; }
-    public string ReceiverFacility { get; set; }
-    public string ReceiverHost { get; set; }
-        public int ReceiverPort { get; set; }
+    public string SenderName { get; set; } = "ORDERORM";
+    public string ReceiverName { get; set; } = "RECEIVER_APPLICATION";
+    public string ReceiverFacility { get; set; } = "RECEIVER_FACILITY";
+    public string ReceiverHost { get; set; } = "localhost";
+        public int ReceiverPort { get; set; } = 7777;
     }
 
     public class QueryConfig
@@ -44,14 +44,14 @@ namespace OrderORM
 
     public class DateConfig
     {
-        public string Mode { get; set; }
-        public int DaysBefore { get; set; }
-        public int DaysAfter { get; set; }
-        public string Date { get; set; }
+        public string Mode { get; set; } = "today";
+        public int DaysBefore { get; set; } = 1;
+        public int DaysAfter { get; set; } = 1;
+        public string Date { get; set; } = "";
     }
 
     public class RetryConfig
     {
-        public int RetryIntervalMinutes { get; set; } = 5;
+        public int RetryIntervalMinutes { get; set; } = 1;
     }
 }

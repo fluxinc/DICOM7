@@ -90,6 +90,17 @@ msbuild
 
 Note: This application is designed to run continuously as a service, querying at configured intervals.
 
+## Command Line Arguments
+
+The application supports the following command line arguments:
+
+- `--path <directory_path>`: Sets a custom base path for the application. All other paths (configuration, cache, logs) will be relative to this path unless explicitly configured otherwise in the config.yaml file.
+
+Example:
+```
+OrderORM.exe --path C:\CustomPath\OrderORM
+```
+
 ## License
 
 This software is proprietary and confidential. Unauthorized copying, transferring, or reproduction of the contents of this repository, via any medium, is strictly prohibited.
