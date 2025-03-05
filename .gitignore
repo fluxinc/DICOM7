@@ -62,3 +62,5 @@ cache/
 
 # User-specific files
 config.local.yaml
+
+installer/Output/*
