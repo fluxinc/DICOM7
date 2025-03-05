@@ -2,27 +2,43 @@
 
 A medical order management system that bridges DICOM worklists and HL7 messaging systems. This application queries DICOM worklists for scheduled procedures and generates HL7 ORM messages to forward to compatible receivers.
 
+## License
+
+This software is released under the **Medical Software Academic and Restricted Use License**:
+
+- **Academic Users**: Free to download, use, and modify for non-commercial purposes with attribution.
+- **Commercial Use**: Prohibited without written permission from Flux Inc.
+- **Competitors**: Prohibited from use.
+- **Clients**: Prohibited from use by clients of licensees.
+
+See the [LICENSE](LICENSE.md) file for full terms.
+
+
 ## Features
 
 - Queries DICOM Modality Worklist (MWL) for scheduled procedures
-- Generates HL7 ORM messages from DICOM worklist data
-- Implements caching with configurable retention to prevent duplicate submissions
-- Supports automatic retry for failed message delivery
-- Configurable query parameters (patient name, modality, date ranges)
-- Template-based HL7 message generation
+- Generates HL7 ORM messages from DICOM worklist data using customizable templates
+- Implements caching with configurable retention to prevent duplicate submissions and manage disk space
+- Supports automatic retry for failed message deliveries with indefinite retries
+- Configurable query parameters (modality, date ranges, station AE title)
+- Template-based HL7 message generation with support for a default template
 - YAML-based configuration
+- Logging to console and file for easier troubleshooting
 
 ## Requirements
 
 - .NET Framework 4.7.2
 - Windows environment (not compatible with macOS/Linux)
 
+## Why .NET Framework 4.7.2?
+
+- **Windows 10 Compatibility**: Most use cases are for legacy medical software frequently installed on Windows 10, and this only supports .NET <= 4.7.2.
+
 ## Dependencies
 
 - **fo-dicom**: DICOM implementation for .NET
-- **NHapi**: HL7 processing library
+- **Serilog**: Logging framework
 - **YamlDotNet**: YAML file parsing
-- **Microsoft.Extensions.Logging**: Logging framework
 
 ## Project Structure
 
@@ -61,11 +77,15 @@ Retry:
   RetryIntervalMinutes: Minutes between retry attempts
 ```
 
+## HL7 Template
+
+The application uses an HL7 ORM template file (`ormTemplate.hl7`) located in the same directory as `config.yaml`. If not found, a default HL7 v2.3 ORM template is used with placeholders for DICOM tags and special values (e.g., #{CurrentDateTime}, #{ScheduledDateTime}).
+
+
 ## Building and Running
 
 ```
-dotnet build OrderORM.csproj
-dotnet run --project OrderORM.csproj
+msbuild
 ```
 
 Note: This application is designed to run continuously as a service, querying at configured intervals.
