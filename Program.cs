@@ -12,9 +12,16 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
+        // Parse command line arguments
+        ParseCommandLineArgs(args);
+
         var logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", "order-orm-log-.txt");
         Log.Logger = new LoggerConfiguration()
+#if DEBUG
+            .MinimumLevel.Debug()
+#else
             .MinimumLevel.Information()
+#endif
             .WriteTo.Console()
             .WriteTo.File(logPath,
                 rollingInterval: RollingInterval.Day,
@@ -28,7 +35,6 @@ internal class Program
         {
             // Try to load the config from the common app folder first
             var commonConfigPath = AppConfig.GetConfigFilePath();
-            string configPath = null;
             Config config = null;
 
             var deserializer = new DeserializerBuilder()
@@ -42,7 +48,6 @@ internal class Program
                 try
                 {
                     config = deserializer.Deserialize<Config>(File.ReadAllText(commonConfigPath));
-                    configPath = commonConfigPath;
                 }
                 catch (Exception ex)
                 {
@@ -60,7 +65,6 @@ internal class Program
                 try
                 {
                     config = deserializer.Deserialize<Config>(File.ReadAllText(localConfigPath));
-                    configPath = localConfigPath;
                 }
                 catch (Exception ex)
                 {
@@ -70,22 +74,19 @@ internal class Program
             }
 
             // Ensure Cache config is initialized
-            if (config.Cache == null)
-                config.Cache = new CacheConfig
-                {
-                    RetentionDays = 30 // Default retention period
-                };
+            config.Cache ??= new CacheConfig
+            {
+                RetentionDays = 7 // Default retention period
+            };
 
             // Set the configured cache folder if specified in config
             if (config.Cache != null && !string.IsNullOrWhiteSpace(config.Cache.Folder))
                 CacheManager.SetConfiguredCacheFolder(config.Cache.Folder);
 
             // Clean up cache based on retention policy
-            CacheManager.CleanUpCache(CacheManager.CacheFolder, config.Cache?.RetentionDays ?? 30);
+            CacheManager.CleanUpCache(CacheManager.CacheFolder, config.Cache?.RetentionDays ?? 7);
 
-            // Look for ormTemplate.hl7 in the same folder as config.yaml
-            var configDirectory = Path.GetDirectoryName(configPath);
-            var templatePath = Path.Combine(configDirectory, "ormTemplate.hl7");
+            var templatePath = Path.Combine(AppConfig.CommonAppFolder, "ormTemplate.hl7");
 
             Log.Information("Looking for ORM template at {TemplatePath}", templatePath);
             var ormTemplate = ORMGenerator.LoadTemplate(templatePath);
@@ -121,5 +122,31 @@ internal class Program
         {
             Log.CloseAndFlush();
         }
+    }
+
+    /// <summary>
+    ///     Parses command line arguments and configures the application accordingly
+    /// </summary>
+    /// <param name="args">Command line arguments</param>
+    private static void ParseCommandLineArgs(string[] args)
+    {
+        for (var i = 0; i < args.Length; i++)
+            if (args[i] == "--path" && i + 1 < args.Length)
+            {
+                var basePath = args[i + 1];
+                basePath = Path.GetFullPath(basePath);
+                if (Directory.Exists(basePath))
+                {
+                    AppConfig.SetBasePath(basePath);
+                    Console.WriteLine($"Using custom base path: {basePath}");
+                }
+                else
+                {
+                    Console.WriteLine($"ERROR: Specified path '{basePath}' does not exist.  Terminating.");
+                    Environment.Exit(1);
+                }
+
+                i++;
+            }
     }
 }

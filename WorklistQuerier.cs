@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FellowOakDicom;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace OrderORM
@@ -66,7 +65,7 @@ namespace OrderORM
     {
       if (dateConfig == null)
       {
-        Log.Warning($"ScheduledProcedureStepStartDate configuration is missing, using today's date");
+        Log.Warning("ScheduledProcedureStepStartDate configuration is missing, using today's date");
         return DateTime.Today.ToString("yyyyMMdd");
       }
 
@@ -93,13 +92,6 @@ namespace OrderORM
 
     private IDicomClient CreateClient()
     {
-
-      // Create a logger factory
-      var loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
-      {
-        builder.AddConsole();
-      });
-
       return DicomClientFactory.Create(
           _config.Dicom.ScpHost,
           _config.Dicom.ScpPort,
@@ -128,12 +120,6 @@ namespace OrderORM
         _queryStatus = response.Status;
         Log.Information("C-FIND query status: 0x{StatusCode}", response.Status.Code);
       }
-    }
-
-    private async Task AddAndSendRequestAsync(DicomClient client, DicomRequest request, CancellationToken cancellationToken)
-    {
-      await client.AddRequestAsync(request);
-      await client.SendAsync(cancellationToken, DicomClientCancellationMode.ImmediatelyAbortAssociation);
     }
 
     private bool WaitForQueryCompletion(int timeoutSeconds = 60)
@@ -241,23 +227,24 @@ namespace OrderORM
         // Get all pending messages that are ready for retry
         var pendingMessages = RetryManager.GetPendingMessages(CacheManager.CacheFolder, cutoffTime);
 
-        if (!pendingMessages.Any())
+        var pendingOrmMessages = pendingMessages.ToList();
+        if (!pendingOrmMessages.Any())
         {
           return;
         }
 
-        Log.Information("Processing {Count} pending messages for retry", pendingMessages.Count());
+        Log.Information("Processing {Count} pending messages for retry", pendingOrmMessages.Count());
 
-        foreach (var pending in pendingMessages)
+        foreach (var pending in pendingOrmMessages)
         {
-          Log.Information($"Retrying ORM for study {pending.StudyInstanceUid} (attempt {pending.AttemptCount} of indefinite retries)");
+          Log.Information("Retrying ORM for study {StudyInstanceUid} (attempt {AttemptCount} of indefinite retries)", pending.StudyInstanceUid, pending.AttemptCount);
 
           if (HL7Sender.SendOrm(_config, pending.OrmMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort, _config.Dicom.ScuAeTitle))
           {
             // Success! Save to successful cache and remove from pending
             CacheManager.SaveToCache(pending.StudyInstanceUid, pending.OrmMessage, CacheManager.CacheFolder);
             RetryManager.RemovePendingMessage(pending.StudyInstanceUid, CacheManager.CacheFolder);
-            Log.Information($"Successfully delivered previously failed message: {pending.StudyInstanceUid}");
+            Log.Information("Successfully delivered previously failed message: {StudyInstanceUid}", pending.StudyInstanceUid);
           }
           else
           {

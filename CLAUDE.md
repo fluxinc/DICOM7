@@ -2,8 +2,9 @@
 
 ## Build & Run Commands
 - ⚠️ WARNING: This is a .NET 4.7.2 project that doesn't run on the current OS
-- Build: `dotnet build OrderORM.csproj`
-- Run: `dotnet run --project OrderORM.csproj`
+- Build: `msbuild`
+- Run: `bin\Debug\OrderORM.exe`
+- Run with custom base path: `bin\Debug\OrderORM.exe --path .\`
 
 ## Project Structure
 - Medical order management system that:
@@ -23,3 +24,5 @@
 ## Additional Notes
 - Uses fo-dicom, NHapi, and YamlDotNet libraries
 - Configuration stored in config.yaml
+- Command line arguments:
+  - `--path <directory_path>`: Sets a custom base path for the application

@@ -21,7 +21,8 @@ namespace OrderORM
                     return _configuredCacheFolder;
                 }
 
-                // Otherwise use the default location
+                // Otherwise use the default location under the common app folder
+                // (which may be using a custom base path if one was specified)
                 var cacheFolder = Path.Combine(AppConfig.CommonAppFolder, "cache");
                 if (!Directory.Exists(cacheFolder))
                 {
@@ -35,7 +36,15 @@ namespace OrderORM
         {
             if (!string.IsNullOrWhiteSpace(cacheFolder))
             {
-                _configuredCacheFolder = Path.GetFullPath(cacheFolder);
+                // If the path is relative and we have a custom base path, make it relative to that
+                if (!Path.IsPathRooted(cacheFolder))
+                {
+                    _configuredCacheFolder = Path.GetFullPath(Path.Combine(AppConfig.CommonAppFolder, cacheFolder));
+                }
+                else
+                {
+                    _configuredCacheFolder = Path.GetFullPath(cacheFolder);
+                }
 
                 // Ensure the configured folder exists
                 if (!Directory.Exists(_configuredCacheFolder))
@@ -59,7 +68,7 @@ namespace OrderORM
 
             if (!Directory.Exists(normalizedPath))
             {
-                Log.Information($"Creating cache folder '{normalizedPath}'");
+                Log.Information("Creating cache folder \'{NormalizedPath}\'", normalizedPath);
                 Directory.CreateDirectory(normalizedPath);
             }
         }
@@ -82,7 +91,7 @@ namespace OrderORM
                     deleted++;
                 }
             }
-            Log.Information($"Cleaned up {deleted} old ORM files from '{normalizedPath}'");
+            Log.Information("Cleaned up \'{Deleted}\' old ORM files from \'{NormalizedPath}\'", deleted, normalizedPath);
         }
 
         public static bool IsAlreadySent(string studyInstanceUid, string cacheFolder = null)
@@ -105,7 +114,7 @@ namespace OrderORM
             string normalizedFolder = Path.GetFullPath(folderToUse);
             string filename = Path.Combine(normalizedFolder, $"{studyInstanceUid}.hl7");
             File.WriteAllText(filename, ormMessage);
-            Log.Information($"Saved ORM to cache: '{filename}'");
+            Log.Information("Saved ORM to cache: \'{Filename}\'", filename);
         }
     }
 }
