@@ -1,5 +1,0 @@
-MSH|^~\&|ORDERORM|#{0008,0080}|RECEIVER_APPLICATION|RECEIVER_FACILITY|#{CurrentDateTime}||ORM^O01|#{0020,000D}|P|2.3
-PID|1||#{0010,0020}||#{0010,0010}|#{0010,0030}|#{0010,0040}
-PV1|1|O|||||||||||||||||#{0008,0050}
-ORC|NW|#{0008,0050}||#{0020,000D}|SC
-OBR|1|#{0008,0050}||#{0008,1030}|||#{ScheduledDateTime}|||||||||||||||||#{0040,0002}^#{0040,0003}||||||#{ScheduledProcedureStepID}

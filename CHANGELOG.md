@@ -7,7 +7,15 @@ All notable changes to the OrderORM project will be documented in this file.
 ### Added
 
 - Added support for custom base path via `--path`command line argument
+- HL7-V2 message generation and validation
 
+### Changed
+
+- Writes default ORM template to disk if it doesn't exist
+
+### Fixed
+
+- Some attributes in the default template
 
 ## [1.0.3] - 2025-03-04
 

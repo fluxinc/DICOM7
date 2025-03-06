@@ -37,6 +37,7 @@ See the [LICENSE](LICENSE.md) file for full terms.
 ## Dependencies
 
 - **fo-dicom**: DICOM implementation for .NET
+- **Efferent.HL7.V2**: Lightweight HL7-V2 message handler
 - **Serilog**: Logging framework
 - **YamlDotNet**: YAML file parsing
 

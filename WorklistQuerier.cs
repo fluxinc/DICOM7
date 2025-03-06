@@ -46,7 +46,7 @@ namespace OrderORM
       {
         sps.Add(DicomTag.ScheduledStationAETitle, _config.Query.ScheduledStationAeTitle);
       }
-
+      
       // Add ScheduledProcedureStepStartDate
       sps.Add(DicomTag.ScheduledProcedureStepStartDate, GetScheduledDate(_config.Query.ScheduledProcedureStepStartDate));
 
