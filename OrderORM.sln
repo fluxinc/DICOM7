@@ -2,15 +2,21 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderORM", "OrderORM.csproj", "{070860C7-3610-4637-BF4C-E099506DB827}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flux", "flux-net\Flux.csproj", "{BF3EA215-8A3F-45D7-9DA7-9F15AFE12B0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Debug|x64 = Debug|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{070860C7-3610-4637-BF4C-E099506DB827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{070860C7-3610-4637-BF4C-E099506DB827}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{070860C7-3610-4637-BF4C-E099506DB827}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{070860C7-3610-4637-BF4C-E099506DB827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF3EA215-8A3F-45D7-9DA7-9F15AFE12B0E}.Release|x64.ActiveCfg = Release|x64
+		{BF3EA215-8A3F-45D7-9DA7-9F15AFE12B0E}.Release|x64.Build.0 = Release|x64
+		{BF3EA215-8A3F-45D7-9DA7-9F15AFE12B0E}.Debug|x64.ActiveCfg = Debug|x64
+		{BF3EA215-8A3F-45D7-9DA7-9F15AFE12B0E}.Debug|x64.Build.0 = Debug|x64
+		{070860C7-3610-4637-BF4C-E099506DB827}.Release|x64.ActiveCfg = Release|x64
+		{070860C7-3610-4637-BF4C-E099506DB827}.Release|x64.Build.0 = Release|x64
+		{070860C7-3610-4637-BF4C-E099506DB827}.Debug|x64.ActiveCfg = Debug|x64
+		{070860C7-3610-4637-BF4C-E099506DB827}.Debug|x64.Build.0 = Debug|x64
 	EndGlobalSection
 EndGlobal

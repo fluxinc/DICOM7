@@ -1,0 +1,3 @@
+[submodule "flux-net"]
+	path = flux-net
+	url = git@github.com:fluxinc/flux-net.git
