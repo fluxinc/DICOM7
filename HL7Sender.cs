@@ -45,9 +45,6 @@ namespace OrderORM
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
                     string response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
-                    // Debug - log raw response
-                    Log.Information("Received response: {Response}", response);
-
                     if (response.Contains("AA") || response.Contains("ACK"))
                     {
                         Log.Information("ORM sent successfully to {Host}:{Port}", host, port);

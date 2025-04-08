@@ -1,7 +1,7 @@
 # OrderORM - C# .NET Development Guidelines
 
 ## Build & Run Commands
-- ⚠️ WARNING: This is a .NET 4.7.2 project that doesn't run on the current OS
+- ⚠️ WARNING: This is a .NET 4.6.2 project that doesn't run on the current OS
 - Build: `msbuild`
 - Run: `bin\Debug\OrderORM.exe`
 - Run with custom base path: `bin\Debug\OrderORM.exe --path .\`

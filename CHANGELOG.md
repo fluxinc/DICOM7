@@ -4,6 +4,14 @@ All notable changes to the OrderORM project will be documented in this file.
 
 ## [Unreleased]
 
+
+## Changed
+
+- Downgraded to .NET 4.6.2 for compatibility with older Windows versions
+- Upgraded NuGet packages to latest versions
+
+## [1.0.4] - 2025-03-10
+
 ### Added
 
 - Added support for custom base path via `--path`command line argument

@@ -23,7 +23,7 @@ namespace OrderORM
 
                 // Otherwise use the default location under the common app folder
                 // (which may be using a custom base path if one was specified)
-                var cacheFolder = Path.Combine(AppConfig.CommonAppFolder, "cache");
+                string cacheFolder = Path.Combine(AppConfig.CommonAppFolder, "cache");
                 if (!Directory.Exists(cacheFolder))
                 {
                     Directory.CreateDirectory(cacheFolder);
@@ -37,14 +37,8 @@ namespace OrderORM
             if (!string.IsNullOrWhiteSpace(cacheFolder))
             {
                 // If the path is relative and we have a custom base path, make it relative to that
-                if (!Path.IsPathRooted(cacheFolder))
-                {
-                    _configuredCacheFolder = Path.GetFullPath(Path.Combine(AppConfig.CommonAppFolder, cacheFolder));
-                }
-                else
-                {
-                    _configuredCacheFolder = Path.GetFullPath(cacheFolder);
-                }
+                _configuredCacheFolder = Path.GetFullPath(Path.IsPathRooted(cacheFolder) ? 
+                    cacheFolder : Path.Combine(AppConfig.CommonAppFolder, cacheFolder));
 
                 // Ensure the configured folder exists
                 if (!Directory.Exists(_configuredCacheFolder))
