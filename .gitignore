@@ -68,3 +68,4 @@ installer/Output/*
 .stignore
 
 run/
+Flux.snk
