@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Description
+
+- This is a C# .NET 4.6.2 solution comprising two projects
+  - DICOM2ORM - Checks a remote DICOM worklist, generates HL7 ORM messages, and sends them to a receiver
+  - DICOM2ORU - Waits for DICOM files that contain images or PDFs, wraps them into ORU messages and delivers them to an HL7 listener
+  - ORM2DICOM - Receives incoming HL7 ORM orders, saves them to disk, listens for Worklist C-Find queries, and answers with the ORMs, mapping attributes to DICOM
+
+## Dependencies (NuGet Packages)
+
+- fo-dicom 5.2
+- HL7-V2 (example implementations here https://github.com/Efferent-Health/HL7-V2/wiki/Composing-a-new-HL7-message)
+- Serilog for logging
+
+## Project Structure
+
+- DICOM7.sln - main solution file
+- DICOM2ORM/
+  - DICOM2ORM.csproj - DICOM2ORM project
+- DICOM2ORU/
+  - DICOM2ORU.csproj - DICOM2ORU project file
+- packages.config - NuGet package index for this solution.
+- installer/
+  - DICOM7Setup.iss - innosetup installer project for DICOM2ORM
+  - Input/  - files included with the installer
+    - DICOM2ORM.WinSW.xml - Windows Service Wrapper definition file for DICOM2ORM
+    - DICOM2ORU.WinSW.xml - Windows Service Wrapper definition file for DICOM2ORU
+    - WinSW-x64.exe - Windows Service Wrapper binary
+  - Include/ - .pas files included in setup project
+
+## Development Environment
+
+- Cursor, the current IDE, is running on MacOS
+- This project does not compile on Mac, and linter errors, if any, are invalid
+
+

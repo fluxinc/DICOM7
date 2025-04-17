@@ -1,0 +1,9 @@
+MSH|^~\&|ABI-Q|FLUXINC|FLUX^flux.fluxinc.co^DNS|fluxinc^2.16.840.1.113883.3.8873^ISO|20220829220642||ORU^R01^ORU_R01|202208292206420001|P|2.5.1
+PID||400-4.2.5.0|400-4.2.5.0^^^fluxinc&2.16.840.1.113883.3.8873&ISO^MR||Q^NEW||19500829|M
+PV1||O||R|||||||||||||||13286171|||||||||||||||||||||||||20220829220642
+OBR|1|012345|678910|93923^Complete bilateral noninvasive physiologic studies of upper or lower extremity arteries, 3 or more levels^C4^77197-2^Noninvasive arteriosclerosis studies panel^LN|||20220829220642+0000|||||||||123456789^SMITH^BOB^^^^MD^^^^^^NPI|||||||||F
+OBX|1|NM|77194-9^Ankle-brachial index (Right)^LN|1|1.01|{ratio}^ratio^UCUM|>1.00|N|||F|||20220829220642||^JOHNSON^TOM|||20220829220642
+OBX|2|NM|77194-9^Ankle-brachial index (Left)^LN|2|1.04|{ratio}^ratio^UCUM|>1.00|N|||F|||20220829220642||^JOHNSON^TOM|||20220829220642
+OBX|3|ED|47045-0^Study report^LN|1|^AP^Octet-stream^Base64^{BASE 64 PDF HERE}
+NTE|1|L|TEST COMMENT|RE
+NTE|2|O|TEST IMPRESSION|RE

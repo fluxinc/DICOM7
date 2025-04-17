@@ -1,8 +1,14 @@
-# OrderORM
+# DICOM7
 
-Order ORM queries DICOM Modality Worklist at a set interval, generates HL7 ORM orders, and sends them to a receiver.
+A comprehensive bidirectional DICOM and HL7 interface suite with multiple components:
+
+- **DICOM2ORM**: Queries DICOM Modality Worklist and generates HL7 ORM orders
+- **DICOM2ORU**: Processes DICOM images and generates HL7 ORU result messages
+- **ORM2DICOM**: Receives HL7 ORM orders and creates DICOM Modality Worklist entries
 
 ## License
+
+This software is proprietary and confidential. Unauthorized copying, transferring, or reproduction of the contents of this repository, via any medium, is strictly prohibited.
 
 This software is released under the **Medical Software Academic and Restricted Use License**:
 
@@ -13,17 +19,33 @@ This software is released under the **Medical Software Academic and Restricted U
 
 See the [LICENSE](LICENSE.md) file for full terms.
 
-
 ## Features
 
-- Queries DICOM Modality Worklist (MWL) for scheduled procedures
-- Generates HL7 ORM messages from DICOM worklist data using customizable templates
-- Implements caching with configurable retention to prevent duplicate submissions and manage disk space
-- Supports automatic retry for failed message deliveries with indefinite retries
-- Configurable query parameters (modality, date ranges, station AE title)
-- Template-based HL7 message generation with support for a default template
+### Common Features
+
+- Template-based HL7 message generation with support for default templates
 - YAML-based configuration
 - Logging to console and file for easier troubleshooting
+- Caching with configurable retention to prevent duplicate processing
+- Automatic retry for failed operations
+
+### DICOM2ORM
+
+- Queries DICOM Modality Worklist (MWL) for scheduled procedures
+- Generates HL7 ORM messages from DICOM worklist data
+- Sends HL7 ORM messages to configured receivers
+
+### DICOM2ORU
+
+- Processes DICOM images to extract result data
+- Generates HL7 ORU messages containing results
+- Sends HL7 ORU messages to configured receivers
+
+### ORM2DICOM
+
+- Receives HL7 ORM messages via MLLP
+- Creates DICOM Modality Worklist entries from received HL7 data
+- Provides DICOM Worklist SCP functionality
 
 ## Requirements
 
@@ -41,70 +63,29 @@ See the [LICENSE](LICENSE.md) file for full terms.
 - **Serilog**: Logging framework
 - **YamlDotNet**: YAML file parsing
 
-## Project Structure
-
-- **WorklistQuerier.cs**: Queries DICOM worklists using C-FIND requests
-- **OrmGenerator.cs**: Generates HL7 ORM messages using configurable templates
-- **HL7Sender.cs**: Sends HL7 messages over TCP/IP using MLLP protocol
-- **CacheManager.cs**: Handles message caching and prevents duplicates
-- **Config.cs**: Configuration management
-
 ## Configuration
 
-Configuration is stored in `config.yaml` with the following sections:
-
-```yaml
-OrmTemplatePath: Path to HL7 ORM template file
-Cache:
-  Folder: Cache directory location
-  RetentionDays: Number of days to retain cached messages
-Dicom:
-  ScuAeTitle: DICOM SCU application entity title
-  ScpHost: DICOM worklist server host
-  ScpPort: DICOM worklist server port
-  ScpAeTitle: DICOM worklist server AE title
-HL7:
-  SenderName: HL7 sender application name
-  ReceiverName: HL7 receiver application name
-  ReceiverFacility: HL7 receiver facility name
-  ReceiverHost: HL7 receiver host
-  ReceiverPort: HL7 receiver port
-Query:
-  ScheduledStationAeTitle: Optional filter for specific station
-  ScheduledProcedureStepStartDate: Date configuration
-  Modality: Optional filter for specific modality
-QueryInterval: Seconds between queries
-Retry:
-  RetryIntervalMinutes: Minutes between retry attempts
-```
-
-## HL7 Template
-
-The application uses an HL7 ORM template file (`ormTemplate.hl7`) located in the same directory as `config.yaml`. If not found, a default HL7 v2.3 ORM template is used with placeholders for DICOM tags and special values (e.g., #{CurrentDateTime}, #{ScheduledDateTime}).
-
+Each component has its own `config.yaml` file with appropriate settings for that component's functionality. Refer to the documentation within each project directory for specific configuration options.
 
 ## Building and Running
 
-```
+```cmd
 msbuild
 ```
 
-Note: This application is designed to run continuously as a service, querying at configured intervals.
+Note: Each application is designed to run continuously as a service, operating according to its configured parameters.
 
 ## Command Line Arguments
 
-The application supports the following command line arguments:
+Each application supports the following command line arguments:
 
 - `--path <directory_path>`: Sets a custom base path for the application. All other paths (configuration, cache, logs) will be relative to this path unless explicitly configured otherwise in the config.yaml file.
 
 Example:
-```
-OrderORM.exe --path C:\CustomPath\OrderORM
-```
 
-## License
-
-This software is proprietary and confidential. Unauthorized copying, transferring, or reproduction of the contents of this repository, via any medium, is strictly prohibited.
+```cmd
+DICOM2ORM.exe --path C:\CustomPath\DICOM2ORM
+```
 
 ## Support
 

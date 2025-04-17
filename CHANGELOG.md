@@ -1,14 +1,19 @@
 # Changelog
 
-All notable changes to the OrderORM project will be documented in this file.
+All notable changes to the DICOM7 project will be documented in this file.
 
 ## [Unreleased]
 
-
 ## Changed
 
+- Renamed to DICOM7
 - Downgraded to .NET 4.6.2 for compatibility with older Windows versions
 - Upgraded NuGet packages to latest versions
+
+### Added
+
+- Added ORM2DICOM component
+- Added DICOM2ORU component
 
 ## [1.0.4] - 2025-03-10
 
@@ -60,7 +65,7 @@ All notable changes to the OrderORM project will be documented in this file.
 
 ### Added
 
-- Initial release of OrderORM application
+- Initial release of DICOM2ORM application
 - DICOM worklist query functionality
 - HL7 ORM message generation from DICOM worklist data
 - Caching mechanism with configurable retention period
