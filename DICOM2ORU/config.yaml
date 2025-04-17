@@ -7,6 +7,8 @@ ProcessInterval: 60
 Dicom:
   ApplicationName: "DICOM7_DICOM2ORU"
   FacilityName: "Flux Inc"
+  AETitle: "DICOM7_DICOM2ORU"
+  ListenPort: 104
 
 # Input Configuration
 Input:

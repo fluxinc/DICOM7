@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DICOM2ORM
+namespace DICOM7.DICOM2ORM
 {
     public class Config
     {

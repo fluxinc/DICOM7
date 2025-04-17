@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace DICOM2ORM
+namespace DICOM7.DICOM2ORM
 {
     public static class AppConfig
     {

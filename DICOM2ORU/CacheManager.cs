@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Serilog;
 
-namespace DICOM2ORU
+namespace DICOM7.DICOM2ORU
 {
   public static class CacheManager
   {

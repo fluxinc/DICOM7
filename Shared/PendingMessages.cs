@@ -1,4 +1,4 @@
-namespace Shared
+namespace DICOM7.Shared
 {
   /// <summary>
   /// Represents a pending ORM message that needs to be retried

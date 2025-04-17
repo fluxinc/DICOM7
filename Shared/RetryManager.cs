@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Serilog;
 
-namespace Shared
+namespace DICOM7.Shared
 {
     /// <summary>
     /// Manages retry operations for HL7 messages with a persistent queue

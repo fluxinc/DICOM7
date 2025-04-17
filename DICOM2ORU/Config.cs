@@ -1,6 +1,6 @@
 using System;
 
-namespace DICOM2ORU
+namespace DICOM7.DICOM2ORU
 {
   public class Config
   {
@@ -20,8 +20,10 @@ namespace DICOM2ORU
 
   public class DicomConfig
   {
-    public string ApplicationName { get; set; } = "DICOM2ORU";
+    public string ApplicationName { get; set; } = "DICOM7_DICOM2ORU";
     public string FacilityName { get; set; } = "Flux Inc";
+    public int ListenPort { get; set; } = 104;
+    public string AETitle { get; set; } = "DICOM7_DICOM2ORU";
   }
 
   public class HL7Config

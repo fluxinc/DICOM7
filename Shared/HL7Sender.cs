@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace Shared
+namespace DICOM7.Shared
 {
   /// <summary>
   /// Handles sending HL7 messages to a receiver

@@ -7,9 +7,9 @@ using FellowOakDicom;
 using FellowOakDicom.Network;
 using FellowOakDicom.Network.Client;
 using Serilog;
-using Shared;
+using DICOM7.Shared;
 
-namespace DICOM2ORM
+namespace DICOM7.DICOM2ORM
 {
   public class WorklistQuerier
   {

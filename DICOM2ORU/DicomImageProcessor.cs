@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DICOM2ORU;
 using FellowOakDicom;
 using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
 using Serilog;
-using Shared;
+using DICOM7.Shared;
 
-namespace DICOM2ORU
+namespace DICOM7.DICOM2ORU
 {
     public class DicomImageProcessor
     {

@@ -8,7 +8,7 @@ using Serilog;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace DICOM2ORM;
+namespace DICOM7.DICOM2ORM;
 
 internal class Program
 {
