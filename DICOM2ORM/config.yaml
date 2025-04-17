@@ -1,39 +1,37 @@
 # DICOM2ORM Configuration
+# Queries DICOM worklist and generates HL7 ORM messages
 
-
-# Cache Configuration
+# Cache settings
 Cache:
-  Folder: "cache"
-  RetentionDays: 2
+  Folder: "cache"             # Cache path
+  RetentionDays: 2            # File retention period (days)
 
-# DICOM Worklist Configuration
-#
-# This is the DICOM  node that we will query to get the worklist data.
+# DICOM SCU settings
 Dicom:
-  ScuAeTitle: DICOM7_DICOM2ORM
-  ScpHost: worklist.fluxinc.ca
-  ScpPort: 1070
-  ScpAeTitle: FLUX_WORKLIST
+  ScuAeTitle: DICOM7          # Local AE Title for queries
+  ScpHost: worklist.fluxinc.ca # Target worklist server
+  ScpPort: 1070               # Target server port
+  ScpAeTitle: FLUX_WORKLIST   # Target AE Title
 
+# Query parameters
 Query:
-  ScheduledStationAeTitle: # set this value to limit results to a specific station
+  ScheduledStationAeTitle:    # Station filter (optional)
   ScheduledProcedureStepStartDate:
-    Mode: today            # today, range, specific
-    DaysBefore: 1          # only used if mode is range
-    DaysAfter: 1           # only used if mode is range
-    Date: 2023-03-01       # only used if mode is specific
-  Modality:                # set this value to limit results to a specific modality
+    Mode: today               # Date filter type
+    DaysBefore: 1             # Past days to include
+    DaysAfter: 1              # Future days to include
+    Date: 2023-03-01          # Exact date if mode=specific
+  Modality:                   # Modality filter (optional)
+  IntervalSeconds: 60         # Query interval (seconds)
 
-# HL7 Configuration
+# HL7 transmission settings
 HL7:
-  SenderName: DICOM7_DICOM2ORM
-  ReceiverName: RECEIVER_APPLICATION
-  ReceiverFacility: RECEIVER_FACILITY
-  ReceiverHost: localhost
-  ReceiverPort: 7777
+  SenderName: DICOM7          # Source application
+  ReceiverName: RECEIVER_APPLICATION  # Target application
+  ReceiverFacility: RECEIVER_FACILITY # Target facility
+  ReceiverHost: localhost      # Target host
+  ReceiverPort: 7777           # Target port
 
-
-QueryInterval: 60
-
+# Retry handling
 Retry:
-  RetryIntervalMinutes: 1
+  RetryIntervalMinutes: 1      # Retry frequency (minutes)

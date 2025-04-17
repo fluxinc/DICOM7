@@ -1,133 +1,103 @@
 using System;
+using DICOM7.Shared.Config;
 
 namespace DICOM7.ORM2DICOM
 {
   /// <summary>
   /// Configuration settings for the ORM2DICOM application
   /// </summary>
-  public class Config
+  public class Config : IHasCacheConfig
   {
     /// <summary>
-    /// Cache-related configuration settings
-    /// </summary>
-    public CacheConfig Cache { get; set; } = new();
-
-    /// <summary>
-    /// DICOM worklist SCP configuration settings
+    /// DICOM worklist SCP configuration
     /// </summary>
     public DicomConfig Dicom { get; set; } = new();
 
     /// <summary>
-    /// HL7 related configuration settings
+    /// HL7 configuration
     /// </summary>
     public HL7Config HL7 { get; set; } = new();
 
     /// <summary>
-    /// Time in seconds between processing cycles
+    /// Order configuration
     /// </summary>
-    public int ProcessInterval { get; set; } = 60;
+    public OrderConfig Order { get; set; } = new();
 
     /// <summary>
-    /// Expiry configuration for cached messages
+    /// Cache configuration
     /// </summary>
-    public ExpiryConfig Expiry { get; set; } = new();
+    public CacheConfig Cache { get; set; } = new();
+
+    // Explicit interface implementation to satisfy IHasCacheConfig
+    BaseCacheConfig IHasCacheConfig.Cache
+    {
+      get => Cache;
+      set => Cache = value as CacheConfig ?? new CacheConfig
+      {
+        RetentionDays = value?.RetentionDays ?? 3,
+        Folder = value?.Folder,
+        KeepSentItems = value?.KeepSentItems ?? true,
+        AutoCleanup = true,
+        CleanupIntervalMinutes = 60
+      };
+    }
   }
 
   /// <summary>
-  /// Configuration settings for the cache folder
+  /// DICOM worklist server configuration
   /// </summary>
-  public class CacheConfig
+  public class DicomConfig : BaseDicomConfig
   {
     /// <summary>
-    /// Custom folder path for cache storage
+    /// TCP port for DICOM worklist SCP
     /// </summary>
-    public string Folder { get; set; }
-
-    /// <summary>
-    /// Number of days to retain cached ORM messages
-    /// </summary>
-    public int RetentionDays { get; set; } = 3;
+    public new int ListenPort { get; set; } = 11112;
   }
 
   /// <summary>
-  /// Configuration settings for DICOM worklist SCP
+  /// HL7 messaging configuration
   /// </summary>
-  public class DicomConfig
+  public class HL7Config : BaseHL7Config
   {
     /// <summary>
-    /// AE Title for the DICOM worklist SCP
-    /// </summary>
-    public string AETitle { get; set; } = "DICOM7_ORM2DICOM";
-
-    /// <summary>
-    /// IP address to bind the DICOM worklist SCP to
-    /// </summary>
-    public string ListenIP { get; set; } = "0.0.0.0";
-
-    /// <summary>
-    /// Port to listen for DICOM worklist requests
-    /// </summary>
-    public int ListenPort { get; set; } = 11112;
-
-    /// <summary>
-    /// Maximum number of concurrent connections
-    /// </summary>
-    public int MaxConnections { get; set; } = 10;
-
-    /// <summary>
-    /// Facility name to include in worklist responses
-    /// </summary>
-    public string FacilityName { get; set; } = "Flux Inc";
-  }
-
-  /// <summary>
-  /// Configuration settings for HL7 message processing
-  /// </summary>
-  public class HL7Config
-  {
-    /// <summary>
-    /// Port to listen for incoming HL7 ORM messages
+    /// TCP port for HL7 listener
     /// </summary>
     public int ListenPort { get; set; } = 7777;
 
     /// <summary>
-    /// IP address to bind the HL7 listener to
+    /// IP address to bind HL7 listener
     /// </summary>
     public string ListenIP { get; set; } = "0.0.0.0";
 
     /// <summary>
-    /// Maximum number of ORMs to store per unique patient ID
+    /// Maximum stored orders per patient
     /// </summary>
     public int MaxORMsPerPatient { get; set; } = 5;
-
-    /// <summary>
-    /// Sender name for HL7 ACK messages
-    /// </summary>
-    public string SenderName { get; set; } = "ORM2DICOM";
-
-    /// <summary>
-    /// Facility name for HL7 ACK messages
-    /// </summary>
-    public string FacilityName { get; set; } = "Flux Inc";
   }
 
   /// <summary>
-  /// Configuration settings for message expiry
+  /// Order lifecycle configuration
   /// </summary>
-  public class ExpiryConfig
+  public class OrderConfig
   {
     /// <summary>
-    /// Number of hours after which received ORM messages should expire
+    /// Hours after which an order expires
     /// </summary>
     public int ExpiryHours { get; set; } = 72;
+  }
 
+  /// <summary>
+  /// Cache and cleanup configuration
+  /// </summary>
+  public class CacheConfig : BaseCacheConfig
+  {
     /// <summary>
-    /// Whether to automatically clean up expired messages
+    /// Enable automatic cache cleanup
     /// </summary>
     public bool AutoCleanup { get; set; } = true;
 
     /// <summary>
-    /// Time in minutes between automatic cleanup runs
+    /// Cleanup interval in minutes
     /// </summary>
     public int CleanupIntervalMinutes { get; set; } = 60;
   }

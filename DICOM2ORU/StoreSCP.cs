@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DICOM2ORU;
 using DICOM7.Shared;
 using FellowOakDicom;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.IO.Buffer;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Serialization;
@@ -58,6 +61,19 @@ internal class StoreSCP(
     private static readonly DicomStatus DicomStatusRefusedNotAuthorized =
         new("0124", DicomState.Failure, "Refused: Not Authorized.");
 
+    // DicomImageProcessor and ORU template for processing
+    private static DicomImageProcessor _imageProcessor;
+    private static string _oruTemplate;
+    private static Config _config;
+
+    // Set processors needed for ORU generation
+    public static void SetProcessors(DicomImageProcessor imageProcessor, string oruTemplate, Config config)
+    {
+        _imageProcessor = imageProcessor;
+        _oruTemplate = oruTemplate;
+        _config = config;
+    }
+
     public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
     {
         _logger.LogInformation($"C-Store request received from '{LastAssociatedAeTitle}'");
@@ -83,9 +99,9 @@ internal class StoreSCP(
     {
         if (request is null) throw new ArgumentNullException(nameof(request));
 
-        var sopInstanceUID = request.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
+        string sopInstanceUID = request.Dataset.GetSingleValue<string>(DicomTag.SOPInstanceUID);
         sopInstanceUID = sopInstanceUID.Replace('_', '.');
-        var studyInstanceUID = request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID);
+        string studyInstanceUID = request.Dataset.GetSingleValue<string>(DicomTag.StudyInstanceUID);
 
         studyInstanceUID = string.IsNullOrWhiteSpace(studyInstanceUID)
             ? sopInstanceUID
@@ -102,7 +118,7 @@ internal class StoreSCP(
     private DicomCStoreResponse CreateDicomCStoreResponse(DicomCStoreRequest request, DicomStatus status)
     {
         Logger.LogDebug($"CreateDicomCStoreResponse({request}, {status})");
-        var response = new DicomCStoreResponse(request, status);
+        DicomCStoreResponse response = new DicomCStoreResponse(request, status);
 
         try
         {
@@ -113,7 +129,7 @@ internal class StoreSCP(
                 return response;
             }
 
-            var affectedSOPInstanceUID = request.Command.GetSingleValue<string>(DicomTag.AffectedSOPInstanceUID);
+            string affectedSOPInstanceUID = request.Command.GetSingleValue<string>(DicomTag.AffectedSOPInstanceUID);
 
             if (string.IsNullOrEmpty(affectedSOPInstanceUID))
             {
@@ -161,22 +177,144 @@ internal class StoreSCP(
 
       try
       {
-        var receivedAtUtc = DateTime.UtcNow;
+        DateTime receivedAtUtc = DateTime.UtcNow;
 
-        using var cachedFile = new CachedFile(LastCalledAeTitle, LastAssociatedAeTitle, request.Dataset);
+        // Get the SOP Instance UID for tracking
+        string sopInstanceUid = request.Dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, "");
 
-        // TODO: Save request.Dataset as outbound HL7 ORU into cache.  Might need to save to a temp file first.
-        var temporaryName = GetTemporaryFileName(cachedFile);
-        await request.File.SaveAsync(temporaryName);
+        if (string.IsNullOrEmpty(sopInstanceUid))
+        {
+            _logger.LogError("DICOM dataset missing SOP Instance UID");
+            return CreateDicomCStoreResponse(request, DicomStatus.ProcessingFailure);
+        }
 
-        if (!Validate(temporaryName))
-          return HandleInvalidFile(request, temporaryName);
+        // Check if this DICOM has already been processed
+        if (CacheManager.IsAlreadySent(sopInstanceUid))
+        {
+            _logger.LogInformation("DICOM with SOP Instance UID {SopInstanceUid} already processed", sopInstanceUid);
+            return CreateDicomCStoreResponse(request, DicomStatus.Success);
+        }
 
+        // Also check if it's already in the retry queue
+        if (RetryManager.IsPendingRetry(sopInstanceUid, CacheManager.CacheFolder))
+        {
+            _logger.LogInformation("DICOM with SOP Instance UID {SopInstanceUid} already in retry queue", sopInstanceUid);
+            return CreateDicomCStoreResponse(request, DicomStatus.Success);
+        }
 
-        cachedFile.Log($"Wrote to {cachedFile.FileInfo.FullName}");
+        // Save to temp file for processing
+        string tempFilePath = Path.GetTempFileName();
 
-        return CreateDicomCStoreResponse(request, DicomStatus.Success);
+        try
+        {
+            // Save DICOM file temporarily for processing
+            await request.File.SaveAsync(tempFilePath);
 
+            if (!Validate(tempFilePath))
+            {
+                _logger.LogError("DICOM file validation failed for SOP Instance UID {SopInstanceUid}", sopInstanceUid);
+                File.Delete(tempFilePath);
+                return CreateDicomCStoreResponse(request, DicomStatus.ProcessingFailure);
+            }
+
+            // Generate ORU message from the DICOM dataset
+            string oruMessage = ORUGenerator.ReplacePlaceholders(_oruTemplate, request.Dataset);
+
+            // Process potential embedded data (images, PDFs, etc.) if processor is available
+            if (_imageProcessor != null)
+            {
+                try
+                {
+                    // Extract the SOP Class UID to determine the type of DICOM file
+                    string sopClassUid = request.Dataset.GetSingleValueOrDefault(DicomTag.SOPClassUID, string.Empty);
+
+                    // Check for Encapsulated PDF Storage
+                    if (sopClassUid == DicomUID.EncapsulatedPDFStorage.UID)
+                    {
+                        if (request.Dataset.Contains(DicomTag.EncapsulatedDocument))
+                        {
+                            DicomElement pdfDataElement = request.Dataset.GetDicomItem<DicomElement>(DicomTag.EncapsulatedDocument);
+                            byte[] pdfBytes = pdfDataElement.Buffer.Data;
+
+                            if (pdfBytes != null && pdfBytes.Length > 0)
+                            {
+                                string base64Pdf = Convert.ToBase64String(pdfBytes);
+                                _logger.LogInformation("Extracted embedded PDF data, converting to Base64");
+                                oruMessage = ORUGenerator.UpdateObxWithPdfFromData(oruMessage, base64Pdf);
+                            }
+                        }
+                    }
+                    // Check for Secondary Capture Image Storage
+                    else if (sopClassUid == DicomUID.SecondaryCaptureImageStorage.UID)
+                    {
+                        DicomPixelData pixelData = DicomPixelData.Create(request.Dataset);
+                        if (pixelData is { NumberOfFrames: > 0 })
+                        {
+                            IByteBuffer frame = pixelData.GetFrame(0);
+                            byte[] imageBytes = frame.Data;
+
+                            if (imageBytes is { Length: > 0 })
+                            {
+                                string base64Image = Convert.ToBase64String(imageBytes);
+                                _logger.LogInformation("Extracted pixel data for Secondary Capture, converting to Base64");
+                                oruMessage = ORUGenerator.UpdateObxWithImageData(oruMessage, request.Dataset, base64Image);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing embedded data: {Message}", ex.Message);
+                    // Continue with the basic ORU message
+                }
+            }
+
+            // Ensure the outgoing folder exists in cache
+            CacheManager.EnsureCacheFolder();
+
+            // Create outgoing folder if it doesn't exist
+            string outgoingFolder = Path.Combine(CacheManager.CacheFolder, "outgoing");
+            if (!Directory.Exists(outgoingFolder))
+            {
+                Directory.CreateDirectory(outgoingFolder);
+                _logger.LogInformation("Created outgoing ORU folder: {OutgoingPath}", outgoingFolder);
+            }
+
+            // Save the ORU message to the outgoing folder
+            string oruFilePath = Path.Combine(outgoingFolder, $"{sopInstanceUid}.oru");
+            File.WriteAllText(oruFilePath, oruMessage);
+            _logger.LogInformation("Saved ORU message to outgoing folder: {FilePath}", oruFilePath);
+
+            // Mark DICOM as processed, storing the ORU message for reference
+            CacheManager.MarkAsProcessed(sopInstanceUid, _config.Cache.KeepSentItems, oruMessage);
+
+            // Cleanup temporary DICOM file
+            File.Delete(tempFilePath);
+
+            return CreateDicomCStoreResponse(request, DicomStatus.Success);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing DICOM for ORU generation: {Message}", ex.Message);
+
+            // Clean up the temp file if it exists
+            try { if (File.Exists(tempFilePath)) File.Delete(tempFilePath); }
+            catch { /* ignore cleanup errors */ }
+
+            // Try to add to retry queue if there was an error
+            try
+            {
+                string oruMessage = ORUGenerator.ReplacePlaceholders(_oruTemplate, request.Dataset);
+                RetryManager.SavePendingMessage(sopInstanceUid, oruMessage, CacheManager.CacheFolder);
+                _logger.LogInformation("Added failed ORU to retry queue: {SopInstanceUid}", sopInstanceUid);
+            }
+            catch (Exception retryEx)
+            {
+                _logger.LogError(retryEx, "Failed to add to retry queue: {Message}", retryEx.Message);
+            }
+
+            return CreateDicomCStoreResponse(request, DicomStatus.ProcessingFailure);
+        }
       }
       catch (Exception e)
       {
@@ -185,20 +323,13 @@ internal class StoreSCP(
       }
     }
 
-    private DicomCStoreResponse HandleInvalidFile(DicomCStoreRequest request, string temporaryName)
-    {
-        File.Delete(temporaryName);
-        return CreateDicomCStoreResponse(request, DicomStatus.ProcessingFailure);
-    }
-
-
     private bool Validate(string temporaryName)
     {
         _logger.LogDebug($"Validate({temporaryName})");
         bool valid;
         try
         {
-            var temp = DicomFile.Open(temporaryName);
+            DicomFile temp = DicomFile.Open(temporaryName);
             valid = temp.Dataset.Any();
         }
         catch (Exception e)
@@ -213,7 +344,7 @@ internal class StoreSCP(
     protected override void HandlePresentContexts(DicomAssociation association)
     {
         _logger.LogDebug($"HandlePresentContexts({association})");
-        foreach (var pc in association.PresentationContexts)
+        foreach (DicomPresentationContext pc in association.PresentationContexts)
             if (pc.AbstractSyntax == DicomUID.Verification)
                 pc.AcceptTransferSyntaxes(AcceptedTransferSyntaxes);
             else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)

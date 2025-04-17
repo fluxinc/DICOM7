@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using DICOM7.Shared.Common;
+using DICOM7.Shared.Config;
 using FellowOakDicom;
 using Serilog;
 using YamlDotNet.Serialization;
@@ -12,109 +15,82 @@ namespace DICOM7.DICOM2ORM;
 
 internal class Program
 {
+    private static Config _config;
+    private static bool _running = true;
+    private static CancellationTokenSource _cts;
+    private const string APPLICATION_NAME = "DICOM2ORM";
+    private static string _ormTemplate;
+
     private static async Task Main(string[] args)
     {
         // Parse command line arguments
-        ParseCommandLineArgs(args);
+        ProgramHelpers.ParseCommandLineArgs(args, APPLICATION_NAME);
 
-        string logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", "dicom7-dicom2orm-.log");
-        Log.Logger = new LoggerConfiguration()
-#if DEBUG
-            .MinimumLevel.Debug()
-#else
-            .MinimumLevel.Information()
-#endif
-            .WriteTo.Console()
-            .WriteTo.File(logPath,
-                rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: 7,
-                fileSizeLimitBytes: 1024 * 1024 * 10,
-                rollOnFileSizeLimit: true
-            )
-            .CreateLogger();
+        // Configure Serilog
+        ProgramHelpers.ConfigureSerilog(APPLICATION_NAME);
 
         try
         {
-            // Try to load the config from the common app folder first
-            string commonConfigPath = AppConfig.GetConfigFilePath();
-            Config config = null;
+            // Load configuration
+            _config = ProgramHelpers.LoadConfiguration<Config>(APPLICATION_NAME);
 
-            IDeserializer deserializer = new DeserializerBuilder()
-                .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                .Build();
+            // Initialize cache system
+            ProgramHelpers.InitializeCache(_config);
 
-            // First try to load from common app folder
-            if (File.Exists(commonConfigPath))
-            {
-                Log.Information("Loading configuration from common location: {ConfigPath}", commonConfigPath);
-                try
-                {
-                    config = deserializer.Deserialize<Config>(File.ReadAllText(commonConfigPath));
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Error loading configuration from common location");
-                    // Will fall back to local config
-                }
-            }
+            // Register handlers for shutdown events
+            Console.CancelKeyPress += OnCancelKeyPress;
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-            // If not found or failed to load, try local config
-            if (config == null)
-            {
-                string localConfigPath = Path.GetFullPath("config.yaml");
-                Log.Information("Loading configuration from local path: {ConfigPath}", localConfigPath);
+            // Create a cancellation token source for graceful shutdown
+            _cts = new CancellationTokenSource();
 
-                try
-                {
-                    config = deserializer.Deserialize<Config>(File.ReadAllText(localConfigPath));
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Error loading local configuration");
-                    throw; // Cannot continue without configuration
-                }
-            }
-
-            // Ensure Cache config is initialized
-            config.Cache ??= new CacheConfig
-            {
-                RetentionDays = 7 // Default retention period
-            };
-
-            // Set the configured cache folder if specified in config
-            if (config.Cache != null && !string.IsNullOrWhiteSpace(config.Cache.Folder))
-                CacheManager.SetConfiguredCacheFolder(config.Cache.Folder);
-
-            // Clean up cache based on retention policy
-            CacheManager.CleanUpCache(CacheManager.CacheFolder, config.Cache?.RetentionDays ?? 7);
-
+            // Load ORM template
             string templatePath = Path.Combine(AppConfig.CommonAppFolder, "ormTemplate.hl7");
-
             Log.Information("Looking for ORM template at {TemplatePath}", templatePath);
-            string ormTemplate = ORMGenerator.LoadTemplate(templatePath);
+            _ormTemplate = ORMGenerator.LoadTemplate(templatePath);
 
-            WorklistQuerier querier = new WorklistQuerier(config, ormTemplate);
+            // Create worklist querier
+            WorklistQuerier querier = new WorklistQuerier(_config, _ormTemplate);
 
             Log.Information("Starting HL7 ORM sender script with SCU AE Title '{DicomScuAeTitle}'",
-                config.Dicom.ScuAeTitle);
+                _config.Dicom.ScuAeTitle);
 
             // Main loop
-            while (true)
+            while (_running)
             {
-                // First process any pending messages that need to be retried
-                querier.ProcessPendingMessages();
+                try
+                {
+                    // First process any pending messages that need to be retried
+                    querier.ProcessPendingMessages();
 
-                // Then query for new messages
-                await querier.QueryAsync();
+                    // Then query for new messages
+                    await querier.QueryAsync();
 
-                // The processing of results is now handled in the OnFindResponseReceived method
-                // We can optionally access the results here if needed
-                IEnumerable<DicomDataset> results = querier.GetQueryResults();
-                if (!results.Any()) Log.Information("No new orders found in this query cycle");
+                    // The processing of results is now handled in the OnFindResponseReceived method
+                    // We can optionally access the results here if needed
+                    IEnumerable<DicomDataset> results = querier.GetQueryResults();
+                    if (!results.Any()) Log.Information("No new orders found in this query cycle");
 
-                Log.Information("Sleeping for {QueryInterval} seconds", config.QueryInterval);
-                await Task.Delay(TimeSpan.FromSeconds(config.QueryInterval));
+                    Log.Information("Sleeping for {QueryInterval} seconds", _config.Query.IntervalSeconds);
+                    await Task.Delay(TimeSpan.FromSeconds(_config.Query.IntervalSeconds), _cts.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    // Cancellation requested, exit the loop
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error in processing cycle: {Message}", ex.Message);
+                    // Continue to next cycle after error
+                    await Task.Delay(TimeSpan.FromSeconds(10), _cts.Token);
+                }
             }
+        }
+        catch (TaskCanceledException)
+        {
+            // Normal cancellation, log at info level
+            Log.Information("Application was canceled");
         }
         catch (Exception ex)
         {
@@ -122,33 +98,33 @@ internal class Program
         }
         finally
         {
+            Shutdown();
             Log.CloseAndFlush();
         }
     }
 
-    /// <summary>
-    ///     Parses command line arguments and configures the application accordingly
-    /// </summary>
-    /// <param name="args">Command line arguments</param>
-    private static void ParseCommandLineArgs(string[] args)
+    private static void Shutdown()
     {
-        for (int i = 0; i < args.Length; i++)
-            if (args[i] == "--path" && i + 1 < args.Length)
-            {
-                string basePath = args[i + 1];
-                basePath = Path.GetFullPath(basePath);
-                if (Directory.Exists(basePath))
-                {
-                    AppConfig.SetBasePath(basePath);
-                    Console.WriteLine($"Using custom base path: {basePath}");
-                }
-                else
-                {
-                    Console.WriteLine($"ERROR: Specified path '{basePath}' does not exist.  Terminating.");
-                    Environment.Exit(1);
-                }
+        _running = false;
 
-                i++;
-            }
+        // Signal cancellation to any tasks
+        _cts?.Cancel();
+
+        Log.Information("Shutdown complete");
+    }
+
+    private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    {
+        Log.Information("Shutdown requested via console");
+        e.Cancel = true; // Prevent the process from terminating immediately
+        _running = false;
+        _cts?.Cancel();
+    }
+
+    private static void OnProcessExit(object sender, EventArgs e)
+    {
+        Log.Information("Application is exiting");
+        _running = false;
+        _cts?.Cancel();
     }
 }

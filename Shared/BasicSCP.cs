@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DICOM7.Shared;
 
-internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCEchoProvider
+public abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCEchoProvider
 {
   protected readonly ILogger _logger;
   protected static readonly DicomTransferSyntax[] AcceptedTransferSyntaxes =
@@ -17,7 +17,7 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
     DicomTransferSyntax.ExplicitVRBigEndian,
   ];
 
-  internal string LastAssociatedAeTitle { get; set; }
+  protected string LastAssociatedAeTitle { get; set; }
 
 
   protected BasicSCP(
@@ -122,7 +122,7 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
   protected abstract void HandlePresentContexts(DicomAssociation association);
 }
 
-internal interface IMakeIdentifiers
+public interface IMakeIdentifiers
 {
   string GetIdentifier(DicomRequest request);
 }

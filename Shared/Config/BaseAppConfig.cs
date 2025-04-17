@@ -3,21 +3,27 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Serilog;
 
-namespace DICOM7.ORM2DICOM
+namespace DICOM7.Shared.Config
 {
   /// <summary>
-  /// Application configuration management
+  /// Base application configuration management
   /// </summary>
-  public static class AppConfig
+  public class BaseAppConfig
   {
     private static string _commonAppFolder;
     private static string _customBasePath;
+    private readonly string _applicationName;
+
+    public BaseAppConfig(string applicationName)
+    {
+      _applicationName = applicationName ?? throw new ArgumentNullException(nameof(applicationName));
+    }
 
     /// <summary>
     /// Sets a custom base path for the application
     /// </summary>
     /// <param name="basePath">The custom base path to use</param>
-    public static void SetBasePath(string basePath)
+    public void SetBasePath(string basePath)
     {
       if (string.IsNullOrWhiteSpace(basePath))
         throw new ArgumentException("Base path cannot be null or empty", nameof(basePath));
@@ -33,7 +39,7 @@ namespace DICOM7.ORM2DICOM
     /// If a custom base path is set, it uses that; otherwise:
     /// On Windows, this is under CommonApplicationData; on other platforms, it's under $HOME/.local
     /// </summary>
-    public static string CommonAppFolder
+    public string CommonAppFolder
     {
       get
       {
@@ -59,7 +65,7 @@ namespace DICOM7.ORM2DICOM
           baseFolder = Path.Combine(home, ".local");
         }
 
-        string tmp = Path.Combine(baseFolder, "Flux Inc", "DICOM7", "ORM2DICOM");
+        string tmp = Path.Combine(baseFolder, "Flux Inc", "DICOM7", _applicationName);
         try
         {
           if (!Directory.Exists(tmp))
@@ -87,7 +93,7 @@ namespace DICOM7.ORM2DICOM
     /// </summary>
     /// <param name="fileName">Name of the configuration file (default: config.yaml)</param>
     /// <returns>Full path to the configuration file</returns>
-    public static string GetConfigFilePath(string fileName = "config.yaml")
+    public string GetConfigFilePath(string fileName = "config.yaml")
     {
       return Path.Combine(CommonAppFolder, fileName);
     }

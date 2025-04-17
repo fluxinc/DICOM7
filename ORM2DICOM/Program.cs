@@ -2,16 +2,13 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DICOM7.Shared;
+using DICOM7.Shared.Common;
+using DICOM7.Shared.Config;
 using FellowOakDicom;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Extensions.Logging;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace DICOM7.ORM2DICOM
 {
@@ -23,36 +20,23 @@ namespace DICOM7.ORM2DICOM
     private static bool _running = true;
     private static CancellationTokenSource _cts;
     private static IHost _host;
+    private const string APPLICATION_NAME = "ORM2DICOM";
 
     public static void Main(string[] args)
     {
       // Parse command line arguments
-      ParseCommandLineArgs(args);
+      ProgramHelpers.ParseCommandLineArgs(args, APPLICATION_NAME);
 
-      // Initialize the logger
-      string logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", "dicom7-orm2dicom-.log");
-      Log.Logger = new LoggerConfiguration()
-#if DEBUG
-          .MinimumLevel.Debug()
-#else
-          .MinimumLevel.Information()
-#endif
-          .WriteTo.Console()
-          .WriteTo.File(logPath,
-              rollingInterval: RollingInterval.Day,
-              retainedFileCountLimit: 7,
-              fileSizeLimitBytes: 1024 * 1024 * 10,
-              rollOnFileSizeLimit: true
-          )
-          .CreateLogger();
+      // Configure Serilog
+      ProgramHelpers.ConfigureSerilog(APPLICATION_NAME);
 
       try
       {
         // Load configuration
-        LoadConfiguration();
+        _config = ProgramHelpers.LoadConfiguration<Config>(APPLICATION_NAME);
 
         // Initialize cache system
-        InitializeCache();
+        ProgramHelpers.InitializeCache(_config, logCacheFolder: true);
 
         // Register handlers for shutdown events
         Console.CancelKeyPress += OnCancelKeyPress;
@@ -71,9 +55,9 @@ namespace DICOM7.ORM2DICOM
         _host.StartAsync(_cts.Token).GetAwaiter().GetResult();
 
         // Set up cleanup timer
-        if (_config.Expiry.AutoCleanup)
+        if (_config.Cache.AutoCleanup)
         {
-          int cleanupInterval = _config.Expiry.CleanupIntervalMinutes * 60 * 1000; // Convert to milliseconds
+          int cleanupInterval = _config.Cache.CleanupIntervalMinutes * 60 * 1000; // Convert to milliseconds
           _cleanupTimer = new Timer(CleanupExpiredOrms, null, cleanupInterval, cleanupInterval);
         }
 
@@ -108,112 +92,28 @@ namespace DICOM7.ORM2DICOM
       }
     }
 
-    private static void LoadConfiguration()
-    {
-      // Try to load the config from the common app folder first
-      string commonConfigPath = AppConfig.GetConfigFilePath();
-      _config = null;
-
-      IDeserializer deserializer = new DeserializerBuilder()
-          .WithNamingConvention(PascalCaseNamingConvention.Instance)
-          .Build();
-
-      // First try to load from common app folder
-      if (File.Exists(commonConfigPath))
-      {
-        Log.Information("Loading configuration from common location: {ConfigPath}", commonConfigPath);
-        try
-        {
-          _config = deserializer.Deserialize<Config>(File.ReadAllText(commonConfigPath));
-        }
-        catch (Exception ex)
-        {
-          Log.Error(ex, "Error loading configuration from common location");
-          // Will fall back to local config
-        }
-      }
-
-      // If not found or failed to load, try local config
-      if (_config != null) return;
-      {
-        string localConfigPath = Path.GetFullPath("config.yaml");
-        Log.Information("Loading configuration from local path: {ConfigPath}", localConfigPath);
-
-        try
-        {
-          _config = deserializer.Deserialize<Config>(File.ReadAllText(localConfigPath));
-        }
-        catch (Exception ex)
-        {
-          Log.Error(ex, "Error loading configuration");
-
-          // Create a default configuration if none exists
-          Log.Information("No configuration found, using default values");
-          _config = new Config(); // This will use the default values defined in the Config class
-        }
-      }
-    }
-
-    private static void InitializeCache()
-    {
-      // Set the configured cache folder if specified in config
-      if (_config.Cache != null && !string.IsNullOrWhiteSpace(_config.Cache.Folder))
-      {
-        CacheManager.SetConfiguredCacheFolder(_config.Cache.Folder);
-      }
-
-      // Ensure cache folder exists
-      CacheManager.EnsureCacheFolder();
-
-      // Clean up cache based on retention policy
-      CacheManager.CleanUpCache(CacheManager.CacheFolder, _config.Cache.RetentionDays);
-    }
-
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
       return Host.CreateDefaultBuilder(args)
-        .ConfigureLogging((hostContext, logging) => ConfigureLogging(logging))
+        .ConfigureLogging((hostContext, logging) => ProgramHelpers.ConfigureLogging(logging))
         .ConfigureServices((hostContext, services) => ConfigureServices(services));
-    }
-
-    private static void ConfigureLogging(ILoggingBuilder logging)
-    {
-      logging.ClearProviders();
-      logging.AddSerilog(dispose: true);
     }
 
     private static void ConfigureServices(IServiceCollection services)
     {
-      ConfigureHostOptions(services);
-      ConfigureDicomServices(services);
-      ConfigureBackgroundServices(services);
-    }
+      // Configure host options and DICOM services
+      ProgramHelpers.ConfigureServices(services, _config.Dicom.AETitle);
 
-    private static void ConfigureBackgroundServices(IServiceCollection services)
-    {
+      // Register background services
       services.AddSingleton<DICOMServerBackgroundService>();
       services.AddHostedService<DICOMServerBackgroundService>();
-    }
-
-    private static void ConfigureDicomServices(IServiceCollection services)
-    {
-      services.AddFellowOakDicom();
-      services.AddSingleton(_config.Dicom.AETitle);
-    }
-
-    private static void ConfigureHostOptions(IServiceCollection services)
-    {
-      services.Configure<HostOptions>(hostOptions =>
-      {
-        hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.StopHost;
-      });
     }
 
     private static void CleanupExpiredOrms(object state)
     {
       try
       {
-        int expiryHours = _config.Expiry.ExpiryHours;
+        int expiryHours = _config.Order.ExpiryHours;
         int removed = CachedORM.RemoveExpired(expiryHours);
 
         if (removed > 0)
@@ -260,34 +160,14 @@ namespace DICOM7.ORM2DICOM
       Log.Information("Shutdown requested via console");
       e.Cancel = true; // Prevent the process from terminating immediately
       _running = false;
+      _cts?.Cancel();
     }
 
     private static void OnProcessExit(object sender, EventArgs e)
     {
       Log.Information("Application is exiting");
       _running = false;
-    }
-
-    private static void ParseCommandLineArgs(string[] args)
-    {
-      for (int i = 0; i < args.Length; i++)
-      {
-        if (args[i] != "--path" || i + 1 >= args.Length) continue;
-
-        string basePath = args[i + 1];
-        basePath = Path.GetFullPath(basePath);
-        if (Directory.Exists(basePath))
-        {
-          AppConfig.SetBasePath(basePath);
-          Console.WriteLine($"Using custom base path: {basePath}");
-        }
-        else
-        {
-          Console.WriteLine($"ERROR: Specified path '{basePath}' does not exist. Terminating.");
-          Environment.Exit(1);
-        }
-        i++; // Skip the next argument as it's the path
-      }
+      _cts?.Cancel();
     }
   }
 }

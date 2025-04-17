@@ -1,32 +1,26 @@
 # ORM2DICOM Configuration
+# Converts HL7 ORM messages to DICOM worklist items
 
 # DICOM worklist SCP configuration
+# These settings control the DICOM worklist server behavior
 Dicom:
-  AETitle: DICOM7_ORM2DICOM
-  ListenIP: 0.0.0.0
-  ListenPort: 11112
-  MaxConnections: 10
-  FacilityName: Flux Inc
+  AETitle: DICOM7             # DICOM AE Title
+  ListenIP: 0.0.0.0           # Bind address (all interfaces)
+  ListenPort: 11112           # TCP port for DICOM worklist
 
 # HL7 server configuration
+# These settings control the HL7 receiver behavior
 HL7:
-  ListenPort: 7777
-  ListenIP: 0.0.0.0
-  MaxORMsPerPatient: 5
-  SenderName: ORM2DICOM
-  FacilityName: Flux Inc
+  ListenPort: 7777            # TCP port for HL7 receiver
+  MaxORMsPerPatient: 5        # Max orders per patient
 
 # Cache configuration
 Cache:
-  # Optional custom folder path (relative to app folder or absolute)
-  Folder: cache
-  RetentionDays: 3
+  Folder: cache               # Cache directory path
+  RetentionDays: 3            # Days to retain cached files
+  AutoCleanup: true           # Enable automatic cleanup
+  CleanupIntervalMinutes: 60  # Cleanup frequency (minutes)
 
-# Expiry configuration
-Expiry:
-  ExpiryHours: 72
-  AutoCleanup: true
-  CleanupIntervalMinutes: 60
-
-# Time in seconds between processing cycles
-ProcessInterval: 60
+# Order expiration
+Order:
+  ExpiryHours: 72             # Order removal time (hours)

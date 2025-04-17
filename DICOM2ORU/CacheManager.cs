@@ -3,47 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Serilog;
+using DICOM7.Shared.Cache;
 
 namespace DICOM7.DICOM2ORU
 {
+  /// <summary>
+  /// Manages the cache folder for tracking processed DICOM files
+  /// </summary>
   public static class CacheManager
   {
-    private static string _cacheFolder;
     private const string CACHE_SUFFIX = ".sent";
     private const string CACHE_FOLDER_NAME = "cache";
+
+    static CacheManager()
+    {
+      // Set the cache folder name
+      BaseCacheManager.SetConfiguredCacheFolder(CACHE_FOLDER_NAME);
+    }
 
     /// <summary>
     /// Gets the path to the cache folder
     /// </summary>
-    public static string CacheFolder
-    {
-      get
-      {
-        if (!string.IsNullOrEmpty(_cacheFolder))
-          return _cacheFolder;
-
-        // Default to {AppDataFolder}/cache if not set
-        string defaultCacheFolder = Path.Combine(AppConfig.CommonAppFolder, CACHE_FOLDER_NAME);
-
-        try
-        {
-          if (!Directory.Exists(defaultCacheFolder))
-          {
-            Directory.CreateDirectory(defaultCacheFolder);
-            Log.Information("Created default cache folder: {DefaultCacheFolder}", defaultCacheFolder);
-          }
-
-          _cacheFolder = defaultCacheFolder;
-        }
-        catch (Exception e)
-        {
-          Log.Error(e, "Failed to create default cache folder: {DefaultCacheFolder}", defaultCacheFolder);
-          throw;
-        }
-
-        return _cacheFolder;
-      }
-    }
+    public static string CacheFolder => BaseCacheManager.CacheFolder;
 
     /// <summary>
     /// Sets a custom cache folder path
@@ -51,34 +32,16 @@ namespace DICOM7.DICOM2ORU
     /// <param name="folderPath">The path to use for caching</param>
     public static void SetConfiguredCacheFolder(string folderPath)
     {
-      if (string.IsNullOrWhiteSpace(folderPath))
-      {
-        Log.Warning("Invalid cache folder path specified, using default");
-        return;
-      }
+      BaseCacheManager.SetConfiguredCacheFolder(folderPath);
+    }
 
-      // If the path is relative, make it absolute relative to the app folder
-      if (!Path.IsPathRooted(folderPath))
-      {
-        folderPath = Path.Combine(AppConfig.CommonAppFolder, folderPath);
-      }
-
-      try
-      {
-        if (!Directory.Exists(folderPath))
-        {
-          Directory.CreateDirectory(folderPath);
-          Log.Information("Created configured cache folder: {FolderPath}", folderPath);
-        }
-
-        _cacheFolder = folderPath;
-        Log.Information("Set cache folder to: {CacheFolder}", _cacheFolder);
-      }
-      catch (Exception e)
-      {
-        Log.Error(e, "Failed to set custom cache folder: {FolderPath}", folderPath);
-        throw;
-      }
+    /// <summary>
+    /// Ensures the cache folder exists
+    /// </summary>
+    /// <param name="folder">Optional specific folder, otherwise uses the default</param>
+    public static void EnsureCacheFolder(string folder = null)
+    {
+      BaseCacheManager.EnsureCacheFolder(folder);
     }
 
     /// <summary>
@@ -89,26 +52,86 @@ namespace DICOM7.DICOM2ORU
     /// <returns>True if the file has been processed, false otherwise</returns>
     public static bool IsAlreadySent(string sopInstanceUid, string cacheFolder = null)
     {
-      // Normalize the path to ensure proper handling of separators
-      string normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
-      string cacheFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}{CACHE_SUFFIX}");
-      return File.Exists(cacheFile);
+      return IsItemCached(sopInstanceUid, cacheFolder);
     }
 
     /// <summary>
-    /// Saves a processed message to the cache
+    /// Checks if an item with the given ID already exists in the cache
     /// </summary>
-    /// <param name="sopInstanceUid">The SOP Instance UID of the processed DICOM file</param>
-    /// <param name="oruMessage">The ORU message that was sent</param>
-    /// <param name="cacheFolder">The cache folder to save to (optional)</param>
-    public static void SaveToCache(string sopInstanceUid, string oruMessage, string cacheFolder = null)
+    /// <param name="id">The ID to check</param>
+    /// <param name="cacheFolder">Optional specific cache folder to check</param>
+    /// <returns>True if the item exists, false otherwise</returns>
+    public static bool IsItemCached(string id, string cacheFolder = null)
     {
-      // Normalize the path to ensure proper handling of separators
-      string normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
-      string cacheFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}{CACHE_SUFFIX}");
+      if (string.IsNullOrEmpty(id))
+      {
+        return false;
+      }
 
-      File.WriteAllText(cacheFile, oruMessage);
-      Log.Debug("Saved to cache: {CacheFile}", cacheFile);
+      // Use provided cache folder or default to CacheFolder property
+      string folderToUse = cacheFolder ?? CacheFolder;
+
+      // Normalize the path to ensure proper handling of separators
+      string normalizedFolder = Path.GetFullPath(folderToUse);
+
+      // Check in the main folder first for legacy files with CACHE_SUFFIX
+      string legacyFile = Path.Combine(normalizedFolder, $"{id}{CACHE_SUFFIX}");
+      if (File.Exists(legacyFile))
+      {
+        return true;
+      }
+
+      // Also check in the sent folder for newer files
+      string sentFolder = Path.Combine(normalizedFolder, BaseCacheManager.SENT_FOLDER_NAME);
+      string sentFile = Path.Combine(sentFolder, $"{id}.dcm");
+      return File.Exists(sentFile);
+    }
+
+    /// <summary>
+    /// Marks a DICOM file as processed, either moving it to the sent folder or deleting it based on configuration
+    /// </summary>
+    /// <param name="sopInstanceUid">The SOP Instance UID that was processed</param>
+    /// <param name="keepSentItems">Whether to keep sent items (from config)</param>
+    /// <param name="oruMessage">Optional ORU message sent for this DICOM file</param>
+    /// <param name="cacheFolder">Optional specific cache folder</param>
+    /// <returns>True if successful, false otherwise</returns>
+    public static bool MarkAsProcessed(string sopInstanceUid, bool keepSentItems, string oruMessage = null, string cacheFolder = null)
+    {
+      if (string.IsNullOrEmpty(sopInstanceUid))
+      {
+        Log.Warning("Cannot mark DICOM as processed: SOP Instance UID is empty");
+        return false;
+      }
+
+      // Use provided cache folder or default to CacheFolder property
+      string folderToUse = cacheFolder ?? CacheFolder;
+
+      // Normalize the path to ensure proper handling of separators
+      string normalizedFolder = Path.GetFullPath(folderToUse);
+
+      // Create a temporary file to track this processed DICOM
+      string tempFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}.dcm");
+      try
+      {
+        // Write an empty or ORU content file to mark as processed
+        string content = oruMessage ?? $"Processed: {DateTime.Now}";
+        File.WriteAllText(tempFile, content);
+
+        // Use the shared handler to either move to sent folder or delete
+        return BaseCacheManager.HandleProcessedItem(tempFile, keepSentItems, oruMessage);
+      }
+      catch (Exception e)
+      {
+        Log.Error(e, "Failed to mark DICOM as processed: {SopInstanceUid}", sopInstanceUid);
+
+        // Clean up the temp file if it exists
+        if (File.Exists(tempFile))
+        {
+          try { File.Delete(tempFile); } catch { /* ignore cleanup errors */ }
+        }
+
+        return false;
+      }
     }
 
     /// <summary>
@@ -116,42 +139,55 @@ namespace DICOM7.DICOM2ORU
     /// </summary>
     /// <param name="cacheFolder">The cache folder to clean</param>
     /// <param name="retentionDays">The number of days to keep files for</param>
-    public static void CleanUpCache(string cacheFolder, int retentionDays)
+    public static void CleanUpCache(string cacheFolder = null, int retentionDays = 3)
     {
-      DateTime cutoffDate = DateTime.Now.AddDays(-retentionDays);
-      Log.Information("Cleaning cache files older than: {CutoffDate}", cutoffDate);
+      // Use provided folder or default to CacheFolder property
+      string folderToUse = cacheFolder ?? CacheFolder;
+
+      // Normalize the path to ensure proper handling of separators
+      string normalizedFolder = Path.GetFullPath(folderToUse);
+
+      // Clean up legacy sent files with CACHE_SUFFIX in the main folder
+      CleanUpLegacyFiles(normalizedFolder, retentionDays);
+
+      // Clean up the sent folder
+      BaseCacheManager.CleanUpSentFolder(normalizedFolder, retentionDays);
+    }
+
+    /// <summary>
+    /// Cleans up legacy files with CACHE_SUFFIX in the main folder
+    /// </summary>
+    /// <param name="folderPath">The folder to clean</param>
+    /// <param name="days">Number of days to keep files</param>
+    private static void CleanUpLegacyFiles(string folderPath, int days)
+    {
+      if (!Directory.Exists(folderPath))
+      {
+        return;
+      }
+
+      DateTime cutoff = DateTime.Now.AddDays(-days);
+      int deleted = 0;
 
       try
       {
-        string normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
-        string[] cacheFiles = Directory.GetFiles(normalizedFolder, $"*{CACHE_SUFFIX}");
-        List<string> oldFiles = cacheFiles.Where(f => File.GetCreationTime(f) < cutoffDate).ToList();
-
-        if (oldFiles.Any())
+        foreach (string file in Directory.GetFiles(folderPath, $"*{CACHE_SUFFIX}"))
         {
-          Log.Information("Removing {OldFilesCount} cached files older than {RetentionDays} days",
-              oldFiles.Count, retentionDays);
-
-          foreach (string file in oldFiles)
+          if (File.GetLastWriteTime(file) < cutoff)
           {
-            try
-            {
-              File.Delete(file);
-            }
-            catch (Exception ex)
-            {
-              Log.Warning(ex, "Failed to delete cache file: {File}", file);
-            }
+            File.Delete(file);
+            deleted++;
           }
         }
-        else
+
+        if (deleted > 0)
         {
-          Log.Information("No cache files to clean up");
+          Log.Information("Cleaned up {DeletedCount} legacy sent files from '{FolderPath}'", deleted, folderPath);
         }
       }
-      catch (Exception ex)
+      catch (Exception e)
       {
-        Log.Error(ex, "Error cleaning cache folder");
+        Log.Error(e, "Failed to clean up legacy files: {FolderPath}", folderPath);
       }
     }
   }

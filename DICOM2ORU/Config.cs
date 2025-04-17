@@ -1,46 +1,45 @@
 using System;
+using DICOM7.Shared.Config;
 
 namespace DICOM7.DICOM2ORU
 {
-  public class Config
+  public class Config : IHasCacheConfig
   {
-    public CacheConfig Cache { get; set; }
-    public DicomConfig Dicom { get; set; }
-    public HL7Config HL7 { get; set; }
-    public InputConfig Input { get; set; }
-    public int ProcessInterval { get; set; } = 60; // In seconds
-    public RetryConfig Retry { get; set; } = new RetryConfig(); // Default if not in config
+    public CacheConfig Cache { get; set; } = new CacheConfig();
+    public DicomConfig Dicom { get; set; } = new DicomConfig();
+    public HL7Config HL7 { get; set; } = new HL7Config();
+
+    public RetryConfig Retry { get; set; } = new RetryConfig();
+
+    // Type conversion to satisfy IHasCacheConfig interface
+    BaseCacheConfig IHasCacheConfig.Cache
+    {
+      get => Cache;
+      set => Cache = value as CacheConfig ?? new CacheConfig
+      {
+        RetentionDays = value?.RetentionDays ?? 7,
+        Folder = value?.Folder,
+        KeepSentItems = value?.KeepSentItems ?? true
+      };
+    }
   }
 
-  public class CacheConfig
+  public class CacheConfig : BaseCacheConfig
   {
-    public string Folder { get; set; }
-    public int RetentionDays { get; set; } = 3;
+    // Additional cache config properties specific to DICOM2ORU
   }
 
-  public class DicomConfig
+  public class DicomConfig : BaseDicomConfig
   {
-    public string ApplicationName { get; set; } = "DICOM7_DICOM2ORU";
-    public string FacilityName { get; set; } = "Flux Inc";
-    public int ListenPort { get; set; } = 104;
-    public string AETitle { get; set; } = "DICOM7_DICOM2ORU";
+    public new int ListenPort { get; set; } = 104;
   }
 
-  public class HL7Config
+  public class HL7Config : BaseHL7Config
   {
-    public string SenderName { get; set; } = "DICOM2ORU";
-    public string ReceiverName { get; set; } = "RECEIVER_APPLICATION";
-    public string ReceiverFacility { get; set; } = "RECEIVER_FACILITY";
+    // SenderName, ReceiverName, and ReceiverFacility are inherited from BaseHL7Config
     public string ReceiverHost { get; set; } = "localhost";
     public int ReceiverPort { get; set; } = 7777;
     public bool WaitForAck { get; set; } = true;
-  }
-
-  public class InputConfig
-  {
-    public string InputFolder { get; set; } = "input";
-    public string ArchiveFolder { get; set; } = "archive";
-    public string ErrorFolder { get; set; } = "error";
   }
 
   public class RetryConfig

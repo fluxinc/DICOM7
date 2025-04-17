@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Serilog;
+using DICOM7.Shared.Cache;
 
 namespace DICOM7.ORM2DICOM
 {
@@ -10,41 +11,18 @@ namespace DICOM7.ORM2DICOM
   /// </summary>
   public static class CacheManager
   {
-    private static string _cacheFolder;
     private const string CACHE_FOLDER_NAME = "cache";
+
+    static CacheManager()
+    {
+      // Set the cache folder name
+      BaseCacheManager.SetConfiguredCacheFolder(CACHE_FOLDER_NAME);
+    }
 
     /// <summary>
     /// Gets the path to the cache folder
     /// </summary>
-    public static string CacheFolder
-    {
-      get
-      {
-        if (!string.IsNullOrEmpty(_cacheFolder))
-          return _cacheFolder;
-
-        // Default to {AppDataFolder}/cache if not set
-        string defaultCacheFolder = Path.Combine(AppConfig.CommonAppFolder, CACHE_FOLDER_NAME);
-
-        try
-        {
-          if (!Directory.Exists(defaultCacheFolder))
-          {
-            Directory.CreateDirectory(defaultCacheFolder);
-            Log.Information("Created default cache folder: {DefaultCacheFolder}", defaultCacheFolder);
-          }
-
-          _cacheFolder = defaultCacheFolder;
-        }
-        catch (Exception e)
-        {
-          Log.Error(e, "Failed to create default cache folder: {DefaultCacheFolder}", defaultCacheFolder);
-          throw;
-        }
-
-        return _cacheFolder;
-      }
-    }
+    public static string CacheFolder => BaseCacheManager.CacheFolder;
 
     /// <summary>
     /// Sets a custom cache folder path
@@ -52,34 +30,7 @@ namespace DICOM7.ORM2DICOM
     /// <param name="folderPath">The path to use for caching</param>
     public static void SetConfiguredCacheFolder(string folderPath)
     {
-      if (string.IsNullOrWhiteSpace(folderPath))
-      {
-        Log.Warning("Invalid cache folder path specified, using default");
-        return;
-      }
-
-      // If the path is relative, make it absolute relative to the app folder
-      if (!Path.IsPathRooted(folderPath))
-      {
-        folderPath = Path.Combine(AppConfig.CommonAppFolder, folderPath);
-      }
-
-      try
-      {
-        if (!Directory.Exists(folderPath))
-        {
-          Directory.CreateDirectory(folderPath);
-          Log.Information("Created configured cache folder: {FolderPath}", folderPath);
-        }
-
-        _cacheFolder = folderPath;
-        Log.Information("Set cache folder to: {CacheFolder}", _cacheFolder);
-      }
-      catch (Exception e)
-      {
-        Log.Error(e, "Failed to set custom cache folder: {FolderPath}", folderPath);
-        throw;
-      }
+      BaseCacheManager.SetConfiguredCacheFolder(folderPath);
     }
 
     /// <summary>
@@ -88,19 +39,11 @@ namespace DICOM7.ORM2DICOM
     /// <param name="folder">The folder to check/create (defaults to CacheFolder)</param>
     public static void EnsureCacheFolder(string folder = null)
     {
-      // Use provided folder or default to CacheFolder property
-      string folderToUse = folder ?? CacheFolder;
-
-      // Normalize the path to ensure proper handling of separators
-      string normalizedPath = Path.GetFullPath(folderToUse);
-
-      if (!Directory.Exists(normalizedPath))
-      {
-        Log.Information("Creating cache folder '{NormalizedPath}'", normalizedPath);
-        Directory.CreateDirectory(normalizedPath);
-      }
+      BaseCacheManager.EnsureCacheFolder(folder);
 
       // Ensure the active subfolder exists
+      string folderToUse = folder ?? CacheFolder;
+      string normalizedPath = Path.GetFullPath(folderToUse);
       EnsureActiveFolder(normalizedPath);
     }
 
@@ -134,6 +77,9 @@ namespace DICOM7.ORM2DICOM
 
       // Clean the active subfolder
       CleanFolder(Path.Combine(normalizedPath, "active"), days);
+
+      // Clean the sent subfolder
+      BaseCacheManager.CleanUpSentFolder(normalizedPath, days);
     }
 
     /// <summary>
@@ -173,6 +119,16 @@ namespace DICOM7.ORM2DICOM
     }
 
     /// <summary>
+    /// Checks if an item is cached with the given ID
+    /// </summary>
+    /// <param name="id">The ID to check</param>
+    /// <returns>True if cached, false otherwise</returns>
+    public static bool IsItemCached(string id)
+    {
+      return MessageExists(id);
+    }
+
+    /// <summary>
     /// Checks if an ORM message with the given ID already exists in the cache
     /// </summary>
     /// <param name="messageId">The message ID to check</param>
@@ -194,6 +150,16 @@ namespace DICOM7.ORM2DICOM
       // Check in the active folder
       string messagePath = Path.Combine(normalizedFolder, "active", $"{messageId}.hl7");
       return File.Exists(messagePath);
+    }
+
+    /// <summary>
+    /// Saves an item to the cache with the given ID
+    /// </summary>
+    /// <param name="id">The ID to use</param>
+    /// <param name="content">The content to save</param>
+    public static void SaveItemToCache(string id, string content)
+    {
+      SaveToCache(id, content);
     }
 
     /// <summary>
@@ -244,6 +210,41 @@ namespace DICOM7.ORM2DICOM
       {
         Log.Error(e, "Failed to save ORM message to cache: '{FilePath}'", filePath);
       }
+    }
+
+    /// <summary>
+    /// Marks an ORM message as processed, either moving it to the sent folder or deleting it based on configuration
+    /// </summary>
+    /// <param name="messageId">The message ID that was processed</param>
+    /// <param name="keepSentItems">Whether to keep sent items (from config)</param>
+    /// <param name="metadata">Optional metadata about the processing</param>
+    /// <param name="cacheFolder">Optional specific cache folder</param>
+    /// <returns>True if successful, false otherwise</returns>
+    public static bool MarkAsProcessed(string messageId, bool keepSentItems, string metadata = null, string cacheFolder = null)
+    {
+      if (string.IsNullOrEmpty(messageId))
+      {
+        Log.Warning("Cannot mark message as processed: Message ID is empty");
+        return false;
+      }
+
+      // Use provided cache folder or default to CacheFolder property
+      string folderToUse = cacheFolder ?? CacheFolder;
+
+      // Normalize the path to ensure proper handling of separators
+      string normalizedFolder = Path.GetFullPath(folderToUse);
+
+      // Get the path in the active folder
+      string activeFilePath = Path.Combine(normalizedFolder, "active", $"{messageId}.hl7");
+
+      if (!File.Exists(activeFilePath))
+      {
+        Log.Warning("Cannot mark message as processed: File does not exist: {FilePath}", activeFilePath);
+        return false;
+      }
+
+      // Use the shared handler to either move to sent folder or delete
+      return BaseCacheManager.HandleProcessedItem(activeFilePath, keepSentItems, metadata);
     }
   }
 }

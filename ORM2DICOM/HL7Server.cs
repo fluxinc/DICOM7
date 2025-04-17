@@ -371,11 +371,9 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         // Get the message control ID
         string messageControlId = GetMessageControlID(incomingHl7Message);
 
-        // Get sending facility from the original message if possible
-        string sendingApp = _config.HL7.SenderName;
-        string sendingFacility = _config.HL7.FacilityName;
-
-        // Try to extract receiving app and facility from original message
+        // Extract sending and receiving info from original message
+        string sendingApp = "";
+        string sendingFacility = "";
         string receivingApp = "";
         string receivingFacility = "";
 
@@ -385,16 +383,21 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
           if (segments.Length > 0)
           {
             string[] fields = segments[0].Split(FIELD_DELIMITER);
-            if (fields.Length > 4)
+            if (fields.Length > 5)
             {
-              receivingApp = fields[2]; // Original sending app becomes receiving app in ACK
-              receivingFacility = fields[3]; // Original sending facility becomes receiving facility in ACK
+              // For ACK, we swap the sending and receiving entities
+              // MSH fields: MSH|^~\&|SendingApp|SendingFacility|ReceivingApp|ReceivingFacility|...
+              sendingApp = fields[4];       // Field 5 (index 4) is ReceivingApp in original message
+              sendingFacility = fields[5];  // Field 6 (index 5) is ReceivingFacility in original message
+              receivingApp = fields[2];     // Field 3 (index 2) is SendingApp in original message
+              receivingFacility = fields[3]; // Field 4 (index 3) is SendingFacility in original message
             }
           }
         }
-        catch
+        catch (Exception ex)
         {
-          // Ignore errors in extracting fields
+          Logger.Warning(ex, "Error extracting sender/receiver information from message");
+          // If extraction fails, use empty strings - don't use config values
         }
 
         // Build acknowledgment message
@@ -426,11 +429,9 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
     private string CreateDefaultAcknowledgement(string messageId, string ackCode, string errorText)
     {
       StringBuilder ackMessage = new StringBuilder();
-      string sendingApp = _config.HL7.SenderName;
-      string sendingFacility = _config.HL7.FacilityName;
 
       ackMessage.Append(START_OF_BLOCK)
-          .Append($"MSH|^~\\&|{sendingApp}|{sendingFacility}|||{DateTime.Now:yyyyMMddHHmmss}||ACK|ACK{DateTime.Now.Ticks}|P|2.3")
+          .Append($"MSH|^~\\&||||{DateTime.Now:yyyyMMddHHmmss}||ACK|ACK{DateTime.Now.Ticks}|P|2.3")
           .Append(CARRIAGE_RETURN)
           .Append($"MSA|{ackCode}|{messageId}|{errorText}")
           .Append(CARRIAGE_RETURN)
