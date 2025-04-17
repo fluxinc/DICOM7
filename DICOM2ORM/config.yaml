@@ -1,0 +1,37 @@
+# DICOM2ORM Configuration
+# Queries DICOM worklist and generates HL7 ORM messages
+
+# Cache settings
+Cache:
+  Folder: "cache"             # Cache path
+  RetentionDays: 2            # File retention period (days)
+
+# DICOM SCU settings
+Dicom:
+  ScuAeTitle: DICOM7          # Local AE Title for queries
+  ScpHost: worklist.fluxinc.ca # Target worklist server
+  ScpPort: 1070               # Target server port
+  ScpAeTitle: FLUX_WORKLIST   # Target AE Title
+
+# Query parameters
+Query:
+  ScheduledStationAeTitle:    # Station filter (optional)
+  ScheduledProcedureStepStartDate:
+    Mode: today               # Date filter type
+    DaysBefore: 1             # Past days to include
+    DaysAfter: 1              # Future days to include
+    Date: 2023-03-01          # Exact date if mode=specific
+  Modality:                   # Modality filter (optional)
+  IntervalSeconds: 60         # Query interval (seconds)
+
+# HL7 transmission settings
+HL7:
+  SenderName: DICOM7          # Source application
+  ReceiverName: RECEIVER_APPLICATION  # Target application
+  ReceiverFacility: RECEIVER_FACILITY # Target facility
+  ReceiverHost: localhost      # Target host
+  ReceiverPort: 7777           # Target port
+
+# Retry handling
+Retry:
+  RetryIntervalMinutes: 1      # Retry frequency (minutes)

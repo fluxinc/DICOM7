@@ -1,0 +1,29 @@
+# DICOM2ORU Configuration
+# Converts DICOM images to HL7 ORU (results) messages
+
+# DICOM Configuration
+# Controls how DICOM SCP listens for incoming images
+Dicom:
+  AETitle: DICOM7             # DICOM AE Title
+  ListenPort: 104             # TCP port for DICOM SCP
+
+# HL7 Configuration
+# Controls how ORU messages are sent
+HL7:
+  SenderName: DICOM7          # Sender application name
+  ReceiverName: RECEIVER_APPLICATION  # Receiver application name
+  ReceiverFacility: RECEIVER_FACILITY # Receiver facility name
+  ReceiverHost: 127.0.0.1     # Receiver IP address
+  ReceiverPort: 7777          # Receiver TCP port
+  WaitForAck: true            # Require ACK responses
+
+# Cache Configuration
+# Controls how processed files are stored and managed
+Cache:
+  Folder: "cache"             # Cache directory path
+  RetentionDays: 7            # Days to retain cached files
+
+# Retry Configuration
+# Controls how failed transmissions are retried
+Retry:
+  RetryIntervalMinutes: 1     # Retry frequency (minutes)

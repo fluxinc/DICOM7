@@ -1,0 +1,7 @@
+MSH|^~\&|FLUX^flux.fluxinc.co^DNS|fluxinc^2.16.840.1.113883.3.8873^ISO|ABI-Q|FLUXINC|20240206140101||OMG^O19^OMG_O19|202402061401010001|P^T|2.5.1
+PID||123456|123456^^^fluxinc&2.16.840.1.113883.3.8873&ISO^MR||DOE^JOHN||19690101|M
+PV1||O||R||||123456789^SKYWALKER^LUKE^^^DR^MD^^^^^^NPI|||||||||||12345678|||||||||||||||||||||||||20240206140101
+ORC|NW|987654321|||||||20240206140101|987654^VADER^DARTH||123456789^SKYWALKER^LUKE^^^DR^MD^^^^^^NPI
+OBR||987654321||93923^Complete bilateral noninvasive physiologic studies of upper or lower extremity arteries, 3 or more levels^C4^77197-2^Noninvasive arteriosclerosis studies panel^LN||20240206140101||||||||||123456789^SKYWALKER^LUKE^^^DR^MD^^^^^^NPI
+OBX|1|NM|77194-9^Ankle-brachial index (Right)^LN|1||{ratio}^ratio^UCUM|>1.00||||O
+OBX|2|NM|77194-9^Ankle-brachial index (Left)^LN|2||{ratio}^ratio^UCUM|>1.00||||O
