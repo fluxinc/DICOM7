@@ -1,0 +1,32 @@
+# ORM2DICOM Configuration
+
+# DICOM worklist SCP configuration
+Dicom:
+  AETitle: DICOM7_ORM2DICOM
+  ListenIP: 0.0.0.0
+  ListenPort: 11112
+  MaxConnections: 10
+  FacilityName: Flux Inc
+
+# HL7 server configuration
+HL7:
+  ListenPort: 7777
+  ListenIP: 0.0.0.0
+  MaxORMsPerPatient: 5
+  SenderName: ORM2DICOM
+  FacilityName: Flux Inc
+
+# Cache configuration
+Cache:
+  # Optional custom folder path (relative to app folder or absolute)
+  Folder: cache
+  RetentionDays: 3
+
+# Expiry configuration
+Expiry:
+  ExpiryHours: 72
+  AutoCleanup: true
+  CleanupIntervalMinutes: 60
+
+# Time in seconds between processing cycles
+ProcessInterval: 60

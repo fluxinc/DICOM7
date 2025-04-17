@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the OrderORM project will be documented in this file.
+All notable changes to the DICOM2ORM project will be documented in this file.
 
 ## [Unreleased]
 
@@ -60,7 +60,7 @@ All notable changes to the OrderORM project will be documented in this file.
 
 ### Added
 
-- Initial release of OrderORM application
+- Initial release of DICOM2ORM application
 - DICOM worklist query functionality
 - HL7 ORM message generation from DICOM worklist data
 - Caching mechanism with configurable retention period

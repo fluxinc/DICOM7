@@ -1,0 +1,39 @@
+# DICOM2ORM Configuration
+
+
+# Cache Configuration
+Cache:
+  Folder: "cache"
+  RetentionDays: 2
+
+# DICOM Worklist Configuration
+#
+# This is the DICOM  node that we will query to get the worklist data.
+Dicom:
+  ScuAeTitle: DICOM7_DICOM2ORM
+  ScpHost: worklist.fluxinc.ca
+  ScpPort: 1070
+  ScpAeTitle: FLUX_WORKLIST
+
+Query:
+  ScheduledStationAeTitle: # set this value to limit results to a specific station
+  ScheduledProcedureStepStartDate:
+    Mode: today            # today, range, specific
+    DaysBefore: 1          # only used if mode is range
+    DaysAfter: 1           # only used if mode is range
+    Date: 2023-03-01       # only used if mode is specific
+  Modality:                # set this value to limit results to a specific modality
+
+# HL7 Configuration
+HL7:
+  SenderName: DICOM7_DICOM2ORM
+  ReceiverName: RECEIVER_APPLICATION
+  ReceiverFacility: RECEIVER_FACILITY
+  ReceiverHost: localhost
+  ReceiverPort: 7777
+
+
+QueryInterval: 60
+
+Retry:
+  RetryIntervalMinutes: 1

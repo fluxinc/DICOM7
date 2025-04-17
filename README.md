@@ -1,4 +1,4 @@
-# OrderORM
+# DICOM2ORM
 
 Order ORM queries DICOM Modality Worklist at a set interval, generates HL7 ORM orders, and sends them to a receiver.
 
@@ -99,7 +99,7 @@ The application supports the following command line arguments:
 
 Example:
 ```
-OrderORM.exe --path C:\CustomPath\OrderORM
+DICOM2ORM.exe --path C:\CustomPath\DICOM2ORM
 ```
 
 ## License

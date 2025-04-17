@@ -1,0 +1,34 @@
+# DICOM2ORU Configuration
+
+# Process interval in seconds
+ProcessInterval: 60
+
+# DICOM Configuration
+Dicom:
+  ApplicationName: "DICOM7_DICOM2ORU"
+  FacilityName: "Flux Inc"
+
+# Input Configuration
+Input:
+  InputFolder: "input"
+  ArchiveFolder: "archive"
+  ErrorFolder: "error"
+
+# HL7 Configuration
+HL7:
+  SenderName: "DICOM7_DICOM2ORU"
+  ReceiverName: "RECEIVER_APPLICATION"
+  ReceiverFacility: "RECEIVER_FACILITY"
+  ReceiverHost: "localhost"
+  ReceiverPort: 7777
+  WaitForAck: true
+
+
+# Cache Configuration
+Cache:
+  Folder: "cache"
+  RetentionDays: 7
+
+# Retry Configuration
+Retry:
+  RetryIntervalMinutes: 1
