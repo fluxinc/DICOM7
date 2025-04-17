@@ -39,16 +39,16 @@ All options in other sections are optional
 -->
 
   <!-- ID of the service. It should be unique accross the Windows system. -->
-  <id>DICOM7_DICOM2ORM</id>
+  <id>DICOM7_ORM2DICOM</id>
 
   <!-- Path to the executable, which should be started. -->
-  <executable>%BASE%\DICOM2ORM.exe</executable>
+  <executable>%BASE%\ORM2DICOM.exe</executable>
 
   <!-- Display name of the service. -->
-  <name>DICOM7 C-Find to HL7 ORM broker</name>
+  <name>DICOM7 HL7 ORM to Worklist C-Find broker</name>
 
   <!-- Service description. -->
-  <description>DICOM7 Worklist C-Find to HL7 ORM broker from Flux Inc.  Queries DICOM Modality Worklist and sends HL7 ORM messages to a configured HL7 receiver.</description>
+  <description>DICOM7 HL7 ORM to DICOM broker from Flux Inc. Receives HL7 ORM messages and sends DICOM worklist data to a configured DICOM receiver.</description>
 
   <!--
 SECTION: Installation
@@ -248,56 +248,8 @@ SECTION: Environment setup
     List of downloads to be performed by the wrapper before starting.
   -->
   <!--
-  <download from="http://www.google.com/" to="%BASE%\index.html" />
-
-  Download and fail the service startup on Error:
-  <download from="http://www.nosuchhostexists.com/" to="%BASE%\dummy.html" failOnError="true"/>
-
-  An example for unsecure Basic authentication because the connection is not encrypted:
-  <download from="http://example.com/some.dat" to="%BASE%\some.dat"
-            auth="basic" unsecureAuth="true"
-            username="aUser" password="aPassw0rd" />
-
-  Secure Basic authentication via HTTPS:
-  <download from="https://example.com/some.dat" to="%BASE%\some.dat"
-            auth="basic" username="aUser" password="aPassw0rd" />
-
-  Secure authentication when the target server and the client are members of the same domain or
-  the server domain and the client domain belong to the same forest with a trust:
-  <download from="https://example.com/some.dat" to="%BASE%\some.dat" auth="sspi" />
+  <download from="http://www.domain.com/path/to/resource.zip"
+           to="%BASE%\resource.zip"
+           failOnError="true" />
   -->
-
-  <!--
-SECTION: Other options
--->
-
-  <!--
-    OPTION: beeponshutdown
-    Indicates the service should beep when finished on shutdown (if it's supported by OS).
-  -->
-  <!--
-  <beeponshutdown>true</beeponshutdown>
-  -->
-
-  <!--
-SECTION: Extensions
-This configuration section allows specifying custom extensions.
-More info is available here:
-  https://github.com/winsw/winsw/blob/master/docs/extensions/extensions.md
--->
-
-  <!--
-<extensions>
-  Extension 1: id values must be unique
-  <extension enabled="true" id="extension1"
-  className="winsw.Plugins.SharedDirectoryMapper.SharedDirectoryMapper">
-    <mapping>
-      <map enabled="false" label="N:" uncpath="\\UNC"/>
-      <map enabled="false" label="M:" uncpath="\\UNC2"/>
-    </mapping>
-  </extension>
-  ...
-</extensions>
--->
-
 </service>
