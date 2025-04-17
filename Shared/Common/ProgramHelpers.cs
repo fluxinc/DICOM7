@@ -26,6 +26,14 @@ namespace DICOM7.Shared.Common
     /// <param name="applicationName">The name of the application for initialization</param>
     public static void ParseCommandLineArgs(string[] args, string applicationName)
     {
+      // Check for application expiration
+      DateTime expirationDate = new DateTime(2025, 6, 1);
+      if (DateTime.Now > expirationDate)
+      {
+        Console.WriteLine("This application has expired. Please contact support for a new version.");
+        Environment.Exit(1);
+      }
+
       // Initialize AppConfig
       AppConfig.Initialize(applicationName);
 
