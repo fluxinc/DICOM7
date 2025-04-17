@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Serilog;
@@ -22,7 +23,7 @@ namespace DICOM2ORU
           return _cacheFolder;
 
         // Default to {AppDataFolder}/cache if not set
-        var defaultCacheFolder = Path.Combine(AppConfig.CommonAppFolder, CACHE_FOLDER_NAME);
+        string defaultCacheFolder = Path.Combine(AppConfig.CommonAppFolder, CACHE_FOLDER_NAME);
 
         try
         {
@@ -89,8 +90,8 @@ namespace DICOM2ORU
     public static bool IsAlreadySent(string sopInstanceUid, string cacheFolder = null)
     {
       // Normalize the path to ensure proper handling of separators
-      var normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
-      var cacheFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}{CACHE_SUFFIX}");
+      string normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
+      string cacheFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}{CACHE_SUFFIX}");
       return File.Exists(cacheFile);
     }
 
@@ -103,8 +104,8 @@ namespace DICOM2ORU
     public static void SaveToCache(string sopInstanceUid, string oruMessage, string cacheFolder = null)
     {
       // Normalize the path to ensure proper handling of separators
-      var normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
-      var cacheFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}{CACHE_SUFFIX}");
+      string normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
+      string cacheFile = Path.Combine(normalizedFolder, $"{sopInstanceUid}{CACHE_SUFFIX}");
 
       File.WriteAllText(cacheFile, oruMessage);
       Log.Debug("Saved to cache: {CacheFile}", cacheFile);
@@ -117,21 +118,21 @@ namespace DICOM2ORU
     /// <param name="retentionDays">The number of days to keep files for</param>
     public static void CleanUpCache(string cacheFolder, int retentionDays)
     {
-      var cutoffDate = DateTime.Now.AddDays(-retentionDays);
+      DateTime cutoffDate = DateTime.Now.AddDays(-retentionDays);
       Log.Information("Cleaning cache files older than: {CutoffDate}", cutoffDate);
 
       try
       {
-        var normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
-        var cacheFiles = Directory.GetFiles(normalizedFolder, $"*{CACHE_SUFFIX}");
-        var oldFiles = cacheFiles.Where(f => File.GetCreationTime(f) < cutoffDate).ToList();
+        string normalizedFolder = Path.GetFullPath(cacheFolder ?? CacheFolder);
+        string[] cacheFiles = Directory.GetFiles(normalizedFolder, $"*{CACHE_SUFFIX}");
+        List<string> oldFiles = cacheFiles.Where(f => File.GetCreationTime(f) < cutoffDate).ToList();
 
         if (oldFiles.Any())
         {
           Log.Information("Removing {OldFilesCount} cached files older than {RetentionDays} days",
               oldFiles.Count, retentionDays);
 
-          foreach (var file in oldFiles)
+          foreach (string file in oldFiles)
           {
             try
             {

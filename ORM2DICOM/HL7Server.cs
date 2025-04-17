@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using FellowOakDicom;
 using Serilog;
 
 namespace DICOM7.ORM2DICOM
@@ -57,12 +58,12 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
     /// </summary>
     public static List<IPAddress> LocalIPAddresses()
     {
-      var ips = new List<IPAddress> { IPAddress.Loopback };
+      List<IPAddress> ips = new List<IPAddress> { IPAddress.Loopback };
       if (!NetworkInterface.GetIsNetworkAvailable()) return ips;
 
       try
       {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
+        IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
 
         ips.AddRange(host
           .AddressList
@@ -127,7 +128,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
     private void StartListenersOnAllInterfaces(int port)
     {
-      foreach (var ip in LocalIPAddresses())
+      foreach (IPAddress ip in LocalIPAddresses())
       {
         try
         {
@@ -142,10 +143,10 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
     private void StartListener(IPAddress ip, int port)
     {
-      var listener = new TcpListener(ip, port);
+      TcpListener listener = new TcpListener(ip, port);
       listener.Start();
 
-      var thread = new Thread(ListenerThreadMethod)
+      Thread thread = new Thread(ListenerThreadMethod)
       {
         IsBackground = true,
         Name = $"HL7Listener-{ip}-{port}"
@@ -170,7 +171,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
       Logger.Information("Stopping HL7 server...");
       _isRunning = false;
 
-      foreach (var (ip, port, listener, thread) in _listenersAndThreads)
+      foreach ((IPAddress ip, int port, TcpListener listener, Thread thread) in _listenersAndThreads)
       {
         try
         {
@@ -190,7 +191,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
     private void ListenerThreadMethod(object state)
     {
-      var listener = (TcpListener)state;
+      TcpListener listener = (TcpListener)state;
 
       while (_isRunning)
       {
@@ -225,12 +226,12 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
     private void ProcessClientConnection(object state)
     {
-      var client = (TcpClient)state;
-      var endpoint = client.Client.RemoteEndPoint?.ToString() ?? "unknown";
+      TcpClient client = (TcpClient)state;
+      string endpoint = client.Client.RemoteEndPoint?.ToString() ?? "unknown";
 
       Logger.Information("Client connection established from {RemoteEndpoint}", endpoint);
 
-      var receivedByteBuffer = new byte[4096]; // Increased buffer size
+      byte[] receivedByteBuffer = new byte[4096]; // Increased buffer size
       NetworkStream netStream = null;
 
       try
@@ -241,7 +242,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
         // Keep receiving data until the client closes connection
         int bytesReceived;
-        var hl7Data = string.Empty;
+        string hl7Data = string.Empty;
 
         while (_isRunning && client.Connected && (bytesReceived = netStream.Read(receivedByteBuffer, 0, receivedByteBuffer.Length)) > 0)
         {
@@ -250,16 +251,16 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
           hl7Data += Encoding.UTF8.GetString(receivedByteBuffer, 0, bytesReceived);
 
           // Find start of MLLP frame (VT character)
-          var startOfMllpEnvelope = hl7Data.IndexOf(START_OF_BLOCK);
+          int startOfMllpEnvelope = hl7Data.IndexOf(START_OF_BLOCK);
 
           if (startOfMllpEnvelope >= 0)
           {
             // Look for the end of the frame (FS character)
-            var end = hl7Data.IndexOf(END_OF_BLOCK);
+            int end = hl7Data.IndexOf(END_OF_BLOCK);
             if (end >= startOfMllpEnvelope) // End of block received
             {
               // Extract the complete message
-              var hl7MessageData = hl7Data.Substring(startOfMllpEnvelope + 1, end - startOfMllpEnvelope - 1);
+              string hl7MessageData = hl7Data.Substring(startOfMllpEnvelope + 1, end - startOfMllpEnvelope - 1);
 
               // Log the received message (with line breaks for better readability)
               Logger.Information("Received HL7 message ({Length} bytes) from {RemoteEndpoint}",
@@ -300,10 +301,10 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
       try
       {
         // Create and save CachedORM
-        var cachedOrm = new CachedORM(hl7MessageData);
+        CachedORM cachedOrm = new CachedORM(hl7MessageData);
 
         // Validate the message by converting to DicomDataset
-        var dicomDataset = cachedOrm.AsDicomDataset();
+        DicomDataset dicomDataset = cachedOrm.AsDicomDataset();
 
         if (dicomDataset == null)
         {
@@ -323,12 +324,12 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         }
 
         // Create acknowledgment message
-        var ackMessage = CreateAcknowledgementMessage(hl7MessageData, dicomDataset == null ? "AE" : "AA");
+        string ackMessage = CreateAcknowledgementMessage(hl7MessageData, dicomDataset == null ? "AE" : "AA");
 
         // Send acknowledgment
         if (netStream.CanWrite)
         {
-          var buffer = Encoding.UTF8.GetBytes(ackMessage);
+          byte[] buffer = Encoding.UTF8.GetBytes(ackMessage);
           netStream.Write(buffer, 0, buffer.Length);
           Logger.Information("Sent acknowledgment to {RemoteEndpoint}", remoteEndpoint);
           Logger.Debug("ACK Message: {Message}", ackMessage.Replace(START_OF_BLOCK.ToString(), "<SB>")
@@ -345,8 +346,8 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         {
           if (netStream.CanWrite)
           {
-            var errorAck = CreateAcknowledgementMessage(hl7MessageData, "AR", ex.Message);
-            var buffer = Encoding.UTF8.GetBytes(errorAck);
+            string errorAck = CreateAcknowledgementMessage(hl7MessageData, "AR", ex.Message);
+            byte[] buffer = Encoding.UTF8.GetBytes(errorAck);
             netStream.Write(buffer, 0, buffer.Length);
             Logger.Information("Sent error acknowledgment to {RemoteEndpoint}", remoteEndpoint);
           }
@@ -368,7 +369,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
       try
       {
         // Get the message control ID
-        var messageControlId = GetMessageControlID(incomingHl7Message);
+        string messageControlId = GetMessageControlID(incomingHl7Message);
 
         // Get sending facility from the original message if possible
         string sendingApp = _config.HL7.SenderName;
@@ -397,7 +398,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         }
 
         // Build acknowledgment message
-        var ackMessage = new StringBuilder();
+        StringBuilder ackMessage = new StringBuilder();
         ackMessage.Append(START_OF_BLOCK)
             .Append($"MSH|^~\\&|{sendingApp}|{sendingFacility}|{receivingApp}|{receivingFacility}|{DateTime.Now:yyyyMMddHHmmss}||ACK|ACK{messageControlId}|P|2.3")
             .Append(CARRIAGE_RETURN)
@@ -424,7 +425,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
     private string CreateDefaultAcknowledgement(string messageId, string ackCode, string errorText)
     {
-      var ackMessage = new StringBuilder();
+      StringBuilder ackMessage = new StringBuilder();
       string sendingApp = _config.HL7.SenderName;
       string sendingFacility = _config.HL7.FacilityName;
 
@@ -444,10 +445,10 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
       try
       {
         // Parse the message into segments using the end of segment separator
-        var hl7MessageSegments = incomingHl7Message.Split(CARRIAGE_RETURN);
+        string[] hl7MessageSegments = incomingHl7Message.Split(CARRIAGE_RETURN);
 
         // Tokenize the MSH segment into fields using the field separator
-        var hl7FieldsInMshSegment = hl7MessageSegments[0].Split(FIELD_DELIMITER);
+        string[] hl7FieldsInMshSegment = hl7MessageSegments[0].Split(FIELD_DELIMITER);
 
         if ((MESSAGE_CONTROL_ID_LOCATION + 1) > hl7FieldsInMshSegment.Length)
         {
@@ -459,7 +460,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         }
         else
         {
-          var mcid = hl7FieldsInMshSegment[MESSAGE_CONTROL_ID_LOCATION];
+          string mcid = hl7FieldsInMshSegment[MESSAGE_CONTROL_ID_LOCATION];
           return mcid;
         }
       }

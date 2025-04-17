@@ -24,9 +24,9 @@ namespace Shared
             int attemptCount = 1)
         {
             // Normalize the path to ensure proper handling of separators
-            var normalizedFolder = Path.GetFullPath(cacheFolder);
-            var pendingFilename = Path.Combine(normalizedFolder, $"{messageId}{PENDING_SUFFIX}");
-            var attemptsFilename = Path.Combine(normalizedFolder, $"{messageId}{ATTEMPTS_SUFFIX}");
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string pendingFilename = Path.Combine(normalizedFolder, $"{messageId}{PENDING_SUFFIX}");
+            string attemptsFilename = Path.Combine(normalizedFolder, $"{messageId}{ATTEMPTS_SUFFIX}");
 
             File.WriteAllText(pendingFilename, messageContent);
             File.WriteAllText(attemptsFilename, attemptCount.ToString());
@@ -44,9 +44,9 @@ namespace Shared
         public static void RemovePendingMessage(string messageId, string cacheFolder)
         {
             // Normalize the path to ensure proper handling of separators
-            var normalizedFolder = Path.GetFullPath(cacheFolder);
-            var pendingFilename = Path.Combine(normalizedFolder, $"{messageId}{PENDING_SUFFIX}");
-            var attemptsFilename = Path.Combine(normalizedFolder, $"{messageId}{ATTEMPTS_SUFFIX}");
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string pendingFilename = Path.Combine(normalizedFolder, $"{messageId}{PENDING_SUFFIX}");
+            string attemptsFilename = Path.Combine(normalizedFolder, $"{messageId}{ATTEMPTS_SUFFIX}");
 
             if (File.Exists(pendingFilename)) File.Delete(pendingFilename);
 
@@ -62,8 +62,8 @@ namespace Shared
         public static bool IsPendingRetry(string messageId, string cacheFolder)
         {
             // Normalize the path to ensure proper handling of separators
-            var normalizedFolder = Path.GetFullPath(cacheFolder);
-            var pendingFilename = Path.Combine(normalizedFolder, $"{messageId}{PENDING_SUFFIX}");
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string pendingFilename = Path.Combine(normalizedFolder, $"{messageId}{PENDING_SUFFIX}");
             return File.Exists(pendingFilename);
         }
 
@@ -76,13 +76,13 @@ namespace Shared
         public static int GetAttemptCount(string messageId, string cacheFolder)
         {
             // Normalize the path to ensure proper handling of separators
-            var normalizedFolder = Path.GetFullPath(cacheFolder);
-            var attemptsFilename = Path.Combine(normalizedFolder, $"{messageId}{ATTEMPTS_SUFFIX}");
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
+            string attemptsFilename = Path.Combine(normalizedFolder, $"{messageId}{ATTEMPTS_SUFFIX}");
             if (!File.Exists(attemptsFilename)) return 1; // Default to 1 if file doesn't exist or can't be parsed
 
-            var countStr = File.ReadAllText(attemptsFilename);
+            string countStr = File.ReadAllText(attemptsFilename);
 
-            return int.TryParse(countStr, out var count) ? count : 1; // Default to 1 if file doesn't exist or can't be parsed
+            return int.TryParse(countStr, out int count) ? count : 1; // Default to 1 if file doesn't exist or can't be parsed
         }
 
         /// <summary>
@@ -98,21 +98,21 @@ namespace Shared
             DateTime cutoffTime,
             Func<string, string, int, T> createPendingMessage)
         {
-            var pendingMessages = new List<T>();
+            List<T> pendingMessages = new List<T>();
 
             // Normalize the path to ensure proper handling of separators
-            var normalizedFolder = Path.GetFullPath(cacheFolder);
+            string normalizedFolder = Path.GetFullPath(cacheFolder);
 
-            foreach (var pendingFile in Directory.GetFiles(normalizedFolder, $"*{PENDING_SUFFIX}"))
+            foreach (string pendingFile in Directory.GetFiles(normalizedFolder, $"*{PENDING_SUFFIX}"))
                 try
                 {
                     // Only retry messages that have been waiting for at least the retry interval
                     if (File.GetLastWriteTime(pendingFile) < cutoffTime)
                     {
-                        var fileName = Path.GetFileName(pendingFile);
-                        var messageId = fileName.Substring(0, fileName.Length - PENDING_SUFFIX.Length);
-                        var messageContent = File.ReadAllText(pendingFile);
-                        var attemptCount = GetAttemptCount(messageId, normalizedFolder);
+                        string fileName = Path.GetFileName(pendingFile);
+                        string messageId = fileName.Substring(0, fileName.Length - PENDING_SUFFIX.Length);
+                        string messageContent = File.ReadAllText(pendingFile);
+                        int attemptCount = GetAttemptCount(messageId, normalizedFolder);
 
                         pendingMessages.Add(createPendingMessage(messageId, messageContent, attemptCount));
                     }

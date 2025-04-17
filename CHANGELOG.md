@@ -1,14 +1,19 @@
 # Changelog
 
-All notable changes to the DICOM2ORM project will be documented in this file.
+All notable changes to the DICOM7 project will be documented in this file.
 
 ## [Unreleased]
 
-
 ## Changed
 
+- Renamed to DICOM7
 - Downgraded to .NET 4.6.2 for compatibility with older Windows versions
 - Upgraded NuGet packages to latest versions
+
+### Added
+
+- Added ORM2DICOM component
+- Added DICOM2ORU component
 
 ## [1.0.4] - 2025-03-10
 

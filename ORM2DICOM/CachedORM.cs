@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using Efferent.HL7.V2;
 using FellowOakDicom;
 using Serilog;
@@ -210,16 +211,16 @@ namespace DICOM7.ORM2DICOM
         string patientSex = GetFieldValue(pid, 8); // Sex
 
         // Add patient information to dataset
-        dataset.AddOrUpdate(DicomTag.PatientID, patientId);
-        dataset.AddOrUpdate(DicomTag.PatientName, patientName);
+        dataset.AddOrUpdate(DicomTag.PatientID, TruncateForVR(patientId, DicomTag.PatientID));
+        dataset.AddOrUpdate(DicomTag.PatientName, TruncateForVR(patientName, DicomTag.PatientName));
         dataset.AddOrUpdate(DicomTag.PatientBirthDate, birthDate);
-        dataset.AddOrUpdate(DicomTag.PatientSex, patientSex);
+        dataset.AddOrUpdate(DicomTag.PatientSex, TruncateForVR(patientSex, DicomTag.PatientSex));
 
         // Add patient address if available
         string patientAddress = GetFieldValue(pid, 11);
         if (!string.IsNullOrEmpty(patientAddress))
         {
-          dataset.AddOrUpdate(DicomTag.PatientAddress, patientAddress);
+          dataset.AddOrUpdate(DicomTag.PatientAddress, TruncateForVR(patientAddress, DicomTag.PatientAddress));
         }
 
         // Add visit information if PV1 segment exists
@@ -228,20 +229,20 @@ namespace DICOM7.ORM2DICOM
           string referringPhysician = GetFieldComponentsAsXCN(pv1, 8);
           if (!string.IsNullOrEmpty(referringPhysician))
           {
-            dataset.AddOrUpdate(DicomTag.ReferringPhysicianName, referringPhysician);
+            dataset.AddOrUpdate(DicomTag.ReferringPhysicianName, TruncateForVR(referringPhysician, DicomTag.ReferringPhysicianName));
           }
 
           string institutionName = GetFieldComponentValue(pv1, 3, 4);
           if (!string.IsNullOrEmpty(institutionName))
           {
-            dataset.AddOrUpdate(DicomTag.InstitutionName, institutionName);
+            dataset.AddOrUpdate(DicomTag.InstitutionName, TruncateForVR(institutionName, DicomTag.InstitutionName));
           }
 
           // Scheduled Performing Physician
           string scheduledPhysician = GetFieldComponentsAsXCN(pv1, 7);
           if (!string.IsNullOrEmpty(scheduledPhysician))
           {
-            spsDataset.AddOrUpdate(DicomTag.ScheduledPerformingPhysicianName, scheduledPhysician);
+            spsDataset.AddOrUpdate(DicomTag.ScheduledPerformingPhysicianName, TruncateForVR(scheduledPhysician, DicomTag.ScheduledPerformingPhysicianName));
           }
         }
 
@@ -251,13 +252,13 @@ namespace DICOM7.ORM2DICOM
           string accessionNumber = GetFieldComponentValue(orc, 2, 1);
           if (!string.IsNullOrEmpty(accessionNumber))
           {
-            dataset.AddOrUpdate(DicomTag.AccessionNumber, accessionNumber);
+            dataset.AddOrUpdate(DicomTag.AccessionNumber, TruncateForVR(accessionNumber, DicomTag.AccessionNumber));
           }
 
           string requestingPhysician = GetFieldComponentsAsXCN(orc, 12);
           if (!string.IsNullOrEmpty(requestingPhysician))
           {
-            dataset.AddOrUpdate(DicomTag.RequestingPhysician, requestingPhysician);
+            dataset.AddOrUpdate(DicomTag.RequestingPhysician, TruncateForVR(requestingPhysician, DicomTag.RequestingPhysician));
           }
         }
 
@@ -275,7 +276,7 @@ namespace DICOM7.ORM2DICOM
           string procedureDesc = GetFieldValue(obr, 4);
           if (!string.IsNullOrEmpty(procedureDesc))
           {
-            spsDataset.AddOrUpdate(DicomTag.ScheduledProcedureStepDescription, procedureDesc);
+            spsDataset.AddOrUpdate(DicomTag.ScheduledProcedureStepDescription, TruncateForVR(procedureDesc, DicomTag.ScheduledProcedureStepDescription));
           }
         }
 
@@ -382,7 +383,7 @@ namespace DICOM7.ORM2DICOM
     /// <returns>A string representation of the hash</returns>
     private static string GetHashString(string input)
     {
-      using var sha = System.Security.Cryptography.SHA256.Create();
+      using SHA256 sha = System.Security.Cryptography.SHA256.Create();
       byte[] hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
       return BitConverter.ToString(hash).Replace("-", "").Substring(0, 32);
     }
@@ -501,6 +502,42 @@ namespace DICOM7.ORM2DICOM
       if (!string.IsNullOrEmpty(suffix)) components.Add(suffix);
 
       return string.Join("^", components);
+    }
+
+    /// <summary>
+    /// Truncates a string to fit within the character limits of the specified DICOM Value Representation
+    /// </summary>
+    /// <param name="value">The string value to truncate if needed</param>
+    /// <param name="tag">The DICOM tag, used to determine the VR</param>
+    /// <returns>The truncated string that fits within VR limits</returns>
+    private string TruncateForVR(string value, DicomTag tag)
+    {
+      if (string.IsNullOrEmpty(value))
+        return value;
+
+      DicomVR vr = tag.DictionaryEntry.ValueRepresentations.First();
+      int maxLength;
+
+      switch (vr.Code)
+      {
+        case "AE": maxLength = 16; break;  // Application Entity
+        case "LO": maxLength = 64; break;  // Long String
+        case "LT": maxLength = 10240; break; // Long Text
+        case "PN": maxLength = 64; break;  // Person Name (per component)
+        case "SH": maxLength = 16; break;  // Short String
+        case "ST": maxLength = 1024; break; // Short Text
+        case "UT": maxLength = int.MaxValue; break; // Unlimited Text
+        default: return value; // No truncation for other VRs
+      }
+
+      if (value.Length > maxLength)
+      {
+        Logger.Warning("Truncating value for {Tag} ({VR}) from {OriginalLength} to {MaxLength} characters",
+            tag, vr.Code, value.Length, maxLength);
+        return value.Substring(0, maxLength);
+      }
+
+      return value;
     }
 
     #endregion

@@ -2,4 +2,6 @@
 	<s:Boolean x:Key="/Default/CodeEditing/SuppressNullableWarningFix/Enabled/@EntryValue">False</s:Boolean>
   <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=HL7/@EntryIndexedValue">HL7</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=AE/@EntryIndexedValue">AE</s:String>
-	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XCN/@EntryIndexedValue">XCN</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SCP/@EntryIndexedValue">SCP</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XCN/@EntryIndexedValue">XCN</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=worklist/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

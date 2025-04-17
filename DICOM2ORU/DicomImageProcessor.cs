@@ -102,9 +102,9 @@ namespace DICOM2ORU
             try
             {
                 // Get all DCM files (files with .dcm extension or no extension which could be DICOM)
-                var files = Directory.GetFiles(_inputFolderPath)
+                List<string> files = Directory.GetFiles(_inputFolderPath)
                     .Where(f => {
-                        var ext = Path.GetExtension(f).ToLowerInvariant();
+                        string ext = Path.GetExtension(f).ToLowerInvariant();
                         return ext == ".dcm" || string.IsNullOrEmpty(ext);
                     })
                     .ToList();
@@ -117,7 +117,7 @@ namespace DICOM2ORU
 
                 Log.Information("Found {Count} potential DICOM files in input folder", files.Count);
 
-                foreach (var filePath in files)
+                foreach (string filePath in files)
                 {
                     try
                     {
@@ -159,7 +159,7 @@ namespace DICOM2ORU
                 }
 
                 // Get the SOP Instance UID (unique identifier for this DICOM instance)
-                var sopInstanceUid = dicomFile.Dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, "");
+                string sopInstanceUid = dicomFile.Dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, "");
                 if (string.IsNullOrEmpty(sopInstanceUid))
                 {
                     Log.Error("File {FilePath} does not contain a SOP Instance UID", filePath);
@@ -197,7 +197,7 @@ namespace DICOM2ORU
                     {
                         if (dicomFile.Dataset.Contains(DicomTag.EncapsulatedDocument))
                         {
-                            var pdfDataElement = dicomFile.Dataset.GetDicomItem<DicomElement>(DicomTag.EncapsulatedDocument);
+                            DicomElement pdfDataElement = dicomFile.Dataset.GetDicomItem<DicomElement>(DicomTag.EncapsulatedDocument);
                             IByteBuffer pdfBuffer = pdfDataElement.Buffer;
                             byte[] pdfBytes = pdfBuffer.Data;
 
@@ -229,10 +229,16 @@ namespace DICOM2ORU
                 {
                     try
                     {
-                        var pixelData = DicomPixelData.Create(dicomFile.Dataset);
+                        DicomPixelData pixelData = DicomPixelData.Create(dicomFile.Dataset);
                         if (pixelData != null && pixelData.NumberOfFrames > 0)
                         {
-                            var frame = pixelData.GetFrame(0);
+                            Log.Information("Found {FrameCount} frames in Secondary Capture image", pixelData.NumberOfFrames);
+
+                            // For multi-frame images like multi-page TIFFs, we need to handle all frames
+                            // Currently we're using a simple approach to just include the first frame
+                            // A more complete solution would convert the entire multi-frame DICOM to a multi-page TIFF
+
+                            IByteBuffer frame = pixelData.GetFrame(0);
                             byte[] imageBytes = GetBytesFromBuffer(frame);
 
                             if (imageBytes != null && imageBytes.Length > 0)
@@ -424,8 +430,8 @@ namespace DICOM2ORU
         /// </summary>
         public void ProcessPendingMessages()
         {
-            var cutoffTime = DateTime.UtcNow.AddMinutes(-_config.Retry.RetryIntervalMinutes);
-            var pendingMessages = RetryManager.GetPendingMessages<PendingOruMessage>(CacheManager.CacheFolder, cutoffTime,
+            DateTime cutoffTime = DateTime.UtcNow.AddMinutes(-_config.Retry.RetryIntervalMinutes);
+            IEnumerable<PendingOruMessage> pendingMessages = RetryManager.GetPendingMessages<PendingOruMessage>(CacheManager.CacheFolder, cutoffTime,
                 (messageId, messageContent, attemptCount) => new PendingOruMessage
                 {
                     SopInstanceUid = messageId,
@@ -433,7 +439,7 @@ namespace DICOM2ORU
                     AttemptCount = attemptCount
                 });
 
-            foreach (var pending in pendingMessages)
+            foreach (PendingOruMessage pending in pendingMessages)
             {
                 Log.Information("Retrying ORU for {SopInstanceUid}, attempt {AttemptCount}", pending.SopInstanceUid, pending.AttemptCount);
 

@@ -24,7 +24,7 @@ namespace DICOM7.ORM2DICOM
           return _cacheFolder;
 
         // Default to {AppDataFolder}/cache if not set
-        var defaultCacheFolder = Path.Combine(AppConfig.CommonAppFolder, CACHE_FOLDER_NAME);
+        string defaultCacheFolder = Path.Combine(AppConfig.CommonAppFolder, CACHE_FOLDER_NAME);
 
         try
         {

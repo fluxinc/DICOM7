@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FellowOakDicom;
 using Serilog;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -15,7 +17,7 @@ internal class Program
         // Parse command line arguments
         ParseCommandLineArgs(args);
 
-        var logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", "dicom7-dicom2orm-.log");
+        string logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", "dicom7-dicom2orm-.log");
         Log.Logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Debug()
@@ -34,10 +36,10 @@ internal class Program
         try
         {
             // Try to load the config from the common app folder first
-            var commonConfigPath = AppConfig.GetConfigFilePath();
+            string commonConfigPath = AppConfig.GetConfigFilePath();
             Config config = null;
 
-            var deserializer = new DeserializerBuilder()
+            IDeserializer deserializer = new DeserializerBuilder()
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
@@ -59,7 +61,7 @@ internal class Program
             // If not found or failed to load, try local config
             if (config == null)
             {
-                var localConfigPath = Path.GetFullPath("config.yaml");
+                string localConfigPath = Path.GetFullPath("config.yaml");
                 Log.Information("Loading configuration from local path: {ConfigPath}", localConfigPath);
 
                 try
@@ -86,12 +88,12 @@ internal class Program
             // Clean up cache based on retention policy
             CacheManager.CleanUpCache(CacheManager.CacheFolder, config.Cache?.RetentionDays ?? 7);
 
-            var templatePath = Path.Combine(AppConfig.CommonAppFolder, "ormTemplate.hl7");
+            string templatePath = Path.Combine(AppConfig.CommonAppFolder, "ormTemplate.hl7");
 
             Log.Information("Looking for ORM template at {TemplatePath}", templatePath);
-            var ormTemplate = ORMGenerator.LoadTemplate(templatePath);
+            string ormTemplate = ORMGenerator.LoadTemplate(templatePath);
 
-            var querier = new WorklistQuerier(config, ormTemplate);
+            WorklistQuerier querier = new WorklistQuerier(config, ormTemplate);
 
             Log.Information("Starting HL7 ORM sender script with SCU AE Title '{DicomScuAeTitle}'",
                 config.Dicom.ScuAeTitle);
@@ -107,7 +109,7 @@ internal class Program
 
                 // The processing of results is now handled in the OnFindResponseReceived method
                 // We can optionally access the results here if needed
-                var results = querier.GetQueryResults();
+                IEnumerable<DicomDataset> results = querier.GetQueryResults();
                 if (!results.Any()) Log.Information("No new orders found in this query cycle");
 
                 Log.Information("Sleeping for {QueryInterval} seconds", config.QueryInterval);
@@ -130,10 +132,10 @@ internal class Program
     /// <param name="args">Command line arguments</param>
     private static void ParseCommandLineArgs(string[] args)
     {
-        for (var i = 0; i < args.Length; i++)
+        for (int i = 0; i < args.Length; i++)
             if (args[i] == "--path" && i + 1 < args.Length)
             {
-                var basePath = args[i + 1];
+                string basePath = args[i + 1];
                 basePath = Path.GetFullPath(basePath);
                 if (Directory.Exists(basePath))
                 {

@@ -6,7 +6,7 @@ Copyright (c) 2025 Flux Inc. All rights reserved.
 
 ## 1. Definitions
 
-- "Software" refers to the Order-ORM application and its source code.
+- "Software" refers to the DICOM7 application and its source code.
 - "Academic User" refers to individuals or entities affiliated with accredited educational institutions using the Software for non-commercial research or educational purposes.
 - "Commercial Use" refers to any use of the Software for monetary gain or in a commercial product or service.
 - "Competitor" refers to any entity developing, selling, or providing medical software solutions similar to those offered by Flux Inc.
@@ -31,7 +31,7 @@ Redistribution: Non-Academic Users may not redistribute the Software or its deri
 ## 4. Attribution
 
 Any use or modification of the Software must include the following notice:
-"Based on Order-ORM by Flux Inc, used under the Medical Software Academic and Restricted Use License."
+"Based on DICOM7 by Flux Inc, used under the Medical Software Academic and Restricted Use License."
 
 ## 5. Warranty and Liability
 

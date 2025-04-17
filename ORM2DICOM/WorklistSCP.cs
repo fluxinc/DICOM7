@@ -10,18 +10,14 @@ using DICOM7.Shared;
 
 namespace DICOM7.ORM2DICOM
 {
-  internal class WorklistSCP : BasicSCP, IDicomCFindProvider
+  internal class WorklistSCP(
+    INetworkStream stream,
+    Encoding fallBackEncoding,
+    ILogger log,
+    DicomServiceDependencies dependencies,
+    string aeTitle)
+    : BasicSCP(stream, fallBackEncoding, log, dependencies, aeTitle), IDicomCFindProvider
   {
-    public WorklistSCP(
-      INetworkStream stream,
-      Encoding fallBackEncoding,
-      ILogger log,
-      DicomServiceDependencies dependencies,
-      string aeTitle)
-      : base(stream, fallBackEncoding, log, dependencies, aeTitle)
-    {
-    }
-
     public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest dicomRequest)
     {
       if (dicomRequest is null)
@@ -38,7 +34,7 @@ namespace DICOM7.ORM2DICOM
       else
       {
         // Get active ORMs from cache
-        var ormDatasets = GetWorklistItemsFromActiveORMs(dicomRequest);
+        IEnumerable<DicomDataset> ormDatasets = GetWorklistItemsFromActiveORMs(dicomRequest);
 
         foreach (DicomDataset result in ormDatasets)
         {
@@ -70,10 +66,10 @@ namespace DICOM7.ORM2DICOM
     private IEnumerable<DicomDataset> GetWorklistItemsFromActiveORMs(DicomCFindRequest request)
     {
       // Get all active ORM messages
-      var orms = CachedORM.GetActiveORMs();
+      IEnumerable<CachedORM> orms = CachedORM.GetActiveORMs();
 
       // Convert each ORM to a DICOM dataset
-      var datasets = orms.Select(orm => orm.AsDicomDataset())
+      List<DicomDataset> datasets = orms.Select(orm => orm.AsDicomDataset())
                          .Where(dataset => dataset != null)
                          .ToList();
 
@@ -86,14 +82,14 @@ namespace DICOM7.ORM2DICOM
 
     private IEnumerable<DicomDataset> FilterWorklistItems(DicomDataset requestDataset, IEnumerable<DicomDataset> datasets)
     {
-      var filteredDatasets = new List<DicomDataset>();
+      List<DicomDataset> filteredDatasets = new List<DicomDataset>();
 
-      foreach (var dataset in datasets)
+      foreach (DicomDataset dataset in datasets)
       {
         bool isMatch = true;
 
         // Match against all attributes in the request
-        foreach (var element in requestDataset)
+        foreach (DicomItem element in requestDataset)
         {
           // Skip sequence elements for simplicity
           if (element.ValueRepresentation == DicomVR.SQ)
@@ -115,7 +111,7 @@ namespace DICOM7.ORM2DICOM
               if (requestValue.Contains('*'))
               {
                 // Simple wildcard matching
-                var pattern = requestValue.Replace("*", "");
+                string pattern = requestValue.Replace("*", "");
                 if (!string.IsNullOrEmpty(pattern) && !datasetValue.Contains(pattern))
                 {
                   isMatch = false;

@@ -29,7 +29,7 @@ namespace DICOM2ORM
 
     private DicomDataset BuildQueryDataset()
     {
-      var ds = new DicomDataset
+      DicomDataset ds = new DicomDataset
       {
         { DicomTag.PatientName, "" },
         { DicomTag.PatientID, "" },
@@ -41,7 +41,7 @@ namespace DICOM2ORM
       };
 
 
-      var sps = new DicomDataset();
+      DicomDataset sps = new DicomDataset();
       // Add ScheduledStationAETitle if configured
       if (!string.IsNullOrEmpty(_config.Query.ScheduledStationAeTitle))
       {
@@ -106,7 +106,7 @@ namespace DICOM2ORM
     {
       if (response.Status == DicomStatus.Pending && response.HasDataset)
       {
-        var dataset = response.Dataset;
+        DicomDataset dataset = response.Dataset;
         string studyInstanceUid = dataset.GetString(DicomTag.StudyInstanceUID);
         Log.Information("Found order with StudyInstanceUID: {StudyInstanceUid}", studyInstanceUid);
         _findResponses.Add(dataset);
@@ -125,7 +125,7 @@ namespace DICOM2ORM
 
     private bool WaitForQueryCompletion(int timeoutSeconds = 60)
     {
-      var startTime = DateTime.UtcNow;
+      DateTime startTime = DateTime.UtcNow;
       while (_queryStatus == DicomStatus.Pending)
       {
         Thread.Sleep(250);
@@ -147,8 +147,8 @@ namespace DICOM2ORM
         _findResponses.Clear();
         _queryStatus = DicomStatus.Pending;
 
-        var client = CreateClient();
-        var cfind = new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFind)
+        IDicomClient client = CreateClient();
+        DicomCFindRequest cfind = new DicomCFindRequest(DicomUID.ModalityWorklistInformationModelFind)
         {
           Dataset = BuildQueryDataset()
         };
@@ -170,7 +170,7 @@ namespace DICOM2ORM
         if (success && _findResponses.Count > 0)
         {
           Log.Information("Found {FindResponsesCount} orders to process", _findResponses.Count);
-          foreach (var dataset in _findResponses)
+          foreach (DicomDataset dataset in _findResponses)
           {
             string studyInstanceUid = dataset.GetString(DicomTag.StudyInstanceUID);
             if (CacheManager.IsAlreadySent(studyInstanceUid, _config.Cache.Folder))
@@ -226,7 +226,7 @@ namespace DICOM2ORM
         DateTime cutoffTime = DateTime.Now.AddMinutes(-_config.Retry.RetryIntervalMinutes);
 
         // Get all pending messages that are ready for retry
-        var pendingMessages = RetryManager.GetPendingMessages<PendingOrmMessage>(
+        IEnumerable<PendingOrmMessage> pendingMessages = RetryManager.GetPendingMessages<PendingOrmMessage>(
             CacheManager.CacheFolder,
             cutoffTime,
             (messageId, messageContent, attemptCount) => new PendingOrmMessage
@@ -236,7 +236,7 @@ namespace DICOM2ORM
                 AttemptCount = attemptCount
             });
 
-        var pendingOrmMessages = pendingMessages.ToList();
+        List<PendingOrmMessage> pendingOrmMessages = pendingMessages.ToList();
         if (!pendingOrmMessages.Any())
         {
           return;
@@ -244,7 +244,7 @@ namespace DICOM2ORM
 
         Log.Information("Processing {Count} pending messages for retry", pendingOrmMessages.Count());
 
-        foreach (var pending in pendingOrmMessages)
+        foreach (PendingOrmMessage pending in pendingOrmMessages)
         {
           Log.Information("Retrying ORM for study {StudyInstanceUid} (attempt {AttemptCount} of indefinite retries)", pending.StudyInstanceUid, pending.AttemptCount);
 

@@ -54,12 +54,12 @@ namespace DICOM7.ORM2DICOM
         }
         else
         {
-          var home = Environment.GetEnvironmentVariable("HOME");
+          string home = Environment.GetEnvironmentVariable("HOME");
           if (string.IsNullOrEmpty(home)) home = "/tmp";
           baseFolder = Path.Combine(home, ".local");
         }
 
-        var tmp = Path.Combine(baseFolder, "Flux Inc", "DICOM7", "ORM2DICOM");
+        string tmp = Path.Combine(baseFolder, "Flux Inc", "DICOM7", "ORM2DICOM");
         try
         {
           if (!Directory.Exists(tmp))

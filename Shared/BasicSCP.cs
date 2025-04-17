@@ -42,7 +42,7 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
 
   public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
   {
-    _logger.LogInformation($"Responding to C-Echo request from '{LastAssociatedAeTitle}'");
+    _logger.LogInformation("Responding to C-Echo request from \'{LastAssociatedAeTitle}\'", LastAssociatedAeTitle);
 
     return Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
   }
@@ -56,27 +56,27 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
 
   public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
   {
-    _logger.LogWarning($"Association with '{LastAssociatedAeTitle}' aborted");
+    _logger.LogWarning("Association with \'{LastAssociatedAeTitle}\' aborted", LastAssociatedAeTitle);
   }
 
   public Task OnReceiveAssociationReleaseRequestAsync()
   {
     try
     {
-      _logger.LogInformation($"Association release request received from '{LastAssociatedAeTitle}'");
+      _logger.LogInformation("Association release request received from \'{LastAssociatedAeTitle}\'", LastAssociatedAeTitle);
       return SendAssociationReleaseResponseAsync();
     }
     catch (ObjectDisposedException e)
     {
-      _logger.LogInformation(
-          $"ObjectDisposedException in OnReceiveAssociationReleaseRequest: '{e.Message}'\r\n{e.StackTrace}");
+      _logger.LogInformation(@"ObjectDisposedException in OnReceiveAssociationReleaseRequest: '{EMessage}'\r\n{EStackTrace}", e.Message, e.StackTrace);
       return Task.CompletedTask;
     }
   }
 
   public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
   {
-    _logger.LogInformation($"Association request received from '{association.CallingAE}' for '{association.CalledAE}'");
+    _logger.LogInformation("Association request received from \'{AssociationCallingAE}\' for \'{AssociationCalledAE}\'",
+      association.CallingAE, association.CalledAE);
 
     try
     {
@@ -85,7 +85,8 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
 
       if (StrictCalledAe && association.CalledAE != AeTitle)
       {
-        _logger.LogWarning($"Invalid called AE '{association.CalledAE}', expected '{AeTitle}'. Rejecting association");
+        _logger.LogWarning("Invalid called AE \'{AssociationCalledAE}\', expected \'{AeTitle}\'. Rejecting association",
+          association.CalledAE, AeTitle);
         return SendAssociationRejectAsync(
             DicomRejectResult.Permanent,
             DicomRejectSource.ServiceUser,
@@ -96,7 +97,8 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
 
       if (calledAE != AeTitle)
       {
-        _logger.LogInformation($"Rejecting association for '{association.CalledAE}', node or alias not found.");
+        _logger.LogInformation("Rejecting association for \'{AssociationCalledAE}\', node or alias not found",
+          association.CalledAE);
         return SendAssociationRejectAsync(
         DicomRejectResult.Permanent,
         DicomRejectSource.ServiceUser,
@@ -111,7 +113,8 @@ internal abstract class BasicSCP : DicomService, IDicomServiceProvider, IDicomCE
     }
     catch (ObjectDisposedException e)
     {
-      _logger.LogError($"ObjectDisposedException in OnReceiveAssociationRequest: '{e.Message}'\r\n{e.StackTrace}");
+      _logger.LogError(@"ObjectDisposedException in OnReceiveAssociationRequest: '{EMessage}'\r\n{EStackTrace}",
+        e.Message, e.StackTrace);
       return SendAssociationRejectAsync(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser, DicomRejectReason.NoReasonGiven_);
     }
   }

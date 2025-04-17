@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DICOM7.Shared;
+using FellowOakDicom;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,7 +66,7 @@ namespace DICOM7.ORM2DICOM
         _hl7Server.Start();
 
         // Start the DICOM Worklist SCP server
-        var builder = CreateHostBuilder(args);
+        IHostBuilder builder = CreateHostBuilder(args);
         _host = builder.Build();
         _host.StartAsync(_cts.Token).GetAwaiter().GetResult();
 
@@ -76,10 +77,7 @@ namespace DICOM7.ORM2DICOM
           _cleanupTimer = new Timer(CleanupExpiredOrms, null, cleanupInterval, cleanupInterval);
         }
 
-        Log.Information("ORM2DICOM server started successfully.");
-        Log.Information("HL7 server listening on port {HL7Port}.", _config.HL7.ListenPort);
-        Log.Information("DICOM server listening on port {DicomPort} with AE Title {AETitle}.",
-          _config.Dicom.ListenPort, _config.Dicom.AETitle);
+        Log.Information("DICOM7 ORM2DICOM server started successfully");
 
         // Keep the application running until cancelled
         WaitForShutdown();
@@ -116,7 +114,7 @@ namespace DICOM7.ORM2DICOM
       string commonConfigPath = AppConfig.GetConfigFilePath();
       _config = null;
 
-      var deserializer = new DeserializerBuilder()
+      IDeserializer deserializer = new DeserializerBuilder()
           .WithNamingConvention(PascalCaseNamingConvention.Instance)
           .Build();
 
@@ -184,11 +182,32 @@ namespace DICOM7.ORM2DICOM
       logging.AddSerilog(dispose: true);
     }
 
-    private static void ConfigureServices(IServiceCollection services) =>
+    private static void ConfigureServices(IServiceCollection services)
+    {
+      ConfigureHostOptions(services);
+      ConfigureDicomServices(services);
       ConfigureBackgroundServices(services);
+    }
 
-    private static void ConfigureBackgroundServices(IServiceCollection services) =>
+    private static void ConfigureBackgroundServices(IServiceCollection services)
+    {
+      services.AddSingleton<DICOMServerBackgroundService>();
       services.AddHostedService<DICOMServerBackgroundService>();
+    }
+
+    private static void ConfigureDicomServices(IServiceCollection services)
+    {
+      services.AddFellowOakDicom();
+      services.AddSingleton(_config.Dicom.AETitle);
+    }
+
+    private static void ConfigureHostOptions(IServiceCollection services)
+    {
+      services.Configure<HostOptions>(hostOptions =>
+      {
+        hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.StopHost;
+      });
+    }
 
     private static void CleanupExpiredOrms(object state)
     {

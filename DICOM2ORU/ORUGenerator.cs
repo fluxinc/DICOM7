@@ -52,15 +52,15 @@ namespace DICOM2ORU
     {
       Message message = new Message();
       message.AddSegmentMSH(
-          "DICOM2ORU",
-          "Flux Inc",
-          "RECEIVER_APPLICATION",
-          "RECEIVER_FACILITY",
+          "DICOM7_DICOM2ORU",
+          "FLUXINC",
+          "FLUX^fluxinc.co^DNS",
+          "fluxinc^2.16.840.1.113883.3.8873^ISO",
           "",
-          "ORU^R01",
+          "ORU^R01^ORU_R01",
           "#{0020,000D}", // Study Instance UID as message control ID
           "P",
-          "2.3");
+          "2.5.1");
 
       HL7Encoding enc = new HL7Encoding();
 
@@ -78,6 +78,8 @@ namespace DICOM2ORU
       pv1.AddNewField("O");                    // PV1.2 Patient Class
       pv1.AddNewField("#{0008,0080}", 3);     // PV1.3 Assigned Location (Institution Name)
       pv1.AddNewField("#{0008,0050}", 19);    // PV1.19 Visit Number (Accession Number)
+      pv1.AddNewField("#{CurrentDateTime}", 44); // PV1.44 Admit Date/Time
+
       message.AddNewSegment(pv1);
 
       Segment orc = new Segment("ORC", enc);
@@ -95,17 +97,30 @@ namespace DICOM2ORU
       obr.AddNewField("#{0008,0020}#{0008,0030}", 7); // OBR.7 Observation Date/Time (Study Date + Study Time)
       obr.AddNewField("#{CurrentDateTime}", 8); // OBR.8 Observation End Date/Time
       obr.AddNewField("#{0008,1070}", 16);    // OBR.16 Ordering Provider (Operators' Name)
+      obr.AddNewField("F", 25);              // OBR.25 Result Status (F = Final)
+
       message.AddNewSegment(obr);
 
       // Default OBX for report if available
       Segment obx = new Segment("OBX", enc);
       obx.AddNewField("1");                    // OBX.1 Set ID
       obx.AddNewField("ED");                   // OBX.2 Value Type (ED = Encapsulated Data)
-      obx.AddNewField("SR", 3);               // OBX.3 Observation Identifier (SR = Structured Report)
+      obx.AddNewField("47045-0^Study report^LN", 3); // OBX.3 Observation Identifier with LOINC code
       obx.AddNewField("1", 4);                // OBX.4 Observation Sub-ID
-      obx.AddNewField("", 5);                 // OBX.5 Observation Value (will be filled with PDF if available)
-      obx.AddNewField("", 11);                // OBX.11 Observation Result Status
+
+      // Set OBX.5 as a structured field with placeholder for future base64 data
+      Field edField = new Field(enc);
+      edField.AddNewComponent(new Component(enc) { Value = "" }); // Component 1: Source App
+      edField.AddNewComponent(new Component(enc) { Value = "AP" }); // Component 2: Type of Data
+      edField.AddNewComponent(new Component(enc) { Value = "Octet-stream" }); // Component 3: Data Subtype
+      edField.AddNewComponent(new Component(enc) { Value = "Base64" }); // Component 4: Encoding
+      edField.AddNewComponent(new Component(enc) { Value = "" }); // Component 5: Data (empty initially)
+      obx.AddNewField(edField, 5);
+
+      // Set OBX.11 Result Status to Final
+      obx.AddNewField("F", 11);               // OBX.11 Observation Result Status (F = Final)
       message.AddNewSegment(obx);
+
 
       return message;
     }
@@ -201,20 +216,14 @@ namespace DICOM2ORU
         message.ParseMessage();
 
         HL7Encoding enc = new HL7Encoding();
-        // Find existing OBX for this identifier or create a new one
-        // Use Field(3) to check the Observation Identifier
+        // Find existing OBX with the appropriate observation identifier (should be in template)
         Segment obxSegment = message.Segments("OBX").FirstOrDefault(seg =>
             seg.Fields(3) != null && seg.Fields(3).Value == observationIdentifier);
 
         if (obxSegment == null)
         {
-          // Create a new OBX segment if one doesn't exist
-          obxSegment = new Segment("OBX", enc);
-          obxSegment.AddNewField("1");    // OBX.1 Set ID (Needs logic for multiple OBX)
-          obxSegment.AddNewField("ED");   // OBX.2 Value Type
-          obxSegment.AddNewField(observationIdentifier, 3); // OBX.3 Observation Identifier
-          obxSegment.AddNewField("1", 4);  // OBX.4 Observation Sub-ID
-          message.AddNewSegment(obxSegment);
+          Log.Warning("Could not find an OBX segment with identifier {ObservationIdentifier} in the template", observationIdentifier);
+          return messageText;
         }
 
         // Create the ED field for the content
@@ -227,16 +236,12 @@ namespace DICOM2ORU
         edField.AddNewComponent(new Component(enc) { Value = "Base64" }); // Encoding
         edField.AddNewComponent(new Component(enc) { Value = base64Data }); // Data
 
-        // Set OBX.5 (Observation Value) using AddNewField
+        // Update OBX.5 (Observation Value) using AddNewField
         obxSegment.AddNewField(edField, 5);
 
-        // Set OBX.11 (Observation Result Status) to 'F' (Final)
-        Field statusField = new Field(enc);
-        statusField.Value = "F";
-        // Set OBX.11 using AddNewField
-        obxSegment.AddNewField(statusField, 11);
+        // OBX.11 should already be set to 'F' (Final) in the template
 
-        Log.Information("Added Base64 {DataType}/{DataSubtype} attachment to OBX segment ({ObservationIdentifier})", dataType, dataSubtype, observationIdentifier);
+        Log.Information("Updated OBX segment ({ObservationIdentifier}) with Base64 {DataType}/{DataSubtype} data", observationIdentifier, dataType, dataSubtype);
 
         return message.SerializeMessage();
       }
@@ -255,8 +260,8 @@ namespace DICOM2ORU
     /// <returns>Updated HL7 message string</returns>
     public static string UpdateObxWithPdfFromData(string messageText, string base64PdfData)
     {
-      // Use "SR" (Structured Report) or a custom identifier like "PDF_DATA" for OBX-3
-      return UpdateObxWithBase64Data(messageText, base64PdfData, "Application", "PDF", "SR");
+      // Use the consistent identifier "47045-0^Study report^LN" for OBX-3
+      return UpdateObxWithBase64Data(messageText, base64PdfData, "Application", "PDF", "47045-0^Study report^LN");
     }
 
     /// <summary>
@@ -280,66 +285,32 @@ namespace DICOM2ORU
         Message message = new Message(messageText);
         message.ParseMessage(); // Ensure message is parsed
 
-        // Find or create an OBX segment for the image data
-        // Use Field(3) to check the Observation Identifier
+        // Find the OBX segment with the Study report observation identifier
         Segment obxSegment = message.Segments("OBX").FirstOrDefault(seg =>
-             seg.Fields(3) != null && seg.Fields(3).Value == "IMG_DATA");
+             seg.Fields(3) != null && seg.Fields(3).Value == "47045-0^Study report^LN");
 
         if (obxSegment == null)
         {
-          // Create a new OBX segment if one doesn't exist for image data
-          obxSegment = new Segment("OBX", enc);
-          obxSegment.AddNewField("1"); // OBX.1 Set ID (increment if multiple OBX exist?)
-          obxSegment.AddNewField("ED"); // OBX.2 Value Type
-          obxSegment.AddNewField("IMG_DATA", 3); // OBX.3 Observation Identifier
-          obxSegment.AddNewField("1", 4); // OBX.4 Observation Sub-ID
-          message.AddNewSegment(obxSegment);
+          Log.Warning("Could not find an OBX segment with Study report identifier in the template");
+          return messageText;
         }
 
         // Create the ED field for image content (Base64 encoded)
         Field edField = new Field(enc);
 
-        // Get relevant metadata for ED components (e.g., image type, encoding)
-        string imageType = dataset.GetSingleValueOrDefault(DicomTag.PhotometricInterpretation, "UNK"); // e.g., MONOCHROME2, RGB
-        string encoding = "Base64"; // We are encoding as Base64
-
         // HL7 ED Component structure: Source Application^Type of Data^Data Subtype^Encoding^Data
-        // Component 1: Source Application (Optional, can be empty)
-        Component component1 = new Component(enc);
-        component1.Value = ""; // Or perhaps the AETitle?
-        edField.AddNewComponent(component1);
+        edField.AddNewComponent(new Component(enc) { Value = "" }); // Source App (Optional)
+        edField.AddNewComponent(new Component(enc) { Value = "AP" }); // Type of Data (Application)
+        edField.AddNewComponent(new Component(enc) { Value = "Octet-stream" }); // Data Subtype
+        edField.AddNewComponent(new Component(enc) { Value = "Base64" }); // Encoding
+        edField.AddNewComponent(new Component(enc) { Value = base64ImageData }); // Data
 
-        // Component 2: Type of Data (e.g., Image)
-        Component component2 = new Component(enc);
-        component2.Value = "Image";
-        edField.AddNewComponent(component2);
-
-        // Component 3: Data Subtype (e.g., MONOCHROME2, RGB, JPG - use PhotometricInterpretation)
-        Component component3 = new Component(enc);
-        component3.Value = imageType;
-        edField.AddNewComponent(component3);
-
-        // Component 4: Encoding (Base64)
-        Component component4 = new Component(enc);
-        component4.Value = encoding;
-        edField.AddNewComponent(component4);
-
-        // Component 5: Data (Base64 encoded image data)
-        Component component5 = new Component(enc);
-        component5.Value = base64ImageData;
-        edField.AddNewComponent(component5);
-
-        // Set OBX.5 (Observation Value) using AddNewField
+        // Update OBX.5 (Observation Value) with the encoded image data
         obxSegment.AddNewField(edField, 5);
 
+        // OBX.11 should already be set to 'F' (Final) in the template
 
-        // Set OBX.11 (Observation Result Status) to 'F' (Final)
-        Field statusField = new Field(enc);
-        statusField.Value = "F";
-        // Set OBX.11 using AddNewField
-        obxSegment.AddNewField(statusField, 11);
-
-        Log.Information("Added DICOM image data attachment to OBX segment");
+        Log.Information("Updated OBX segment with DICOM image data in Base64 format");
 
         return message.SerializeMessage();
       }

@@ -1,8 +1,8 @@
 {
   "dotnet.preferCSharpExtension": false,
   "dotrush.roslyn.projectOrSolutionFiles": [
-    "c:\\dev\\OrderORM\\DICOM7.sln",
-    "c:\\dev\\OrderORM\\DICOM2ORM\\DICOM2ORM.csproj",
-    "c:\\dev\\OrderORM\\DICOM2ORU\\DICOM2ORU.csproj"
+    "c:\\dev\\DICOM7\\DICOM7.sln",
+    "c:\\dev\\DICOM7\\DICOM2ORM\\DICOM2ORM.csproj",
+    "c:\\dev\\DICOM7\\DICOM2ORU\\DICOM2ORU.csproj"
   ]
 }

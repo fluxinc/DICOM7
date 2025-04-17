@@ -20,7 +20,7 @@ public class ORMGenerator
     public static string LoadTemplate(string path)
     {
         // Make sure the path is properly normalized for the current OS
-        var normalizedPath = Path.GetFullPath(path);
+        string normalizedPath = Path.GetFullPath(path);
         if (!File.Exists(normalizedPath) )
         {
             Log.Information("Saving default v23 ORM template to '{Path}'", normalizedPath);
@@ -28,7 +28,7 @@ public class ORMGenerator
         }
 
         Log.Information("Reading ORM template from '{Path}'", normalizedPath);
-        var message = new Message(File.ReadAllText(normalizedPath));
+        Message message = new Message(File.ReadAllText(normalizedPath));
         try
         {
             message.ParseMessage();
@@ -47,7 +47,7 @@ public class ORMGenerator
     /// <returns>A string containing the default ORM template</returns>
     private static Message GetDefaultV23OrmMessage()
     {
-        var message = new Message();
+        Message message = new Message();
         message.AddSegmentMSH(
             "DICOM7",
             "",
@@ -58,8 +58,8 @@ public class ORMGenerator
             "#{0020,000D}",
             "P",
             "2.3");
-        var enc = new HL7Encoding();
-        var pid = new Segment("PID", enc);
+        HL7Encoding enc = new HL7Encoding();
+        Segment pid = new Segment("PID", enc);
         pid.AddNewField("1");                    // PID.1 Set ID
         pid.AddNewField("#{0010,0020}", 2);     // PID.2 Patient ID
         pid.AddNewField("#{0010,0020}", 3);     // PID.3 Patient ID (Alternate)
@@ -68,21 +68,21 @@ public class ORMGenerator
         pid.AddNewField("#{0010,0040}", 8);     // PID.8 Sex
         message.AddNewSegment(pid);
 
-        var pv1 = new Segment("PV1", enc);
+        Segment pv1 = new Segment("PV1", enc);
         pv1.AddNewField("1");                    // PV1.1 Set ID
         pv1.AddNewField("O");                    // PV1.2 Patient Class
         pv1.AddNewField("#{0008,0050}", 19);    // PV1.19 Visit Number
         pv1.AddNewField("#{0040,0002}#{0040,0003}", 44); // PV1.44 Admit Date/Time
         message.AddNewSegment(pv1);
 
-        var orc = new Segment("ORC", enc);
+        Segment orc = new Segment("ORC", enc);
         orc.AddNewField("NW");                   // ORC.1 Order Control
         orc.AddNewField("#{0008,0050}");        // ORC.2 Placer Order Number
         orc.AddNewField("#{0020,000D}");        // ORC.3 Filler Order Number
         orc.AddNewField("SC");                   // ORC.4 Order Status
         message.AddNewSegment(orc);
 
-        var obr = new Segment("OBR", enc);
+        Segment obr = new Segment("OBR", enc);
         obr.AddNewField("1");                    // OBR.1 Set ID
         obr.AddNewField("#{0008,0050}", 2);     // OBR.2 Placer Order Number
         obr.AddNewField("#{0008,1030}", 4);     // OBR.4 Universal Service ID
@@ -108,9 +108,9 @@ public class ORMGenerator
         {
             try
             {
-                var groupStr = match.Groups[1].Value;
-                var elementStr = match.Groups[2].Value;
-                var tag = new DicomTag(Convert.ToUInt16(groupStr, 16), Convert.ToUInt16(elementStr, 16));
+                string groupStr = match.Groups[1].Value;
+                string elementStr = match.Groups[2].Value;
+                DicomTag tag = new DicomTag(Convert.ToUInt16(groupStr, 16), Convert.ToUInt16(elementStr, 16));
                 // First try to get the value directly from the dataset
                 if (dataset.Contains(tag))
                 {
@@ -119,19 +119,19 @@ public class ORMGenerator
                         if (tag.DictionaryEntry.ValueRepresentations[0] == DicomVR.SQ)
                         {
                             // For sequence tags, try to find the first occurrence of this tag in any sequence
-                            var sequenceValue = FindTagInSequences(dataset, tag);
+                            string sequenceValue = FindTagInSequences(dataset, tag);
                             if (!string.IsNullOrEmpty(sequenceValue)) return sequenceValue.Replace("|", "^");
                             return "[Sequence]";
                         }
 
                         try
                         {
-                            var value = dataset.GetSingleValueOrDefault(tag, "");
+                            string value = dataset.GetSingleValueOrDefault(tag, "");
                             return value.Replace("|", "^");
                         }
                         catch
                         {
-                            var dicomElement = dataset.GetDicomItem<DicomElement>(tag);
+                            DicomElement dicomElement = dataset.GetDicomItem<DicomElement>(tag);
                             if (dicomElement != null) return dicomElement.ToString().Replace("|", "^");
                         }
                     }
@@ -143,7 +143,7 @@ public class ORMGenerator
                 else
                 {
                     // If the tag is not directly in the dataset, search for it in sequences
-                    var sequenceValue = FindTagInSequences(dataset, tag);
+                    string sequenceValue = FindTagInSequences(dataset, tag);
                     if (!string.IsNullOrEmpty(sequenceValue)) return sequenceValue.Replace("|", "^");
                 }
 
@@ -173,18 +173,18 @@ public class ORMGenerator
             }
             catch
             {
-                var element = dataset.GetDicomItem<DicomElement>(targetTag);
+                DicomElement element = dataset.GetDicomItem<DicomElement>(targetTag);
                 if (element != null) return element.ToString();
             }
 
         // Then search through all sequences in this dataset
-        foreach (var item in dataset)
+        foreach (DicomItem item in dataset)
             if (item.ValueRepresentation == DicomVR.SQ)
             {
-                var sequence = dataset.GetSequence(item.Tag);
-                foreach (var sequenceItem in sequence)
+                DicomSequence sequence = dataset.GetSequence(item.Tag);
+                foreach (DicomDataset sequenceItem in sequence)
                 {
-                    var result = FindTagInSequences(sequenceItem, targetTag);
+                    string result = FindTagInSequences(sequenceItem, targetTag);
                     if (!string.IsNullOrEmpty(result)) return result;
                 }
             }
@@ -233,11 +233,11 @@ public class ORMGenerator
         try
         {
             // Try to get scheduled date and time from dataset
-            var scheduledDate = "";
-            var scheduledTime = "";
+            string scheduledDate = "";
+            string scheduledTime = "";
 
-            var dateTag = new DicomTag(0x0040, 0x0002); // Scheduled Procedure Step Start Date
-            var timeTag = new DicomTag(0x0040, 0x0003); // Scheduled Procedure Step Start Time
+            DicomTag dateTag = new DicomTag(0x0040, 0x0002); // Scheduled Procedure Step Start Date
+            DicomTag timeTag = new DicomTag(0x0040, 0x0003); // Scheduled Procedure Step Start Time
 
             if (dataset.Contains(dateTag)) scheduledDate = dataset.GetSingleValueOrDefault(dateTag, "");
 
@@ -268,22 +268,22 @@ public class ORMGenerator
         try
         {
             // Tag for Scheduled Procedure Step Sequence
-            var spsSequenceTag = new DicomTag(0x0040, 0x0100);
+            DicomTag spsSequenceTag = new DicomTag(0x0040, 0x0100);
 
             if (dataset.Contains(spsSequenceTag))
             {
                 try
                 {
                     // Try to get the sequence
-                    var sequence = dataset.GetSequence(spsSequenceTag);
+                    DicomSequence sequence = dataset.GetSequence(spsSequenceTag);
 
                     // If sequence has items, try to get the ID from the first item
                     if (sequence != null && sequence.Items.Count > 0)
                     {
-                        var firstItem = sequence.Items[0];
+                        DicomDataset firstItem = sequence.Items[0];
 
                         // Tag for Scheduled Procedure Step ID within the sequence
-                        var stepIDTag = new DicomTag(0x0040, 0x0009);
+                        DicomTag stepIDTag = new DicomTag(0x0040, 0x0009);
 
                         if (firstItem.Contains(stepIDTag))
                         {
@@ -299,7 +299,7 @@ public class ORMGenerator
             }
 
             // If we can't find it in the sequence, try to find it directly (though this is less likely)
-            var directStepIDTag = new DicomTag(0x0040, 0x0009);
+            DicomTag directStepIDTag = new DicomTag(0x0040, 0x0009);
 
             return dataset.Contains(directStepIDTag) ? dataset.GetSingleValueOrDefault(directStepIDTag, "") : "";
         }
