@@ -3,8 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DICOM2ORU;
-using DICOM7.ORM2DICOM;
 using DICOM7.Shared;
 using Serilog;
 using Microsoft.Extensions.DependencyInjection;

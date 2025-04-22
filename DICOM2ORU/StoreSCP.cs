@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DICOM2ORU;
 using DICOM7.Shared;
 using FellowOakDicom;
 using FellowOakDicom.Imaging;

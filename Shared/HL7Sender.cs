@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
+using System.Collections.Generic;
 
 namespace DICOM7.Shared
 {
@@ -203,6 +204,38 @@ namespace DICOM7.Shared
     }
 
     /// <summary>
+    /// Cleans an HL7 message by removing empty lines and leading/trailing spaces from lines
+    /// </summary>
+    /// <param name="message">The HL7 message to clean</param>
+    /// <returns>The cleaned HL7 message</returns>
+    private static string CleanHL7Message(string message)
+    {
+      if (string.IsNullOrEmpty(message))
+      {
+        return message;
+      }
+
+      // Normalize line endings
+      string normalized = Regex.Replace(message, @"\r\n|\n\r|\n|\r", "\r");
+
+      // Process line by line to remove leading/trailing spaces and empty lines
+      string[] lines = normalized.Split('\r');
+      List<string> cleanedLines = [];
+
+      foreach (string line in lines)
+      {
+        string trimmedLine = line.Trim();
+        if (!string.IsNullOrWhiteSpace(trimmedLine))
+        {
+          cleanedLines.Add(trimmedLine);
+        }
+      }
+
+      // Join lines with carriage returns (standard HL7 line separator)
+      return string.Join("\r", cleanedLines);
+    }
+
+    /// <summary>
     /// Sends an ORU message to the specified HL7 receiver asynchronously
     /// </summary>
     /// <param name="config">Application configuration</param>
@@ -216,8 +249,11 @@ namespace DICOM7.Shared
       {
         Log.Information("Sending ORU to {Host}:{Port} asynchronously", host, port);
 
+        // Clean the message before sending
+        string cleanedMessage = CleanHL7Message(message);
+
         // MLLP wrapping: prepend with VT (0x0B) and append with FS (0x1C) and CR (0x0D)
-        string mllpMessage = $"{(char)0x0B}{message}{(char)0x1C}{(char)0x0D}";
+        string mllpMessage = $"{(char)0x0B}{cleanedMessage}{(char)0x1C}{(char)0x0D}";
         byte[] data = Encoding.UTF8.GetBytes(mllpMessage);
 
         using (TcpClient client = new TcpClient())

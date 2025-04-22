@@ -78,10 +78,7 @@ namespace DICOM7.ORM2DICOM
     }
 
     // Expose config to the background service
-    public static Config GetConfig()
-    {
-      return _config;
-    }
+    public static Config GetConfig() => _config;
 
     private static void WaitForShutdown()
     {
@@ -92,7 +89,7 @@ namespace DICOM7.ORM2DICOM
       }
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
+    private static IHostBuilder CreateHostBuilder(string[] args)
     {
       return Host.CreateDefaultBuilder(args)
         .ConfigureLogging((hostContext, logging) => ProgramHelpers.ConfigureLogging(logging))

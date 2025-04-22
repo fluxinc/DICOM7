@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DICOM2ORU;
-using DICOM7.DICOM2ORU;
-using DICOM7.Shared;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
-namespace DICOM7.ORM2DICOM
+namespace DICOM7.DICOM2ORU
 {
   internal class DICOMServerBackgroundService(
     IDicomServerFactory factory,
@@ -23,7 +20,8 @@ namespace DICOM7.ORM2DICOM
     {
       try
       {
-        _storeSCP = (IDicomServer<StoreSCP>)factory.Create<StoreSCP>(port: _config.Dicom.ListenPort, tlsAcceptor: null, fallbackEncoding: null, logger: logger);
+        _storeSCP = (IDicomServer<StoreSCP>)factory.Create<StoreSCP>(
+          port: _config.Dicom.ListenPort, tlsAcceptor: null, fallbackEncoding: null, logger: logger);
 
         logger.LogInformation("Store SCP started on port {Port} with AE Title {AETitle}",
           _config.Dicom.ListenPort, _config.Dicom.AETitle);

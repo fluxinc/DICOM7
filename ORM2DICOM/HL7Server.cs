@@ -76,7 +76,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
       return ips;
     }
-    
+
     /// <summary>
     /// Starts the HL7 server
     /// </summary>

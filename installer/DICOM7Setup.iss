@@ -67,32 +67,33 @@ Source: "..\ORM2DICOM\config.yaml"; DestDir: "{#MyAppDataDir}\ORM2DICOM"; DestNa
 
 [Run]
 ; DICOM2ORM Service Install
-Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORM"; Description: "Stopping existing DICOM2ORM service"; WorkingDir: {app}; Check: IsServiceRunning('DICOM7_DICOM2ORM'); Components: dicom2orm;
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORM"; Description: "Stopping existing DICOM2ORM service"; WorkingDir: {app}; Flags: runhidden;
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORU"; Description: "Stopping existing DICOM2ORU service"; WorkingDir: {app}; Flags: runhidden;
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORM2DICOM"; Description: "Stopping existing ORM2DICOM service"; WorkingDir: {app}; Flags: runhidden;
+
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_DICOM2ORM"; Description: "Removing existing DICOM2ORM service"; WorkingDir: {app}; Flags: runhidden; Components: dicom2orm;
 Filename: "{app}\WinSW-x64.exe"; Parameters: "install ""{app}\DICOM2ORM.WinSW.xml"""; Description: "Installing DICOM2ORM service"; WorkingDir: {app}; Flags: runhidden; Components: dicom2orm;
-Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_DICOM2ORM"; Description: "Starting DICOM2ORM service"; WorkingDir: {app}; Components: dicom2orm;
+Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_DICOM2ORM"; Description: "Starting DICOM2ORM service"; Flags: runhidden; WorkingDir: {app}; Components: dicom2orm;
 
 ; DICOM2ORU Service Install
-Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORU"; Description: "Stopping existing DICOM2ORU service"; WorkingDir: {app}; Check: IsServiceRunning('DICOM7_DICOM2ORU'); Components: dicom2oru;
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_DICOM2ORU"; Description: "Removing existing DICOM2ORU service"; WorkingDir: {app}; Flags: runhidden; Components: dicom2oru;
 Filename: "{app}\WinSW-x64.exe"; Parameters: "install ""{app}\DICOM2ORU.WinSW.xml"""; Description: "Installing DICOM2ORU service"; WorkingDir: {app}; Flags: runhidden; Components: dicom2oru;
-Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_DICOM2ORU"; Description: "Starting DICOM2ORU service"; WorkingDir: {app}; Components: dicom2oru;
+Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_DICOM2ORU"; Description: "Starting DICOM2ORU service"; Flags: runhidden; WorkingDir: {app}; Components: dicom2oru;
 
 ; ORM2DICOM Service Install
-Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORM2DICOM"; Description: "Stopping existing ORM2DICOM service"; WorkingDir: {app}; Check: IsServiceRunning('DICOM7_ORM2DICOM'); Components: orm2dicom;
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_ORM2DICOM"; Description: "Removing existing ORM2DICOM service"; WorkingDir: {app}; Flags: runhidden; Components: orm2dicom;
 Filename: "{app}\WinSW-x64.exe"; Parameters: "install ""{app}\ORM2DICOM.WinSW.xml"""; Description: "Installing ORM2DICOM service"; WorkingDir: {app}; Flags: runhidden; Components: orm2dicom;
-Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_ORM2DICOM"; Description: "Starting ORM2DICOM service"; WorkingDir: {app}; Components: orm2dicom;
+Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_ORM2DICOM"; Description: "Starting ORM2DICOM service"; Flags: runhidden; WorkingDir: {app}; Components: orm2dicom;
 
 [UninstallRun]
 ; Only try to uninstall services if they exist
-Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORM"; Check: IsServiceRunning('DICOM7_DICOM2ORM');
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORM";  Flags: runhidden;
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_DICOM2ORM"; Flags: runhidden;
 
-Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORU"; Check: IsServiceRunning('DICOM7_DICOM2ORU');
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORU"; Flags: runhidden;
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_DICOM2ORU"; Flags: runhidden;
 
-Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORM2DICOM"; Check: IsServiceRunning('DICOM7_ORM2DICOM');
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORM2DICOM"; Flags: runhidden;
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_ORM2DICOM"; Flags: runhidden;
 
 [Code]
