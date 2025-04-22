@@ -1,0 +1,1001 @@
+
+# Dicom-File-Format
+
+# Dicom-Meta-Information-Header
+# Used TransferSyntax: Little Endian Explicit
+(0002,0000) UL 214                                      #   4, 1 FileMetaInformationGroupLength
+(0002,0001) OB 00\01                                    #   2, 1 FileMetaInformationVersion
+(0002,0002) UI =ComprehensiveSRStorage                  #  30, 1 MediaStorageSOPClassUID
+(0002,0003) UI [1.2.826.0.1.3680043.2.1635.2.3.637499027342780534] #  50, 1 MediaStorageSOPInstanceUID
+(0002,0010) UI =LittleEndianExplicit                    #  20, 1 TransferSyntaxUID
+(0002,0012) UI [1.2.276.0.7230010.3.0.3.6.4]            #  28, 1 ImplementationClassUID
+(0002,0013) SH [OFFIS_DCMTK_364]                        #  16, 1 ImplementationVersionName
+(0002,0016) AE [CUFFLINK]                               #   8, 1 SourceApplicationEntityTitle
+
+# Dicom-Data-Set
+# Used TransferSyntax: Little Endian Explicit
+(0008,0012) DA [20210225]                               #   8, 1 InstanceCreationDate
+(0008,0013) TM [211854]                                 #   6, 1 InstanceCreationTime
+(0008,0016) UI =ComprehensiveSRStorage                  #  30, 1 SOPClassUID
+(0008,0018) UI [1.2.826.0.1.3680043.2.1635.2.3.637499027342780534] #  50, 1 SOPInstanceUID
+(0008,0020) DA [20200630]                               #   8, 1 StudyDate
+(0008,0023) DA [20200630]                               #   8, 1 ContentDate
+(0008,0030) TM [211854]                                 #   6, 1 StudyTime
+(0008,0033) TM [211854]                                 #   6, 1 ContentTime
+(0008,0050) SH [00000]                                  #   6, 1 AccessionNumber
+(0008,0060) CS [SR]                                     #   2, 1 Modality
+(0008,0070) LO [Newman Medical]                         #  14, 1 Manufacturer
+(0008,0090) PN [NANCY^SMITH^MD]                         #  14, 1 ReferringPhysicianName
+(0008,0110) SQ (Sequence with explicit length #=1)      #  48, 1 CodingSchemeIdentificationSequence
+  (fffe,e000) na (Item with explicit length #=2)          #  40, 1 Item
+    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+    (0008,0116) ST [newman-medical.com]                     #  18, 1 CodingSchemeResponsibleOrganization
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0008,1030) LO [LOWER EXTREMITY PHYSIOLOGIC STUDY]      #  34, 1 StudyDescription
+(0008,1090) LO [Cufflink ABI]                           #  12, 1 ManufacturerModelName
+(0010,0010) PN [VIVALDI^ANTONIO]                        #  16, 1 PatientName
+(0010,0020) LO [AV35674]                                #   8, 1 PatientID
+(0010,0030) DA [19780304]                               #   8, 1 PatientBirthDate
+(0010,0040) CS [M]                                      #   2, 1 PatientSex
+(0010,1010) AS (no value available)                     #   0, 0 PatientAge
+(0018,1030) LO [LOWER EXTREMITY PHYSIOLOGIC STUDY SINGLE LEVEL ABI STRESS] #  58, 1 ProtocolName
+(0020,000d) UI [1.2.276.0.7230010.3.2.101]              #  26, 1 StudyInstanceUID
+(0020,000e) UI [1.2.826.0.1.3680043.2.1635.2.2.637499026225759499] #  50, 1 SeriesInstanceUID
+(0020,0010) SH [6374990273427805]                       #  16, 1 StudyID
+(0020,0011) IS [1]                                      #   2, 1 SeriesNumber
+(0020,0013) IS [1]                                      #   2, 1 InstanceNumber
+(0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+(0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+(0040,a043) SQ (Sequence with explicit length #=1)      #  62, 1 ConceptNameCodeSequence
+  (fffe,e000) na (Item with explicit length #=3)          #  54, 1 Item
+    (0008,0100) SH [18760 - 9]                              #  10, 1 CodeValue
+    (0008,0102) SH [LN]                                     #   2, 1 CodingSchemeDesignator
+    (0008,0104) LO [Ultrasound Report]                      #  18, 1 CodeMeaning
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+(0040,a372) SQ (Sequence with explicit length #=1)      #  62, 1 PerformedProcedureCodeSequence
+  (fffe,e000) na (Item with explicit length #=3)          #  54, 1 Item
+    (0008,0100) SH [18760 - 9]                              #  10, 1 CodeValue
+    (0008,0102) SH [LN]                                     #   2, 1 CodingSchemeDesignator
+    (0008,0104) LO [Ultrasound Report]                      #  18, 1 CodeMeaning
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+(0040,a491) CS [PARTIAL]                                #   8, 1 CompletionFlag
+(0040,a493) CS [UNVERIFIED]                             #  10, 1 VerificationFlag
+(0040,a730) SQ (Sequence with explicit length #=6)      # 9396, 1 ContentSequence
+  (fffe,e000) na (Item with explicit length #=4)          # 166, 1 Item
+    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+    (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+    (0040,a043) SQ (Sequence with explicit length #=1)      #  76, 1 ConceptNameCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  68, 1 Item
+        (0008,0100) SH [GUID]                                   #   4, 1 CodeValue
+        (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+        (0008,0104) LO [LOWER EXTREMITY PHYSIOLOGIC STUDY]      #  34, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    (0040,a160) UT [{9D866E8B-3BEE-4713-9C04-3CC58B1EC490}] #  38, 1 TextValue
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+  (fffe,e000) na (Item with explicit length #=4)          # 152, 1 Item
+    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+    (0040,a040) CS [CODE]                                   #   4, 1 ValueType
+    (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+        (0008,0100) SH [type]                                   #   4, 1 CodeValue
+        (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+        (0008,0104) LO [Report Type]                            #  12, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    (0040,a168) SQ (Sequence with explicit length #=1)      #  46, 1 ConceptCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  38, 1 Item
+        (0008,0100) SH [Home]                                   #   4, 1 CodeValue
+        (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+        (0008,0104) LO [Home]                                   #   4, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+  (fffe,e000) na (Item with explicit length #=4)          # 164, 1 Item
+    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+    (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+    (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+        (0008,0100) SH [name]                                   #   4, 1 CodeValue
+        (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+        (0008,0104) LO [Report Name]                            #  12, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    (0040,a160) UT [LOWER EXTREMITY PHYSIOLOGIC STUDY SINGLE LEVEL ABI STRESS] #  58, 1 TextValue
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+  (fffe,e000) na (Item with explicit length #=5)          # 1202, 1 Item
+    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+    (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+    (0040,a043) SQ (Sequence with explicit length #=1)      #  66, 1 ConceptNameCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  58, 1 Item
+        (0008,0100) SH [121118]                                 #   6, 1 CodeValue
+        (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+        (0008,0104) LO [Patient Characteristics]                #  24, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+    (0040,a730) SQ (Sequence with explicit length #=8)      # 1062, 1 ContentSequence
+      (fffe,e000) na (Item with explicit length #=4)          # 130, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  62, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  54, 1 Item
+            (0008,0100) SH [Patient Name]                           #  12, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Patient Name]                           #  12, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [VIVALDI, ANTONIO]                       #  16, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 118, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  58, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  50, 1 Item
+            (0008,0100) SH [Patient ID]                             #  10, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Patient ID]                             #  10, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [AV35674]                                #   8, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 132, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  72, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  64, 1 Item
+            (0008,0100) SH [Patient DOB]                            #  12, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Patient Date of Birth]                  #  22, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [04-03-78]                               #   8, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 116, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  62, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  54, 1 Item
+            (0008,0100) SH [Patient Age]                            #  12, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Patient Age]                            #  12, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [42]                                     #   2, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 122, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  66, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  58, 1 Item
+            (0008,0100) SH [Patient Gender]                         #  14, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Patient Gender]                         #  14, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [Male]                                   #   4, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 118, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  58, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  50, 1 Item
+            (0008,0100) SH [Study Date]                             #  10, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Study Date]                             #  10, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [30-06-20]                               #   8, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 128, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  70, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  62, 1 Item
+            (0008,0100) SH [Accession Number]                       #  16, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Accession Number]                       #  16, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [00000]                                  #   6, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=4)          # 134, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  62, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  54, 1 Item
+            (0008,0100) SH [Examined By]                            #  12, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Examined By]                            #  12, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [George Johnson, RVT]                    #  20, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+  (fffe,e000) na (Item with explicit length #=5)          # 5980, 1 Item
+    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+    (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+    (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+        (0008,0100) SH [121060]                                 #   6, 1 CodeValue
+        (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+        (0008,0104) LO [History]                                #   8, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+    (0040,a730) SQ (Sequence with explicit length #=2)      # 5856, 1 ContentSequence
+      (fffe,e000) na (Item with explicit length #=4)          # 122, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  58, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  50, 1 Item
+            (0008,0100) SH [notes]                                  #   6, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Notes History]                          #  14, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a160) UT [HistoryNotes]                           #  12, 1 TextValue
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+      (fffe,e000) na (Item with explicit length #=5)          # 5718, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  58, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  50, 1 Item
+            (0008,0100) SH [questions]                              #  10, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [Questions]                              #  10, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+        (0040,a730) SQ (Sequence with explicit length #=15)     # 5586, 1 ContentSequence
+          (fffe,e000) na (Item with explicit length #=5)          # 362, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 234, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 114, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Tobacco Use]                            #  12, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 376, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 248, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 128, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Previous Vascular Surgery]              #  26, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 360, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 232, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 112, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Rest Pain]                              #  10, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [No]                                     #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 362, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 234, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 114, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Claudication]                           #  12, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [No]                                     #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 366, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 238, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 118, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Vascular Ulcers]                        #  16, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [No]                                     #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 358, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 230, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 110, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Diabetes]                               #   8, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 358, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 230, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 110, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Gangrene]                               #   8, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [No]                                     #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 362, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 234, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 114, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Hyperidemia]                            #  12, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 360, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 232, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 112, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Stroke/TIA]                             #  10, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 368, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 240, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 120, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Previous CV Event]                      #  18, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 364, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 236, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 116, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Heart Disease]                          #  14, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 362, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 234, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 114, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Over Age 65]                            #  12, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 376, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 248, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 128, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Numbness, tingling in feet]             #  26, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [No]                                     #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 368, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 240, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 120, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Other Risk Factors]                     #  18, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 364, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                (0008,0100) SH [Question]                               #   8, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Question]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=2)      # 236, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 116, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Prompt]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Prompt]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [Other Symptoms]                         #  14, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 104, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                    (0008,0100) SH [Answer]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Answer]                                 #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a160) UT [-]                                      #   2, 1 TextValue
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+  (fffe,e000) na (Item with explicit length #=5)          # 1684, 1 Item
+    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+    (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+    (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+      (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+        (0008,0100) SH [Tests]                                  #   6, 1 CodeValue
+        (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+        (0008,0104) LO [Tests]                                  #   6, 1 CodeMeaning
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+    (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+    (0040,a730) SQ (Sequence with explicit length #=1)      # 1560, 1 ContentSequence
+      (fffe,e000) na (Item with explicit length #=5)          # 1552, 1 Item
+        (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+        (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+        (0040,a043) SQ (Sequence with explicit length #=1)      #  46, 1 ConceptNameCodeSequence
+          (fffe,e000) na (Item with explicit length #=3)          #  38, 1 Item
+            (0008,0100) SH [test]                                   #   4, 1 CodeValue
+            (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+            (0008,0104) LO [test]                                   #   4, 1 CodeMeaning
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+        (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+        (0040,a730) SQ (Sequence with explicit length #=3)      # 1432, 1 ContentSequence
+          (fffe,e000) na (Item with explicit length #=4)          # 154, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CODE]                                   #   4, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  52, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  44, 1 Item
+                (0008,0100) SH [type]                                   #   4, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Test Type]                              #  10, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a168) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                (0008,0100) SH [Home_R]                                 #   6, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Home_R]                                 #   6, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=4)          # 168, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  52, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  44, 1 Item
+                (0008,0100) SH [name]                                   #   4, 1 CodeValue
+                (0008,0102) SH [99VIP]                                  #   6, 1 CodingSchemeDesignator
+                (0008,0104) LO [Test Name]                              #  10, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a160) UT [RIGHT LOWER EXTREMITY PHYSIOLOGIC STUDY SINGLE LEVEL ABI STRESS] #  64, 1 TextValue
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+          (fffe,e000) na (Item with explicit length #=5)          # 1086, 1 Item
+            (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+            (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+            (0040,a043) SQ (Sequence with explicit length #=1)      #  50, 1 ConceptNameCodeSequence
+              (fffe,e000) na (Item with explicit length #=3)          #  42, 1 Item
+                (0008,0100) SH [121070]                                 #   6, 1 CodeValue
+                (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+                (0008,0104) LO [Findings]                               #   8, 1 CodeMeaning
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+            (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+            (0040,a730) SQ (Sequence with explicit length #=4)      # 962, 1 ContentSequence
+              (fffe,e000) na (Item with explicit length #=4)          # 176, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [CODE]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  54, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  46, 1 Item
+                    (0008,0100) SH [G-C0E3]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [SRT]                                    #   4, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Finding Site]                           #  12, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a168) SQ (Sequence with explicit length #=1)      #  70, 1 ConceptCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  62, 1 Item
+                    (0008,0100) SH [T-47040]                                #   8, 1 CodeValue
+                    (0008,0102) SH [SRT]                                    #   4, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Artery of Lower Extremity]              #  26, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 152, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [CODE]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  52, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  44, 1 Item
+                    (0008,0100) SH [G-C171]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [SRT]                                    #   4, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Laterality]                             #  10, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a168) SQ (Sequence with explicit length #=1)      #  48, 1 ConceptCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  40, 1 Item
+                    (0008,0100) SH [G-A100]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [SRT]                                    #   4, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Right]                                  #   6, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=4)          # 180, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [CODE]                                   #   4, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      #  60, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  52, 1 Item
+                    (0008,0100) SH [G-7292]                                 #   6, 1 CodeValue
+                    (0008,0102) SH [F-1604]                                 #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [Procedure phase]                        #  16, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a168) SQ (Sequence with explicit length #=1)      #  68, 1 ConceptCodeSequence
+                  (fffe,e000) na (Item with explicit length #=3)          #  60, 1 Item
+                    (0008,0100) SH [Resting State]                          #  14, 1 CodeValue
+                    (0008,0102) SH [F-1604]                                 #   6, 1 CodingSchemeDesignator
+                    (0008,0104) LO [HAS ACQ CONTEXT]                        #  16, 1 CodeMeaning
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+              (fffe,e000) na (Item with explicit length #=5)          # 422, 1 Item
+                (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                (0040,a040) CS [CONTAINER]                              #  10, 1 ValueType
+                (0040,a043) SQ (Sequence with explicit length #=1)      # 132, 1 ConceptNameCodeSequence
+                  (fffe,e000) na (Item with explicit length #=4)          # 124, 1 Item
+                    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                    (0040,a040) CS [TEXT]                                   #   4, 1 ValueType
+                    (0040,a043) SQ (Sequence with explicit length #=1)      #  64, 1 ConceptNameCodeSequence
+                      (fffe,e000) na (Item with explicit length #=3)          #  56, 1 Item
+                        (0008,0100) SH [121116]                                 #   6, 1 CodeValue
+                        (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+                        (0008,0104) LO [Proximal Finding Site]                  #  22, 1 CodeMeaning
+                      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                    (0040,a160) UT [Brachial]                               #   8, 1 TextValue
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                (0040,a050) CS [SEPARATE]                               #   8, 1 ContinuityOfContent
+                (0040,a730) SQ (Sequence with explicit length #=1)      # 216, 1 ContentSequence
+                  (fffe,e000) na (Item with explicit length #=4)          # 208, 1 Item
+                    (0040,a010) CS [CONTAINS]                               #   8, 1 RelationshipType
+                    (0040,a040) CS [NUM]                                    #   4, 1 ValueType
+                    (0040,a043) SQ (Sequence with explicit length #=1)      #  68, 1 ConceptNameCodeSequence
+                      (fffe,e000) na (Item with explicit length #=3)          #  60, 1 Item
+                        (0008,0100) SH [F-008EC]                                #   8, 1 CodeValue
+                        (0008,0102) SH [DCM]                                    #   4, 1 CodingSchemeDesignator
+                        (0008,0104) LO [Systolic Blood Pressure]                #  24, 1 CodeMeaning
+                      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                    (0040,a300) SQ (Sequence with explicit length #=1)      #  88, 1 MeasuredValueSequence
+                      (fffe,e000) na (Item with explicit length #=2)          #  80, 1 Item
+                        (0040,08ea) SQ (Sequence with explicit length #=1)      #  58, 1 MeasurementUnitsCodeSequence
+                          (fffe,e000) na (Item with explicit length #=4)          #  50, 1 Item
+                            (0008,0100) SH [mm[Hg]]                                 #   6, 1 CodeValue
+                            (0008,0102) SH [UCUM]                                   #   4, 1 CodingSchemeDesignator
+                            (0008,0103) SH [1.4]                                    #   4, 1 CodingSchemeVersion
+                            (0008,0104) LO [mmHg]                                   #   4, 1 CodeMeaning
+                          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                        (0040,a30a) DS [0]                                      #   2, 1 NumericValue
+                      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+                  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+                (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+              (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+            (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+          (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+        (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+      (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+    (fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem
+  (fffe,e00d) na (ItemDelimitationItem for re-encoding)   #   0, 0 ItemDelimitationItem
+(fffe,e0dd) na (SequenceDelimitationItem for re-encod.) #   0, 0 SequenceDelimitationItem

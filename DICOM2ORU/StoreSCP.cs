@@ -244,6 +244,22 @@ internal class StoreSCP(
                             }
                         }
                     }
+                    // Process Structured Reports
+                    else if (sopClassUid == DicomUID.ComprehensiveSRStorage.UID ||
+                            (request.Dataset.Contains(DicomTag.Modality) &&
+                             request.Dataset.GetSingleValueOrDefault(DicomTag.Modality, "") == "SR"))
+                    {
+                        _logger.LogInformation("Processing DICOM Structured Report");
+                        ProcessingResult result = _imageProcessor.ProcessDicomSR(request.Dataset);
+
+                        // If SR was successfully processed, return success immediately
+                        if (result.Success)
+                        {
+                            File.Delete(tempFilePath);
+                            return CreateDicomCStoreResponse(request, DicomStatus.Success);
+                        }
+                        // If SR processing failed, continue with normal ORU generation as fallback
+                    }
                     // Check for Secondary Capture Image Storage
                     else if (sopClassUid == DicomUID.SecondaryCaptureImageStorage.UID)
                     {

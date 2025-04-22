@@ -1,0 +1,746 @@
+
+# Dicom-File-Format
+
+# Dicom-Meta-Information-Header
+# Used TransferSyntax: Little Endian Explicit
+FileMetaInformationGroupLength    214
+FileMetaInformationVersion        00\01
+MediaStorageSOPClassUID           =ComprehensiveSRStorage
+MediaStorageSOPInstanceUID        [1.2.826.0.1.3680043.2.1635.2.3.637499027342780534]
+TransferSyntaxUID                 =LittleEndianExplicit
+ImplementationClassUID            [1.2.276.0.7230010.3.0.3.6.4]
+ImplementationVersionName         [OFFIS_DCMTK_364]
+SourceApplicationEntityTitle      [CUFFLINK]
+
+# Dicom-Data-Set
+# Used TransferSyntax: Little Endian Explicit
+InstanceCreationDate              [20210225]
+InstanceCreationTime              [211854]
+SOPClassUID                       =ComprehensiveSRStorage
+SOPInstanceUID                    [1.2.826.0.1.3680043.2.1635.2.3.637499027342780534]
+StudyDate                         [20200630]
+ContentDate                       [20200630]
+StudyTime                         [211854]
+ContentTime                       [211854]
+AccessionNumber                   [00000]
+Modality                          [SR]
+Manufacturer                      [Newman Medical]
+ReferringPhysicianName            [NANCY^SMITH^MD]
+CodingSchemeIdentificationSequence 
+| Item                            
+| | CodingSchemeDesignator        [99VIP]
+| | CodingSchemeResponsibleOrganization [newman-medical.com]
+StudyDescription                  [LOWER EXTREMITY PHYSIOLOGIC STUDY]
+ManufacturerModelName             [Cufflink ABI]
+PatientName                       [VIVALDI^ANTONIO]
+PatientID                         [AV35674]
+PatientBirthDate                  [19780304]
+PatientSex                        [M]
+PatientAge                        (no value available)
+ProtocolName                      [LOWER EXTREMITY PHYSIOLOGIC STUDY SINGLE LEVEL ABI STRESS]
+StudyInstanceUID                  [1.2.276.0.7230010.3.2.101]
+SeriesInstanceUID                 [1.2.826.0.1.3680043.2.1635.2.2.637499026225759499]
+StudyID                           [6374990273427805]
+SeriesNumber                      [1]
+InstanceNumber                    [1]
+RelationshipType                  [CONTAINS]
+ValueType                         [CONTAINER]
+ConceptNameCodeSequence           
+| Item                            
+| | CodeValue                     [18760 - 9]
+| | CodingSchemeDesignator        [LN]
+| | CodeMeaning                   [Ultrasound Report]
+ContinuityOfContent               [SEPARATE]
+PerformedProcedureCodeSequence    
+| Item                            
+| | CodeValue                     [18760 - 9]
+| | CodingSchemeDesignator        [LN]
+| | CodeMeaning                   [Ultrasound Report]
+CompletionFlag                    [PARTIAL]
+VerificationFlag                  [UNVERIFIED]
+ContentSequence                   
+| Item                            
+| | RelationshipType              [CONTAINS]
+| | ValueType                     [TEXT]
+| | ConceptNameCodeSequence       
+| | | Item                        
+| | | | CodeValue                 [GUID]
+| | | | CodingSchemeDesignator    [99VIP]
+| | | | CodeMeaning               [LOWER EXTREMITY PHYSIOLOGIC STUDY]
+| | TextValue                     [{9D866E8B-3BEE-4713-9C04-3CC58B1EC490}]
+| Item                            
+| | RelationshipType              [CONTAINS]
+| | ValueType                     [CODE]
+| | ConceptNameCodeSequence       
+| | | Item                        
+| | | | CodeValue                 [type]
+| | | | CodingSchemeDesignator    [99VIP]
+| | | | CodeMeaning               [Report Type]
+| | ConceptCodeSequence           
+| | | Item                        
+| | | | CodeValue                 [Home]
+| | | | CodingSchemeDesignator    [99VIP]
+| | | | CodeMeaning               [Home]
+| Item                            
+| | RelationshipType              [CONTAINS]
+| | ValueType                     [TEXT]
+| | ConceptNameCodeSequence       
+| | | Item                        
+| | | | CodeValue                 [name]
+| | | | CodingSchemeDesignator    [99VIP]
+| | | | CodeMeaning               [Report Name]
+| | TextValue                     [LOWER EXTREMITY PHYSIOLOGIC STUDY SINGLE LEVEL ABI STRESS]
+| Item                            
+| | RelationshipType              [CONTAINS]
+| | ValueType                     [CONTAINER]
+| | ConceptNameCodeSequence       
+| | | Item                        
+| | | | CodeValue                 [121118]
+| | | | CodingSchemeDesignator    [DCM]
+| | | | CodeMeaning               [Patient Characteristics]
+| | ContinuityOfContent           [SEPARATE]
+| | ContentSequence               
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Patient Name]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Patient Name]
+| | | | TextValue                 [VIVALDI, ANTONIO]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Patient ID]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Patient ID]
+| | | | TextValue                 [AV35674]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Patient DOB]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Patient Date of Birth]
+| | | | TextValue                 [04-03-78]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Patient Age]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Patient Age]
+| | | | TextValue                 [42]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Patient Gender]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Patient Gender]
+| | | | TextValue                 [Male]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Study Date]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Study Date]
+| | | | TextValue                 [30-06-20]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Accession Number]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Accession Number]
+| | | | TextValue                 [00000]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [Examined By]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Examined By]
+| | | | TextValue                 [George Johnson, RVT]
+| Item                            
+| | RelationshipType              [CONTAINS]
+| | ValueType                     [CONTAINER]
+| | ConceptNameCodeSequence       
+| | | Item                        
+| | | | CodeValue                 [121060]
+| | | | CodingSchemeDesignator    [DCM]
+| | | | CodeMeaning               [History]
+| | ContinuityOfContent           [SEPARATE]
+| | ContentSequence               
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [TEXT]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [notes]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Notes History]
+| | | | TextValue                 [HistoryNotes]
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [CONTAINER]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [questions]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [Questions]
+| | | | ContinuityOfContent       [SEPARATE]
+| | | | ContentSequence           
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Tobacco Use]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Previous Vascular Surgery]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Rest Pain]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [No]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Claudication]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [No]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Vascular Ulcers]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [No]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Diabetes]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Gangrene]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [No]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Hyperidemia]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Stroke/TIA]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Previous CV Event]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Heart Disease]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Over Age 65]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Numbness, tingling in feet]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [No]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Other Risk Factors]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Question]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Question]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Prompt]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Prompt]
+| | | | | | | | TextValue         [Other Symptoms]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [TEXT]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Answer]
+| | | | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | | | CodeMeaning   [Answer]
+| | | | | | | | TextValue         [-]
+| Item                            
+| | RelationshipType              [CONTAINS]
+| | ValueType                     [CONTAINER]
+| | ConceptNameCodeSequence       
+| | | Item                        
+| | | | CodeValue                 [Tests]
+| | | | CodingSchemeDesignator    [99VIP]
+| | | | CodeMeaning               [Tests]
+| | ContinuityOfContent           [SEPARATE]
+| | ContentSequence               
+| | | Item                        
+| | | | RelationshipType          [CONTAINS]
+| | | | ValueType                 [CONTAINER]
+| | | | ConceptNameCodeSequence   
+| | | | | Item                    
+| | | | | | CodeValue             [test]
+| | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | CodeMeaning           [test]
+| | | | ContinuityOfContent       [SEPARATE]
+| | | | ContentSequence           
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CODE]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [type]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Test Type]
+| | | | | | ConceptCodeSequence   
+| | | | | | | Item                
+| | | | | | | | CodeValue         [Home_R]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Home_R]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [TEXT]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [name]
+| | | | | | | | CodingSchemeDesignator [99VIP]
+| | | | | | | | CodeMeaning       [Test Name]
+| | | | | | TextValue             [RIGHT LOWER EXTREMITY PHYSIOLOGIC STUDY SINGLE LEVEL ABI STRESS]
+| | | | | Item                    
+| | | | | | RelationshipType      [CONTAINS]
+| | | | | | ValueType             [CONTAINER]
+| | | | | | ConceptNameCodeSequence 
+| | | | | | | Item                
+| | | | | | | | CodeValue         [121070]
+| | | | | | | | CodingSchemeDesignator [DCM]
+| | | | | | | | CodeMeaning       [Findings]
+| | | | | | ContinuityOfContent   [SEPARATE]
+| | | | | | ContentSequence       
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [CODE]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [G-C0E3]
+| | | | | | | | | | CodingSchemeDesignator [SRT]
+| | | | | | | | | | CodeMeaning   [Finding Site]
+| | | | | | | | ConceptCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [T-47040]
+| | | | | | | | | | CodingSchemeDesignator [SRT]
+| | | | | | | | | | CodeMeaning   [Artery of Lower Extremity]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [CODE]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [G-C171]
+| | | | | | | | | | CodingSchemeDesignator [SRT]
+| | | | | | | | | | CodeMeaning   [Laterality]
+| | | | | | | | ConceptCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [G-A100]
+| | | | | | | | | | CodingSchemeDesignator [SRT]
+| | | | | | | | | | CodeMeaning   [Right]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [CODE]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [G-7292]
+| | | | | | | | | | CodingSchemeDesignator [F-1604]
+| | | | | | | | | | CodeMeaning   [Procedure phase]
+| | | | | | | | ConceptCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | CodeValue     [Resting State]
+| | | | | | | | | | CodingSchemeDesignator [F-1604]
+| | | | | | | | | | CodeMeaning   [HAS ACQ CONTEXT]
+| | | | | | | Item                
+| | | | | | | | RelationshipType  [CONTAINS]
+| | | | | | | | ValueType         [CONTAINER]
+| | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | Item            
+| | | | | | | | | | RelationshipType [CONTAINS]
+| | | | | | | | | | ValueType     [TEXT]
+| | | | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | | | Item        
+| | | | | | | | | | | | CodeValue [121116]
+| | | | | | | | | | | | CodingSchemeDesignator [DCM]
+| | | | | | | | | | | | CodeMeaning [Proximal Finding Site]
+| | | | | | | | | | TextValue     [Brachial]
+| | | | | | | | ContinuityOfContent [SEPARATE]
+| | | | | | | | ContentSequence   
+| | | | | | | | | Item            
+| | | | | | | | | | RelationshipType [CONTAINS]
+| | | | | | | | | | ValueType     [NUM]
+| | | | | | | | | | ConceptNameCodeSequence 
+| | | | | | | | | | | Item        
+| | | | | | | | | | | | CodeValue [F-008EC]
+| | | | | | | | | | | | CodingSchemeDesignator [DCM]
+| | | | | | | | | | | | CodeMeaning [Systolic Blood Pressure]
+| | | | | | | | | | MeasuredValueSequence 
+| | | | | | | | | | | Item        
+| | | | | | | | | | | | MeasurementUnitsCodeSequence 
+| | | | | | | | | | | | | Item    
+| | | | | | | | | | | | | | CodeValue [mm[Hg]]
+| | | | | | | | | | | | | | CodingSchemeDesignator [UCUM]
+| | | | | | | | | | | | | | CodingSchemeVersion [1.4]
+| | | | | | | | | | | | | | CodeMeaning [mmHg]
+| | | | | | | | | | | | NumericValue [0]

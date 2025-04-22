@@ -1,0 +1,19 @@
+MSH|^~\&|ABI-Q|NEWMANMEDICAL|COREPOINT^corepoint.chenmed.com^DNS|chenmed^2.16.840.1.113883.3.8873^ISO|#{0008,0020}#{0008,0030}||ORU^R01^ORU_R01|#{0008,0020}#{0008,0030}0001|P|2.5.1
+PID||#{0010,0020}|#{0010,0020}^^^chenmed&2.16.840.1.113883.3.8873&ISO^MR||#{0010,0010}||#{0010,0030}|#{0010,0040}
+PV1||O||R|||||||||||||||#{0008,0050}|||||||||||||||||||||||||#{0008,0020}#{0008,0030}
+OBR|1|#{0008,0050}|#{0020,000D}|93923^Complete bilateral noninvasive physiologic studies of upper or lower extremity arteries, 3 or more levels^C4^77197-2^Noninvasive arteriosclerosis studies panel^LN|||#{0008,0020}#{0008,0030}+0000|||||||||#{0008,1070}|||||||||F
+
+// ABI values from the SR
+#{ForEach(test as test)}
+  #{ForEach(test/findings/Code(DCM:121116) as site)}
+    #{If(site/Code(DCM:F-008ECBI))}
+      OBX|#{HL7SequenceNumber(OBX)}|NM|77194-9^Ankle-brachial index (#{SR(121070/G-C171.ConceptCodeMeaning)})^LN|#{HL7SequenceNumber(OBX)}|#{site/Code(DCM:F-008ECBI).Numeric}|{ratio}^ratio^UCUM|>1.00|#{If(site/Code(DCM:F-008ECBI).Numeric > 1.00)}N#{Else}A#{EndIf}|||F|||#{0008,0020}#{0008,0030}||^#{SR(121118/Patient Characteristics/Examined By.Text)}|||#{0008,0020}#{0008,0030}
+    #{EndIf}
+  #{EndForEach}
+#{EndForEach}
+
+OBX|#{HL7SequenceNumber(OBX)}|ED|47045-0^Study report^LN|#{HL7SequenceNumber(OBX)}|^AP^Octet-stream^Base64^
+
+// Comments and impressions
+NTE|1|L|#{SR(121060/notes.Text)}|RE
+NTE|2|O|#{SR(Report Impression.Text)}|RE

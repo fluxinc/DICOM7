@@ -1,0 +1,39 @@
+MSH|^~\&|DICOM7_DICOM2ORU|FLUXINC|FLUX^flux.fluxinc.co^DNS|fluxinc^2.16.840.1.113883.3.8873^ISO|#{CurrentDateTime}||ORU^R01^ORU_R01|#{0020,000D}|P|2.5.1
+PID||#{0010,0020}|#{0010,0020}^^^fluxinc&2.16.840.1.113883.3.8873&ISO^MR||#{0010,0010}||#{0010,0030}|#{0010,0040}
+PV1||O||R|||||||||||||||#{0008,0050}|||||||||||||||||||||||||#{CurrentDateTime}
+OBR|1|#{0008,0050}|#{0020,000D}|#{0008,1030}|||#{0008,0020}#{0008,0030}+0000|||||||||#{0008,1070}|||||||||F
+
+// This block will loop through all "test" containers in the SR
+#{ForEach(test as test)}
+  // Get test name and type information from SR
+  // NTE for test information
+  NTE|#{HL7SequenceNumber(NTE)}|L|Test: #{test/name.Text} (#{test/type.Text})|RE
+
+  // Loop through each "Proximal Finding Site" in the current test's findings
+  #{ForEach(test/findings/Code(DCM:121116) as site)}
+    // Check if this site has Systolic BP measurement
+    #{If(site/Code(DCM:F-008EC))}
+      // Create OBX segment for Systolic BP
+      OBX|#{HL7SequenceNumber(OBX)}|NM|#{site/Code(DCM:F-008EC).ConceptCodeValue}^#{site/Code(DCM:F-008EC).ConceptCodeMeaning}^#{site/Code(DCM:F-008EC).ConceptCodingScheme}|#{HL7SequenceNumber(OBX)}|#{site/Code(DCM:F-008EC).Numeric}|#{site/Code(DCM:F-008EC).UnitsCode}^#{site/Code(DCM:F-008EC).UnitsMeaning}^UCUM|||F|||#{StudyDateTime}||^#{SR(121118/Patient Characteristics/Examined By.Text)}|||#{StudyDateTime}
+    #{EndIf}
+
+    // Check if this site has Brachial Index measurement
+    #{If(site/Code(DCM:F-008ECBI))}
+      // Create OBX segment for Brachial Index
+      OBX|#{HL7SequenceNumber(OBX)}|NM|77194-9^Ankle-brachial index (#{SR(121070/G-C171.Text)})^LN|#{HL7SequenceNumber(OBX)}|#{site/Code(DCM:F-008ECBI).Numeric}|{ratio}^ratio^UCUM|>1.00|#{If(site/Code(DCM:F-008ECBI).Numeric > 1.00)}N#{Else}A#{EndIf}|||F|||#{StudyDateTime}||^#{SR(121118/Patient Characteristics/Examined By.Text)}|||#{StudyDateTime}
+    #{EndIf}
+  #{EndForEach}
+#{EndForEach}
+
+// Create OBX for embedded PDF report if available
+OBX|#{HL7SequenceNumber(OBX)}|ED|47045-0^Study report^LN|1|^AP^Octet-stream^Base64^|||||F
+
+// History section - create NTE segments for patient history questions and answers
+#{ForEach(121060/questions/Question as question)}
+  NTE|#{HL7SequenceNumber(NTE)}|L|#{question/Prompt.Text}: #{question/Answer.Text}|RE
+#{EndForEach}
+
+// Add impression if available
+#{If(Report Impression)}
+  NTE|#{HL7SequenceNumber(NTE)}|O|#{SR(Report Impression.Text)}|RE
+#{EndIf}
