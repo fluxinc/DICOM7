@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DICOM7.Shared;
-using Serilog;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using DICOM7.Shared.Common;
 using DICOM7.Shared.Config;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DICOM7.DICOM2ORU
 {
@@ -54,7 +52,7 @@ namespace DICOM7.DICOM2ORU
         _oruTemplate = ORUGenerator.LoadTemplate(templatePath);
 
         // Initialize processor
-        _processor = new(_config, _oruTemplate);
+        _processor = new DicomImageProcessor(_config, _oruTemplate);
 
         // Set up the StoreSCP to use our processor and template
         StoreSCP.SetProcessors(_processor, _oruTemplate, _config);
@@ -68,7 +66,6 @@ namespace DICOM7.DICOM2ORU
 
         // Main processing loop
         while (_running)
-        {
           try
           {
             // First process any pending messages that need to be retried
@@ -91,7 +88,6 @@ namespace DICOM7.DICOM2ORU
             // Continue to next cycle after error
             await Task.Delay(TimeSpan.FromSeconds(10), _cts.Token);
           }
-        }
       }
       catch (TaskCanceledException)
       {
@@ -110,7 +106,7 @@ namespace DICOM7.DICOM2ORU
     }
 
     /// <summary>
-    /// Processes all pending ORU messages in the outgoing folder
+    ///   Processes all pending ORU messages in the outgoing folder
     /// </summary>
     private static async Task ProcessOutgoingMessagesAsync()
     {
@@ -122,10 +118,7 @@ namespace DICOM7.DICOM2ORU
 
       lock (_processingLock)
       {
-        if (_isProcessing)
-        {
-          return;
-        }
+        if (_isProcessing) return;
         _isProcessing = true;
       }
 
@@ -154,10 +147,7 @@ namespace DICOM7.DICOM2ORU
         Log.Information("Found {Count} ORU messages to send", oruFiles.Length);
 
         // Process each ORU file
-        foreach (string filePath in oruFiles)
-        {
-          await ProcessOruFileAsync(filePath);
-        }
+        foreach (string filePath in oruFiles) await ProcessOruFileAsync(filePath);
       }
       catch (Exception ex)
       {
@@ -170,7 +160,7 @@ namespace DICOM7.DICOM2ORU
     }
 
     /// <summary>
-    /// Processes a single ORU file
+    ///   Processes a single ORU file
     /// </summary>
     private static async Task ProcessOruFileAsync(string filePath)
     {
@@ -183,7 +173,8 @@ namespace DICOM7.DICOM2ORU
         string oruMessage = File.ReadAllText(filePath);
 
         // Send the message using the shared HL7Sender
-        bool success = await HL7Sender.SendOruAsync(_config, oruMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort);
+        bool success =
+          await HL7Sender.SendOruAsync(_config, oruMessage, _config.HL7.ReceiverHost, _config.HL7.ReceiverPort);
 
         if (success)
         {
@@ -195,9 +186,7 @@ namespace DICOM7.DICOM2ORU
 
           // Remove from retry queue if it was there
           if (RetryManager.IsPendingRetry(sopInstanceUid, CacheManager.CacheFolder))
-          {
             RetryManager.RemovePendingMessage(sopInstanceUid, CacheManager.CacheFolder);
-          }
 
           Log.Information("Successfully sent ORU message: {SopInstanceUid}", sopInstanceUid);
         }
@@ -206,9 +195,7 @@ namespace DICOM7.DICOM2ORU
           // If failed, add to retry queue
           int attemptCount = 1;
           if (RetryManager.IsPendingRetry(sopInstanceUid, CacheManager.CacheFolder))
-          {
             attemptCount = RetryManager.GetAttemptCount(sopInstanceUid, CacheManager.CacheFolder) + 1;
-          }
 
           RetryManager.SavePendingMessage(sopInstanceUid, oruMessage, CacheManager.CacheFolder, attemptCount);
 
@@ -216,7 +203,7 @@ namespace DICOM7.DICOM2ORU
           File.Delete(filePath);
 
           Log.Warning("Failed to send ORU message: {SopInstanceUid}, added to retry queue (attempt {AttemptCount})",
-              sopInstanceUid, attemptCount);
+            sopInstanceUid, attemptCount);
         }
       }
       catch (Exception ex)
@@ -227,10 +214,7 @@ namespace DICOM7.DICOM2ORU
         try
         {
           string errorFolder = Path.Combine(CacheManager.CacheFolder, "error");
-          if (!Directory.Exists(errorFolder))
-          {
-            Directory.CreateDirectory(errorFolder);
-          }
+          if (!Directory.Exists(errorFolder)) Directory.CreateDirectory(errorFolder);
 
           string errorPath = Path.Combine(errorFolder, fileName);
           if (File.Exists(errorPath))
@@ -267,10 +251,7 @@ namespace DICOM7.DICOM2ORU
       services.AddHostedService<DICOMServerBackgroundService>();
     }
 
-    public static Config GetConfig()
-    {
-      return _config;
-    }
+    public static Config GetConfig() => _config;
 
     private static void Shutdown()
     {

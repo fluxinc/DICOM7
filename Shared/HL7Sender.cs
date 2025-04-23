@@ -1,11 +1,12 @@
+using Serilog;
+
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Serilog;
-using System.Collections.Generic;
 
 namespace DICOM7.Shared
 {
@@ -220,7 +221,7 @@ namespace DICOM7.Shared
 
       // Process line by line to remove leading/trailing spaces and empty lines
       string[] lines = normalized.Split('\r');
-      List<string> cleanedLines = [];
+      List<string> cleanedLines = new List<string>();
 
       foreach (string line in lines)
       {
@@ -448,7 +449,7 @@ namespace DICOM7.Shared
       }
 
       // Split the message into lines to handle each segment separately
-      string[] lines = message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+      string[] lines = message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
       for (int i = 0; i < lines.Length; i++)
       {
         string line = lines[i];

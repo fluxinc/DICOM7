@@ -5,7 +5,9 @@ using Efferent.HL7.V2;
 using FellowOakDicom;
 using Serilog;
 
-namespace DICOM7.DICOM2ORM;
+namespace DICOM7.DICOM2ORM
+{
+
 
 /// <summary>
 ///     Handles the generation and customization of HL7 ORM messages from DICOM datasets
@@ -309,4 +311,5 @@ public class ORMGenerator
             return "";
         }
     }
+}
 }

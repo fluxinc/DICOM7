@@ -49,12 +49,12 @@ See the [LICENSE](LICENSE.md) file for full terms.
 
 ## Requirements
 
-- .NET Framework 4.7.2
+- .NET Framework 4.6.2
 - Windows environment (not compatible with macOS/Linux)
 
-## Why .NET Framework 4.7.2?
+## Why .NET Framework 4.6.2?
 
-- **Windows 10 Compatibility**: Most use cases are for legacy medical software frequently installed on Windows 10, and this only supports .NET <= 4.7.2.
+- **Windows 10 Compatibility**: Most use cases are for legacy medical software frequently installed on Windows 10, and this only supports .NET <= 4.6.2.
 
 ## Dependencies
 

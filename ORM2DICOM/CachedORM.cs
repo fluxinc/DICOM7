@@ -108,7 +108,8 @@ namespace DICOM7.ORM2DICOM
     {
       try
       {
-        if (!FileInfo.Exists) return;
+        if (!FileInfo.Exists)
+          return;
         File.SetLastWriteTimeUtc(FileInfo.FullName, DateTime.UtcNow);
         if (includeCreationTime) File.SetCreationTimeUtc(FileInfo.FullName, DateTime.UtcNow);
       }
@@ -170,7 +171,7 @@ namespace DICOM7.ORM2DICOM
       try
       {
         // Parse the HL7 message using Efferent.HL7.V2
-        Message message = new(Text);
+        Message message = new Message(Text);
 
         try
         {
@@ -383,9 +384,12 @@ namespace DICOM7.ORM2DICOM
     /// <returns>A string representation of the hash</returns>
     private static string GetHashString(string input)
     {
-      using SHA256 sha = System.Security.Cryptography.SHA256.Create();
-      byte[] hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
-      return BitConverter.ToString(hash).Replace("-", "").Substring(0, 32);
+      using (SHA256 sha = System.Security.Cryptography.SHA256.Create())
+      {
+        byte[] hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+        return BitConverter.ToString(hash).Replace("-", "").Substring(0, 32);
+      }
+
     }
 
     /// <summary>
@@ -461,7 +465,7 @@ namespace DICOM7.ORM2DICOM
       string suffix = GetFieldComponentValue(segment, fieldIndex, 4);     // Suffix (note order swapped for DICOM)
 
       // Combine components with ^ separator for DICOM
-      List<string> components = [];
+      List<string> components = new List<string>();
 
       if (!string.IsNullOrEmpty(familyName)) components.Add(familyName);
       if (!string.IsNullOrEmpty(givenName)) components.Add(givenName);

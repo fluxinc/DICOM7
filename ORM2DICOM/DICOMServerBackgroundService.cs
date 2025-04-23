@@ -1,34 +1,40 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DICOM7.Shared;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace DICOM7.ORM2DICOM
 {
-    internal class DICOMServerBackgroundService(
-      IDicomServerFactory factory,
-      ILogger<DICOMServerBackgroundService> logger)
+  internal class DICOMServerBackgroundService
       : BackgroundService, IDisposable
     {
+      private readonly IDicomServerFactory _factory;
+      private readonly ILogger<DICOMServerBackgroundService> _logger;
       private IDicomServer<WorklistSCP> _worklistSCP;
-        private readonly Config _config = Program.GetConfig();
+      private readonly Config _config = Program.GetConfig();
+
+      internal DICOMServerBackgroundService(
+        IDicomServerFactory factory,
+        ILogger<DICOMServerBackgroundService> logger)
+      {
+          _factory = factory;
+          _logger = logger;
+      }
 
         private void StartWorklistSCP()
         {
             try
             {
-              _worklistSCP = (IDicomServer<WorklistSCP>)factory.Create<WorklistSCP>(port: _config.Dicom.ListenPort, tlsAcceptor: null, fallbackEncoding: null, logger: logger);
+              _worklistSCP = (IDicomServer<WorklistSCP>)_factory.Create<WorklistSCP>(port: _config.Dicom.ListenPort, tlsAcceptor: null, fallbackEncoding: null, logger: _logger);
 
-                logger.LogInformation("Worklist SCP started on port {Port} with AE Title {AETitle}",
+                _logger.LogInformation("Worklist SCP started on port {Port} with AE Title {AETitle}",
                     _config.Dicom.ListenPort, _config.Dicom.AETitle);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to start WorklistSCP on port {Port}", _config.Dicom.ListenPort);
+                _logger.LogError(ex, "Failed to start WorklistSCP on port {Port}", _config.Dicom.ListenPort);
             }
         }
 
@@ -36,7 +42,7 @@ namespace DICOM7.ORM2DICOM
         {
           if (_worklistSCP == null) return;
 
-          logger.LogInformation("Stopping Worklist SCP server");
+          _logger.LogInformation("Stopping Worklist SCP server");
           _worklistSCP.Dispose();
           _worklistSCP = null;
         }

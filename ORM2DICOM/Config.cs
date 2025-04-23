@@ -11,22 +11,22 @@ namespace DICOM7.ORM2DICOM
     /// <summary>
     /// DICOM worklist SCP configuration
     /// </summary>
-    public DicomConfig Dicom { get; set; } = new();
+    public DicomConfig Dicom { get; set; } = new DicomConfig();
 
     /// <summary>
     /// HL7 configuration
     /// </summary>
-    public HL7Config HL7 { get; set; } = new();
+    public HL7Config HL7 { get; set; } = new HL7Config();
 
     /// <summary>
     /// Order configuration
     /// </summary>
-    public OrderConfig Order { get; set; } = new();
+    public OrderConfig Order { get; set; } = new OrderConfig();
 
     /// <summary>
     /// Cache configuration
     /// </summary>
-    public CacheConfig Cache { get; set; } = new();
+    public CacheConfig Cache { get; set; } = new CacheConfig();
 
     // Explicit interface implementation to satisfy IHasCacheConfig
     BaseCacheConfig IHasCacheConfig.Cache

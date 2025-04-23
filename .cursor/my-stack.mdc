@@ -1,14 +1,15 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Project Description
 
-- This is a C# .NET 4.6.2 solution comprising two projects
+- This is a C# .NET 4.6.2 solution comprising four projects
   - DICOM2ORM - Checks a remote DICOM worklist, generates HL7 ORM messages, and sends them to a receiver
   - DICOM2ORU - Waits for DICOM files that contain images or PDFs, wraps them into ORU messages and delivers them to an HL7 listener
   - ORM2DICOM - Receives incoming HL7 ORM orders, saves them to disk, listens for Worklist C-Find queries, and answers with the ORMs, mapping attributes to DICOM
+  - ORU2DICOM - Receives incoming HL7 ORU messages, converts them to DICOM, includes PDFs or images as PixelData or Encapsulated PDF, and sends to PACS -- THIS IS NOT COMPLETE
 
 ## Dependencies (NuGet Packages)
 
@@ -23,18 +24,20 @@ alwaysApply: true
   - DICOM2ORM.csproj - DICOM2ORM project
 - DICOM2ORU/
   - DICOM2ORU.csproj - DICOM2ORU project file
+- ORM2DICOM/
+  - ORM2DICOM.csproj - ORM2DICOM project file
+- ORu2DICOM/
+  - ORU2DICOM.csproj - ORU2DICOM project file
 - packages.config - NuGet package index for this solution.
 - installer/
-  - DICOM7Setup.iss - innosetup installer project for DICOM2ORM
+  - DICOM7Setup.iss - innosetup installer project
   - Input/  - files included with the installer
-    - DICOM2ORM.WinSW.xml - Windows Service Wrapper definition file for DICOM2ORM
-    - DICOM2ORU.WinSW.xml - Windows Service Wrapper definition file for DICOM2ORU
+    - *.WinSW.xml - Windows Service Wrapper definition file for each binary
     - WinSW-x64.exe - Windows Service Wrapper binary
   - Include/ - .pas files included in setup project
 
 ## Development Environment
 
-- Cursor, the current IDE, is running on MacOS
-- This project does not compile on Mac, and linter errors, if any, are invalid
+- This project does not compile on Mac, and linter errors there, if any, are invalid
 
 

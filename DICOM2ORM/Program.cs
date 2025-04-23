@@ -11,10 +11,11 @@ using Serilog;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace DICOM7.DICOM2ORM;
-
-internal class Program
+namespace DICOM7.DICOM2ORM
 {
+
+  internal class Program
+  {
     private static Config _config;
     private static bool _running = true;
     private static CancellationTokenSource _cts;
@@ -23,8 +24,8 @@ internal class Program
 
     private static async Task Main(string[] args)
     {
-        // Parse command line arguments
-        ProgramHelpers.ParseCommandLineArgs(args, APPLICATION_NAME);
+      // Parse command line arguments
+      ProgramHelpers.ParseCommandLineArgs(args, APPLICATION_NAME);
 
         // Configure Serilog
         ProgramHelpers.ConfigureSerilog(APPLICATION_NAME);
@@ -127,4 +128,5 @@ internal class Program
         _running = false;
         _cts?.Cancel();
     }
+}
 }

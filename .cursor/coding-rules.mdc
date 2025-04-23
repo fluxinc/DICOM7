@@ -1,0 +1,19 @@
+﻿---
+description:
+globs:
+alwaysApply: true
+---
+
+Use C# language features compatible with .NET 4.6.2 only.
+Follow the .editorconfig style guidelines (2-space indentation, CRLF line endings).
+Constants should use ALL_CAPS_WITH_UNDERSCORES.
+Prefer no braces for single-line statements.
+Expression-bodied members should be used when on a single line.
+This is a medical software project with DICOM and HL7 components - confidential and proprietary.
+Always use proper DICOM/HL7 terminology when discussing the code.
+Keep implementations simple and maintainable - this is legacy-compatible software.
+Each component (DICOM2ORM, DICOM2ORU, ORM2DICOM, ORU2DICOM) has its own configuration and requirements.
+Components use template-based HL7 message generation with default templates.
+Configuration is YAML-based (YamlDotNet dependency).
+Projects use fo-dicom for DICOM implementation and Efferent.HL7.V2 for HL7 handling.
+Logging is done with Serilog to both console and file.

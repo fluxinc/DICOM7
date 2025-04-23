@@ -2,22 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using DICOM7.Shared;
 using FellowOakDicom;
 using FellowOakDicom.Network;
 using Microsoft.Extensions.Logging;
-using DICOM7.Shared;
 
 namespace DICOM7.ORM2DICOM
 {
-  internal class WorklistSCP(
-    INetworkStream stream,
-    Encoding fallBackEncoding,
-    ILogger log,
-    DicomServiceDependencies dependencies,
-    string aeTitle)
-    : BasicSCP(stream, fallBackEncoding, log, dependencies, aeTitle), IDicomCFindProvider
+  internal class WorklistSCP : BasicSCP, IDicomCFindProvider
   {
+    public WorklistSCP(
+      INetworkStream stream,
+      Encoding fallBackEncoding,
+      ILogger log,
+      DicomServiceDependencies dependencies,
+      string aeTitle) : base(stream, fallBackEncoding, log, dependencies, aeTitle)
+    {
+
+    }
+
     public async IAsyncEnumerable<DicomCFindResponse> OnCFindRequestAsync(DicomCFindRequest dicomRequest)
     {
       if (dicomRequest is null)
@@ -27,21 +30,21 @@ namespace DICOM7.ORM2DICOM
 
       if (dicomRequest.Level != DicomQueryRetrieveLevel.NotApplicable)
       {
-        _logger.LogInformation("C-Find Q/R level not supported. Rejecting request from {CallingAE}",
-          LastAssociatedAeTitle);
-        yield return new DicomCFindResponse(dicomRequest, DicomStatus.QueryRetrieveUnableToProcess);
+          _logger.LogInformation("C-Find Q/R level not supported. Rejecting request from {CallingAE}",
+              LastAssociatedAeTitle);
+          yield return new DicomCFindResponse(dicomRequest, DicomStatus.QueryRetrieveUnableToProcess);
       }
       else
       {
-        // Get active ORMs from cache
-        IEnumerable<DicomDataset> ormDatasets = GetWorklistItemsFromActiveORMs(dicomRequest);
+          // Get active ORMs from cache
+          IEnumerable<DicomDataset> ormDatasets = GetWorklistItemsFromActiveORMs(dicomRequest);
 
-        foreach (DicomDataset result in ormDatasets)
-        {
-          yield return new DicomCFindResponse(dicomRequest, DicomStatus.Pending) { Dataset = result };
-        }
+          foreach (DicomDataset result in ormDatasets)
+          {
+              yield return new DicomCFindResponse(dicomRequest, DicomStatus.Pending) { Dataset = result };
+          }
 
-        yield return new DicomCFindResponse(dicomRequest, DicomStatus.Success);
+          yield return new DicomCFindResponse(dicomRequest, DicomStatus.Success);
       }
     }
 

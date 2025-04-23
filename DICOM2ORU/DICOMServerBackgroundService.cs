@@ -8,35 +8,43 @@ using Serilog;
 
 namespace DICOM7.DICOM2ORU
 {
-  internal class DICOMServerBackgroundService(
-    IDicomServerFactory factory,
-    ILogger<DICOMServerBackgroundService> logger)
-    : BackgroundService, IDisposable
+  internal class DICOMServerBackgroundService : BackgroundService, IDisposable
   {
+    private readonly IDicomServerFactory _factory;
+    private readonly ILogger<DICOMServerBackgroundService> _logger;
     private IDicomServer<StoreSCP> _storeSCP;
     private readonly Config _config = Program.GetConfig();
+
+    public DICOMServerBackgroundService(
+      IDicomServerFactory factory,
+      ILogger<DICOMServerBackgroundService> logger)
+    {
+      _factory = factory;
+      _logger = logger;
+    }
 
     private void StartSCP()
     {
       try
       {
-        _storeSCP = (IDicomServer<StoreSCP>)factory.Create<StoreSCP>(
-          port: _config.Dicom.ListenPort, tlsAcceptor: null, fallbackEncoding: null, logger: logger);
+        _storeSCP = (IDicomServer<StoreSCP>)_factory.Create<StoreSCP>(
+          port: _config.Dicom.ListenPort, tlsAcceptor: null, fallbackEncoding: null, logger: _logger);
 
-        logger.LogInformation("Store SCP started on port {Port} with AE Title {AETitle}",
+        _logger.LogInformation("Store SCP started on port {Port} with AE Title {AETitle}",
           _config.Dicom.ListenPort, _config.Dicom.AETitle);
       }
       catch (Exception ex)
       {
-        logger.LogError(ex, "Failed to start WorklistSCP on port {Port}", _config.Dicom.ListenPort);
+        _logger.LogError(ex, "Failed to start WorklistSCP on port {Port}", _config.Dicom.ListenPort);
       }
     }
 
     private void StopSCP()
     {
-      if (_storeSCP == null) return;
+      if (_storeSCP == null)
+        return;
 
-      logger.LogInformation("Stopping Store SCP server");
+      _logger.LogInformation("Stopping Store SCP server");
       _storeSCP.Dispose();
       _storeSCP = null;
     }

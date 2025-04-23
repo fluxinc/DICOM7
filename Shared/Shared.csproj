@@ -3,7 +3,7 @@
     <TargetFramework>net462</TargetFramework>
     <RootNamespace>DICOM7.Shared</RootNamespace>
     <AssemblyName>DICOM7.Shared</AssemblyName>
-    <LangVersion>default</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
