@@ -30,7 +30,7 @@ namespace DICOM7.ORM2DICOM
 
       if (dicomRequest.Level != DicomQueryRetrieveLevel.NotApplicable)
       {
-          _logger.LogInformation("C-Find Q/R level not supported. Rejecting request from {CallingAE}",
+        _logger.LogInformation("C-Find Q/R level not supported. Rejecting request from {CallingAE}",
               LastAssociatedAeTitle);
           yield return new DicomCFindResponse(dicomRequest, DicomStatus.QueryRetrieveUnableToProcess);
       }

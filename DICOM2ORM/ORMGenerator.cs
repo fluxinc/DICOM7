@@ -12,7 +12,7 @@ namespace DICOM7.DICOM2ORM
 /// <summary>
 ///     Handles the generation and customization of HL7 ORM messages from DICOM datasets
 /// </summary>
-public class ORMGenerator
+public static class ORMGenerator
 {
     /// <summary>
     ///     Loads an ORM template from the specified file path or returns a default template if not found

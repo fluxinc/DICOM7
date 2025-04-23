@@ -262,11 +262,9 @@ namespace DICOM7.DICOM2ORU
     /// <param name="messageText">The HL7 message to update</param>
     /// <param name="base64PdfData">Base64 encoded PDF data</param>
     /// <returns>Updated HL7 message string</returns>
-    public static string UpdateObxWithPdfFromData(string messageText, string base64PdfData)
-    {
+    public static string UpdateObxWithPdfFromData(string messageText, string base64PdfData) =>
       // Use the consistent identifier "47045-0^Study report^LN" for OBX-3
-      return UpdateObxWithBase64Data(messageText, base64PdfData, "Application", "PDF", "47045-0^Study report^LN");
-    }
+      UpdateObxWithBase64Data(messageText, base64PdfData, "Application", "PDF", "47045-0^Study report^LN");
 
     /// <summary>
     ///   Adds or updates an OBX segment in the HL7 message to include Base64 encoded DICOM image data.

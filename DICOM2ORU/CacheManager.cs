@@ -15,11 +15,9 @@ namespace DICOM7.DICOM2ORU
     private const string CACHE_SUFFIX = ".sent";
     private const string CACHE_FOLDER_NAME = "cache";
 
-    static CacheManager()
-    {
+    static CacheManager() =>
       // Set the cache folder name
       BaseCacheManager.SetConfiguredCacheFolder(CACHE_FOLDER_NAME);
-    }
 
     /// <summary>
     /// Gets the path to the cache folder
@@ -30,19 +28,15 @@ namespace DICOM7.DICOM2ORU
     /// Sets a custom cache folder path
     /// </summary>
     /// <param name="folderPath">The path to use for caching</param>
-    public static void SetConfiguredCacheFolder(string folderPath)
-    {
+    public static void SetConfiguredCacheFolder(string folderPath) =>
       BaseCacheManager.SetConfiguredCacheFolder(folderPath);
-    }
 
     /// <summary>
     /// Ensures the cache folder exists
     /// </summary>
     /// <param name="folder">Optional specific folder, otherwise uses the default</param>
-    public static void EnsureCacheFolder(string folder = null)
-    {
+    public static void EnsureCacheFolder(string folder = null) =>
       BaseCacheManager.EnsureCacheFolder(folder);
-    }
 
     /// <summary>
     /// Checks if a file with the given SOP Instance UID has already been processed
@@ -50,10 +44,8 @@ namespace DICOM7.DICOM2ORU
     /// <param name="sopInstanceUid">The SOP Instance UID to check</param>
     /// <param name="cacheFolder">The cache folder to check in (optional)</param>
     /// <returns>True if the file has been processed, false otherwise</returns>
-    public static bool IsAlreadySent(string sopInstanceUid, string cacheFolder = null)
-    {
-      return IsItemCached(sopInstanceUid, cacheFolder);
-    }
+    public static bool IsAlreadySent(string sopInstanceUid, string cacheFolder = null) =>
+      IsItemCached(sopInstanceUid, cacheFolder);
 
     /// <summary>
     /// Checks if an item with the given ID already exists in the cache
