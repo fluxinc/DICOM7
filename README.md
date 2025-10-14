@@ -69,11 +69,50 @@ Each component has its own `config.yaml` file with appropriate settings for that
 
 ## Building and Running
 
+### Local
+
 ```cmd
-msbuild
+msbuild DICOM7.sln /p:Configuration=Release /p:Platform="Any CPU"
 ```
 
-Note: Each application is designed to run continuously as a service, operating according to its configured parameters.
+### Remote via Helper Script
+
+```bash
+./build.sh solution Debug
+./build.sh solution Release --installer
+```
+
+The script uses the environment variables from `.envrc` (or your shell) to locate the Windows host, run MSBuild remotely, and optionally package the installer after a successful build. Each application is designed to run continuously as a service, operating according to its configured parameters.
+
+# Remote Environment Setup
+
+This repository uses `.envrc` to describe the remote Windows build host. Copy the template and adjust the paths for your VM:
+
+- `cp .envrc.example .envrc`
+- Update `SSH_HOST`, `REMOTE_PROJECT_DIR`, and `REMOTE_RUN_DIR` for your machine (defaults point to `windev` and `c:\dev\dicom7`)
+- Run `direnv allow` so the variables are loaded when you `cd` into the repo
+
+If you do not use Direnv, export the same variables manually before running the helper scripts.
+
+# Remote Build Notes
+
+Sync this solution to `%REMOTE_PROJECT_DIR%` on a Windows VM or remote workstation (via Syncthing—allow a short delay after local edits before building).
+
+## Typical Workflow
+
+- Preferred: run `./build.sh solution Debug` for a quick verification build and `./build.sh solution Release --installer` when you need the signed installer in `installer/Output`.
+
+- Start an interactive session: `ssh "$SSH_HOST"`
+- Clear stale locks if MSBuild warns about file access:  
+  `for /d %d in (%REMOTE_PROJECT_DIR%\*\obj) do rd /s /q "%d"`
+- From `%REMOTE_PROJECT_DIR%`, run solution builds (warnings only today):
+  - `"%VS_MSBUILD%" DICOM7.sln /p:Configuration=Debug /p:Platform="Any CPU"`
+  - `"%VS_MSBUILD%" DICOM7.sln /p:Configuration=Release /p:Platform="Any CPU"`
+- Optional: target one project with `"%VS_MSBUILD%" DICOM2ORU\DICOM2ORU.csproj /p:Configuration=Debug`
+- Package the installer when needed:  
+  `"%INNO_SETUP_COMPILER%" installer\DICOM7Setup.iss`
+- Outputs land under `%REMOTE_PROJECT_DIR%\{Project}\bin\<Config>`; installer artifacts appear in `installer\Output`
+- Runtime assets (config, queue, logs) belong under `%REMOTE_RUN_DIR%`
 
 ## Command Line Arguments
 
