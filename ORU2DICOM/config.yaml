@@ -1,0 +1,38 @@
+# ORU2DICOM Configuration
+# Converts HL7 ORU result messages into DICOM studies for downstream PACS systems
+
+# HL7 listener configuration
+# Controls how the service accepts inbound ORU messages over MLLP
+HL7:
+  ListenIP: 0.0.0.0           # Bind address (all interfaces by default)
+  ListenPort: 7777            # TCP port for the HL7 listener
+  SenderName: DICOM7          # Source application name for ACKs
+  ReceiverName: RECEIVER_APPLICATION  # Target application name from incoming ORUs
+  ReceiverFacility: RECEIVER_FACILITY # Target facility name from incoming ORUs
+  DeferredAckCode: AA         # HL7 ACK code when delivery is deferred for retry
+
+# DICOM send configuration
+# Controls how generated DICOM payloads are transmitted
+Dicom:
+  DestinationHost: localhost  # Destination host for C-STORE messages
+  DestinationPort: 104        # Destination port for C-STORE messages
+  DestinationAeTitle: PACS    # Called AE Title for the remote destination
+  SourceAeTitle: ORU2DICOM    # Calling AE Title announced by this service
+  DefaultStudyDescription: "HL7 ORU Result" # Used when ORU lacks study description
+  UseTls: false               # Negotiate TLS for C-STORE (requires remote support)
+
+# Cache configuration
+# Controls how inbound ORUs and generated DICOM files are retained
+Cache:
+  Folder: "cache"             # Root cache directory
+  RetentionDays: 3            # Days to retain cached artifacts
+  KeepSentItems: true         # Preserve sent artifacts under cache\sent\
+  AutoCleanup: true           # Enable periodic cache cleanup
+  CleanupIntervalMinutes: 60  # Cleanup frequency in minutes
+  PersistDicomFiles: true     # Keep generated DICOM files after successful send
+
+# Retry configuration
+# Governs how deferred deliveries are retried
+Retry:
+  RetryIntervalMinutes: 2     # Minutes between retry sweeps
+  MaxAttempts: 10             # Max retry attempts before marking error

@@ -6,11 +6,11 @@ All notable changes to the DICOM7 project will be documented in this file.
 
 ### Added
 
-- _Nothing yet._
+- Included ORU2DICOM binaries, config, and WinSW wrapper in the Windows installer package
 
 ### Changed
 
-- _Nothing yet._
+- Documented ORU2DICOM deployment details in both `README.md` and `installer/Input/readme.txt`
 
 ## [2.0.2] - 2025-10-14
 

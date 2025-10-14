@@ -4,7 +4,7 @@ using DICOM7.Shared.Config;
 namespace DICOM7.ORU2DICOM
 {
   /// <summary>
-  /// Configuration settings for the ORM2DICOM application
+  /// Configuration settings for the ORU2DICOM application
   /// </summary>
   public class Config : IHasCacheConfig
   {
@@ -23,6 +23,11 @@ namespace DICOM7.ORU2DICOM
     /// </summary>
     public CacheConfig Cache { get; set; } = new CacheConfig();
 
+    /// <summary>
+    /// Retry configuration for deferred sends
+    /// </summary>
+    public RetryConfig Retry { get; set; } = new RetryConfig();
+
     // Explicit interface implementation to satisfy IHasCacheConfig
     BaseCacheConfig IHasCacheConfig.Cache
     {
@@ -33,7 +38,8 @@ namespace DICOM7.ORU2DICOM
         Folder = value?.Folder,
         KeepSentItems = value?.KeepSentItems ?? true,
         AutoCleanup = true,
-        CleanupIntervalMinutes = 60
+        CleanupIntervalMinutes = 60,
+        PersistDicomFiles = true
       };
     }
   }
@@ -44,11 +50,34 @@ namespace DICOM7.ORU2DICOM
   public class DicomConfig : BaseDicomConfig
   {
     /// <summary>
-    /// TCP port for the DICOM destination
+    /// Hostname or IP of the target DICOM SCP
     /// </summary>
-    public int Port { get; set; } = 104;
-    public string AeTitle { get; set; } = "PACS";
-    public string TransferSyntax { get; set; } = "JPEGProcess14SV1";
+    public string DestinationHost { get; set; } = "localhost";
+
+    /// <summary>
+    /// TCP port for the target DICOM SCP
+    /// </summary>
+    public int DestinationPort { get; set; } = 104;
+
+    /// <summary>
+    /// Called AE Title (remote PACS/service)
+    /// </summary>
+    public string DestinationAeTitle { get; set; } = "PACS";
+
+    /// <summary>
+    /// Calling AE Title (local sender)
+    /// </summary>
+    public string SourceAeTitle { get; set; } = "ORU2DICOM";
+
+    /// <summary>
+    /// Optional Study Description override if not supplied by ORU
+    /// </summary>
+    public string DefaultStudyDescription { get; set; } = "HL7 ORU Result";
+
+    /// <summary>
+    /// Whether to negotiate TLS when sending C-STORE
+    /// </summary>
+    public bool UseTls { get; set; }
   }
 
   /// <summary>
@@ -65,6 +94,11 @@ namespace DICOM7.ORU2DICOM
     /// IP address to bind HL7 listener
     /// </summary>
     public string ListenIP { get; set; } = "0.0.0.0";
+
+    /// <summary>
+    /// Optional acknowledgement code to use when persistence succeeds but send fails (defaults to AA)
+    /// </summary>
+    public string DeferredAckCode { get; set; } = "AA";
   }
 
   /// <summary>
@@ -81,5 +115,26 @@ namespace DICOM7.ORU2DICOM
     /// Cleanup interval in minutes
     /// </summary>
     public int CleanupIntervalMinutes { get; set; } = 60;
+
+    /// <summary>
+    /// Whether to persist generated DICOM files in the sent folder
+    /// </summary>
+    public bool PersistDicomFiles { get; set; } = true;
+  }
+
+  /// <summary>
+  /// Retry configuration for DICOM send attempts
+  /// </summary>
+  public class RetryConfig
+  {
+    /// <summary>
+    /// Minutes to wait between retry sweeps
+    /// </summary>
+    public int RetryIntervalMinutes { get; set; } = 2;
+
+    /// <summary>
+    /// Maximum number of retry attempts before moving message to error
+    /// </summary>
+    public int MaxAttempts { get; set; } = 10;
   }
 }
