@@ -4,6 +4,8 @@ All notable changes to the DICOM7 project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-10-14
+
 ### Added
 
 - Included ORU2DICOM binaries, config, and WinSW wrapper in the Windows installer package
