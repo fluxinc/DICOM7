@@ -123,10 +123,7 @@ namespace DICOM7.ORM2DICOM
     /// </summary>
     /// <param name="id">The ID to check</param>
     /// <returns>True if cached, false otherwise</returns>
-    public static bool IsItemCached(string id)
-    {
-      return MessageExists(id);
-    }
+    public static bool IsItemCached(string id) => MessageExists(id);
 
     /// <summary>
     /// Checks if an ORM message with the given ID already exists in the cache

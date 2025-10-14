@@ -5,6 +5,7 @@
 Cache:
   Folder: "cache"             # Cache path
   RetentionDays: 2            # File retention period (days)
+  KeepSentItems: true         # Move delivered messages into cache\sent\
 
 # DICOM SCU settings
 Dicom:

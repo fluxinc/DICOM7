@@ -69,3 +69,4 @@ installer/Output/*
 
 run/
 Flux.snk
+.envrc

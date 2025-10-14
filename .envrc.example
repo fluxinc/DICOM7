@@ -1,0 +1,31 @@
+# DICOM7 - Development Environment Configuration
+# Copy this file to .envrc and customize for your setup
+#
+# direnv (https://direnv.net/) loads these variables automatically when you cd into the repo.
+#
+# Setup:
+#   1. Install direnv (e.g. brew install direnv)
+#   2. Add to ~/.zshrc: eval "$(direnv hook zsh)"
+#   3. Copy this file: cp .envrc.example .envrc
+#   4. Adjust the paths below for your environment
+#   5. Allow direnv: direnv allow
+#
+# The variables are consumed by build.sh and other helper scripts to locate the Windows build host.
+
+# SSH connection to the Windows build machine (see ~/.ssh/config)
+export SSH_HOST=windev
+
+# Remote project directory containing DICOM7.sln
+export REMOTE_PROJECT_DIR='c:\dev\dicom7'
+
+# Remote directory used for runtime assets (config, queue, logs)
+export REMOTE_RUN_DIR='c:\dev\dicom7\run'
+
+# Absolute path to MSBuild on the Windows host (2022 Community by default)
+export VS_MSBUILD='C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe'
+
+# Inno Setup compiler path for packaging the installer
+export INNO_SETUP_COMPILER='C:\ProgramData\chocolatey\bin\ISCC.exe'
+
+# Default build configuration for remote builds (Debug or Release)
+export DEFAULT_CONFIG=Debug

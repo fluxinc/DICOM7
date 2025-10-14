@@ -4,16 +4,30 @@ All notable changes to the DICOM7 project will be documented in this file.
 
 ## [Unreleased]
 
-## Changed
+### Added
 
-- Renamed to DICOM7
-- Downgraded to .NET 4.6.2 for compatibility with older Windows versions
-- Upgraded NuGet packages to latest versions
+- _Nothing yet._
+
+### Changed
+
+- _Nothing yet._
+
+## [2.0.2] - 2025-10-14
 
 ### Added
 
-- Added ORM2DICOM component
+- Added ORU2DICOM component for transforming inbound ORU results into DICOM artefacts
+- Added ORM2DICOM.Tests project with initial fixtures to exercise the worklist pipeline
 - Added DICOM2ORU component
+- Added ORM2DICOM component
+
+### Changed
+
+- Documented each installer component, configuration surface, and deployment task list in `installer/Input/readme.txt`
+- Updated sample configuration defaults so DICOM2ORM and DICOM2ORU explicitly surface `Cache.KeepSentItems`, and ORM2DICOM binds HL7 on the configured `ListenIP`
+- Renamed to DICOM7
+- Downgraded to .NET 4.6.2 for compatibility with older Windows versions
+- Upgraded NuGet packages to latest versions
 
 ## [1.0.4] - 2025-03-10
 

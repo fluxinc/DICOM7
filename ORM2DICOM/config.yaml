@@ -5,12 +5,12 @@
 # These settings control the DICOM worklist server behavior
 Dicom:
   AETitle: DICOM7             # DICOM AE Title
-  ListenIP: 0.0.0.0           # Bind address (all interfaces)
   ListenPort: 11112           # TCP port for DICOM worklist
 
 # HL7 server configuration
 # These settings control the HL7 receiver behavior
 HL7:
+  ListenIP: 0.0.0.0           # Bind address (all interfaces)
   ListenPort: 7777            # TCP port for HL7 receiver
   MaxORMsPerPatient: 5        # Max orders per patient
 

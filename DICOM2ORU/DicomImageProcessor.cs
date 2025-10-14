@@ -14,7 +14,7 @@ namespace DICOM7.DICOM2ORU
     {
         private readonly Config _config;
         private readonly string _oruTemplate;
-        private List<ProcessingResult> _processingResults;
+        private readonly List<ProcessingResult> _processingResults;
 
         public DicomImageProcessor(Config config, string oruTemplate)
         {
@@ -43,21 +43,22 @@ namespace DICOM7.DICOM2ORU
 
                 // Get pending messages based on retry interval
                 DateTime cutoffTime = DateTime.Now.AddMinutes(-_config.Retry.RetryIntervalMinutes);
-                var pendingMessages = RetryManager.GetPendingMessages<PendingOruMessage>(
+                IEnumerable<PendingOruMessage> pendingMessages = RetryManager.GetPendingMessages<PendingOruMessage>(
                     CacheManager.CacheFolder,
                     cutoffTime,
                     (id, content, attemptCount) => new PendingOruMessage { SopInstanceUid = id, OruMessage = content, AttemptCount = attemptCount }
                 );
 
-                if (!pendingMessages.Any())
+                IEnumerable<PendingOruMessage> pendingOruMessages = pendingMessages.ToList();
+                if (!pendingOruMessages.Any())
                 {
                     Log.Debug("No pending messages found for retry");
                     return;
                 }
 
-                Log.Information("Found {Count} pending ORU messages to retry", pendingMessages.Count());
+                Log.Information("Found {Count} pending ORU messages to retry", pendingOruMessages.Count());
 
-                foreach (var pendingMessage in pendingMessages)
+                foreach (PendingOruMessage pendingMessage in pendingOruMessages)
                 {
                     try
                     {
