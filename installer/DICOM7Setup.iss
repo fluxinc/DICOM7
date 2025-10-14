@@ -1,7 +1,7 @@
 ; DICOM2ORM Inno Setup Script
 
 #define MyAppName "DICOM7"
-#define MyAppVersion "2.0.1"
+#define MyAppVersion "2.0.2"
 #define MyAppPublisher "Flux Inc"
 #define MyAppURL "https://fluxinc.co/"
 #define MyAppExeName "DICOM2ORM.exe"
