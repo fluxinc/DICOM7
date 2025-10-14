@@ -138,6 +138,44 @@ Configuration notes
 - The HL7 listener honours `ListenIP`; the DICOM worklist server currently binds on all interfaces
   exposed by the host.
 
+4. ORU to DICOM Service (ORU2DICOM)
+-----------------------------------
+Purpose: Accepts inbound HL7 ORU^R01 result messages and emits DICOM studies to a remote destination.
+
+Runtime behavior
+- Hosts an MLLP listener on `HL7.ListenPort` (binding to `HL7.ListenIP`) to receive ORU payloads.
+- Persists raw HL7 messages and generated DICOM objects under the configured cache hierarchy.
+- Transmits DICOM instances via C-STORE using the destination defined in `Dicom` and retries failures.
+
+Configuration (`config.yaml`)
+- HL7: `ListenPort`, `ListenIP`, `DeferredAckCode` control listener binding and ACK semantics. Sender/
+  receiver metadata (`SenderName`, `ReceiverName`, `ReceiverFacility`) flow into acknowledgement messages.
+- Dicom: `DestinationHost`, `DestinationPort`, `DestinationAeTitle`, `SourceAeTitle`, `UseTls`,
+  `DefaultStudyDescription` define the outbound C-STORE session. The base `AETitle` is ignored.
+- Cache: `Folder`, `RetentionDays`, `KeepSentItems`, `AutoCleanup`, `CleanupIntervalMinutes`,
+  `PersistDicomFiles` govern retention of inbound HL7, outbound DICOM, and sent archives.
+- Retry: `RetryIntervalMinutes`, `MaxAttempts` tune deferred delivery cadence and failure handling.
+
+Usage tips
+- Service name: DICOM7_ORU2DICOM
+- Ensure the target PACS or DICOM listener trusts the provided `SourceAeTitle` and accepts the pairing.
+- Set `UseTls: true` only when the remote endpoint negotiates TLS with matching certificates.
+- Monitor `%ProgramData%\Flux Inc\DICOM7\ORU2DICOM\cache\` for stuck payloads during validation.
+- Leverage `DeferredAckCode` (e.g., `AR`) when you need to inform senders of deferred delivery.
+
+Tasks
+- [ ] Assign HL7 listener host/port values that match upstream interface routing.
+- [ ] Populate Dicom destination host/port/AE titles for the receiving PACS or gateway.
+- [ ] Decide on cache retention, sent-item policies, and whether to persist generated DICOM files.
+- [ ] Confirm retry cadence (`RetryIntervalMinutes`, `MaxAttempts`) with operational expectations.
+- [ ] Validate end-to-end by replaying sample ORUs and verifying images arrive at the destination.
+
+Configuration notes
+- `PersistDicomFiles` retains copies of generated C-STORE artifacts; disable if downstream storage is
+  authoritative and disk space is limited.
+- When TLS is enabled, ensure the Windows certificate store contains the client certificate chain
+  expected by the remote PACS.
+
 Sample Configuration Audit
 --------------------------
 - Query.ScheduledProcedureStepStartDate supports only `today`, `range`, and `specific` modes as shown in

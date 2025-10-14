@@ -25,7 +25,26 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Any CPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Any CPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
@@ -111,14 +130,34 @@
           <HintPath>..\packages\System.ValueTuple.4.6.1\lib\net462\System.ValueTuple.dll</HintPath>
         </Reference>
         <Reference Include="System.Xml"/>
+        <Reference Include="Serilog, Version=4.2.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+          <HintPath>..\packages\Serilog.4.2.0\lib\net462\Serilog.dll</HintPath>
+        </Reference>
+        <Reference Include="Serilog.Extensions.Logging, Version=9.0.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+          <HintPath>..\packages\Serilog.Extensions.Logging.9.0.1\lib\net462\Serilog.Extensions.Logging.dll</HintPath>
+        </Reference>
+        <Reference Include="Serilog.Sinks.Console, Version=6.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+          <HintPath>..\packages\Serilog.Sinks.Console.6.0.0\lib\net462\Serilog.Sinks.Console.dll</HintPath>
+        </Reference>
+        <Reference Include="Serilog.Sinks.File, Version=6.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+          <HintPath>..\packages\Serilog.Sinks.File.6.0.0\lib\net462\Serilog.Sinks.File.dll</HintPath>
+        </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="CacheManager.cs" />
+        <Compile Include="CachedORU.cs" />
         <Compile Include="Config.cs" />
-        <Compile Include="Program.cs"/>
-        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="DicomSender.cs" />
+        <Compile Include="Hl7Server.cs" />
+        <Compile Include="OruMessageProcessor.cs" />
+        <Compile Include="Program.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="App.config" />
+      <None Include="config.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
       <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
