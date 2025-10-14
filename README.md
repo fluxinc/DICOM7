@@ -5,12 +5,13 @@ A comprehensive bidirectional DICOM and HL7 interface suite with multiple compon
 - **DICOM2ORM**: Queries DICOM Modality Worklist and generates HL7 ORM orders
 - **DICOM2ORU**: Processes DICOM images and generates HL7 ORU result messages
 - **ORM2DICOM**: Receives HL7 ORM orders and creates DICOM Modality Worklist entries
+- **ORU2DICOM**: Listens for HL7 ORU results, renders DICOM objects, and forwards them via C-STORE
 
 ## License
 
-This software is proprietary and confidential. Unauthorized copying, transferring, or reproduction of the contents of this repository, via any medium, is strictly prohibited.
+This software remains proprietary to Flux Inc. and may only be used as permitted under the **Medical Software Academic and Restricted Use License**. Any copying, transferring, or reproduction outside the scope of that license is prohibited.
 
-This software is released under the **Medical Software Academic and Restricted Use License**:
+The license provides:
 
 - **Academic Users**: Free to download, use, and modify for non-commercial purposes with attribution.
 - **Commercial Use**: Prohibited without written permission from Flux Inc.
@@ -46,6 +47,13 @@ See the [LICENSE](LICENSE.md) file for full terms.
 - Receives HL7 ORM messages via MLLP
 - Creates DICOM Modality Worklist entries from received HL7 data
 - Provides DICOM Worklist SCP functionality
+
+### ORU2DICOM
+
+- Receives HL7 ORU messages over MLLP, validates them, and persists the raw payloads for auditing
+- Converts structured results (and optional PDF attachments) into DICOM instances ready for C-STORE
+- Streams generated DICOM artifacts to a remote PACS using configurable AE titles, TLS, and retry logic
+- Supports deferred acknowledgements and tunable retry policies so upstream systems see meaningful status
 
 ## Requirements
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DICOM7.ORM2DICOM
 {
-  internal class DICOMServerBackgroundService
+  public class DICOMServerBackgroundService
       : BackgroundService, IDisposable
     {
       private readonly IDicomServerFactory _factory;
@@ -15,7 +15,7 @@ namespace DICOM7.ORM2DICOM
       private IDicomServer<WorklistSCP> _worklistSCP;
       private readonly Config _config = Program.GetConfig();
 
-      internal DICOMServerBackgroundService(
+      public DICOMServerBackgroundService(
         IDicomServerFactory factory,
         ILogger<DICOMServerBackgroundService> logger)
       {
@@ -68,4 +68,3 @@ namespace DICOM7.ORM2DICOM
         }
     }
 }
-
