@@ -22,6 +22,7 @@ HL7:
 Cache:
   Folder: "cache"             # Cache directory path
   RetentionDays: 7            # Days to retain cached files
+  KeepSentItems: true         # Preserve sent artifacts in cache\sent\
 
 # Retry Configuration
 # Controls how failed transmissions are retried
