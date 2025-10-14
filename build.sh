@@ -21,6 +21,8 @@ fi
 : "${REMOTE_RUN_DIR:=c:\\dev\\dicom7\\run}"
 : "${VS_MSBUILD:=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe}"
 : "${INNO_SETUP_COMPILER:=C:\\ProgramData\\chocolatey\\bin\\ISCC.exe}"
+: "${VS_VSTEST:=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe}"
+: "${NUGET_EXE:=C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\NuGet\\NuGet.exe}"
 : "${DEFAULT_CONFIG:=Debug}"
 
 BUILD_TARGET="solution"
@@ -107,12 +109,27 @@ echo
 
 msbuild_solution() {
   local verb="$1" # Build / Clean / Rebuild
-  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${VS_MSBUILD}\" DICOM7.sln /t:${verb} /p:Configuration=${CONFIG} /p:Platform=\"Any CPU\" /v:m /nologo"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${VS_MSBUILD}\" DICOM7.sln /t:${verb} /p:Configuration=${CONFIG} /p:Platform=\"Any CPU\" /v:m /nologo /restore"
 }
 
 msbuild_project() {
   local project_path="$1"
-  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${VS_MSBUILD}\" \"${project_path}\" /p:Configuration=${CONFIG} /p:Platform=\"Any CPU\" /v:m /nologo"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${VS_MSBUILD}\" \"${project_path}\" /p:Configuration=${CONFIG} /p:Platform=\"Any CPU\" /v:m /nologo /restore"
+}
+
+run_tests() {
+  local test_dll="ORM2DICOM.Tests\\bin\\${CONFIG}\\ORM2DICOM.Tests.dll"
+  local test_results_dir="TestResults"
+  local runner_path="packages\\xunit.runner.console.2.1.0\\tools\\xunit.console.exe"
+
+  echo
+  echo "Running ORM2DICOM.Tests..."
+
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${test_results_dir}\" mkdir \"${test_results_dir}\""
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${runner_path}\" (\"${NUGET_EXE}\" install xunit.runner.console -Version 2.1.0 -OutputDirectory packages)"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${runner_path}\" (echo Missing xUnit runner: ${runner_path} & exit 1)"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${test_dll}\" (echo Test assembly not found: ${test_dll} & exit 1)"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${runner_path}\" \"${test_dll}\" -xml \"${test_results_dir}\\ORM2DICOM_${CONFIG}.xml\""
 }
 
 case "${BUILD_TARGET}" in
@@ -157,6 +174,17 @@ esac
 
 echo
 echo "Build step completed successfully."
+
+should_run_tests=false
+case "${BUILD_TARGET}" in
+  solution|all|rebuild|orm2dicom)
+    should_run_tests=true
+    ;;
+esac
+
+if [[ "${should_run_tests}" == true ]]; then
+  run_tests
+fi
 
 if [[ "${BUILD_INSTALLER}" == true ]]; then
   echo
