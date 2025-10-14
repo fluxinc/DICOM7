@@ -1,7 +1,7 @@
-; DICOM2ORM Inno Setup Script
+; DICOM7 Inno Setup Script
 
 #define MyAppName "DICOM7"
-#define MyAppVersion "2.0.2"
+#define MyAppVersion "2.1.0"
 #define MyAppPublisher "Flux Inc"
 #define MyAppURL "https://fluxinc.co/"
 #define MyAppExeName "DICOM2ORM.exe"
@@ -37,6 +37,7 @@ Name: "core"; Description: "Core Files (Required)"; Types: full custom; Flags: f
 Name: "dicom2orm"; Description: "DICOM2ORM - DICOM Worklist to HL7 ORM (Order) messages"; Types: full custom
 Name: "dicom2oru"; Description: "DICOM2ORU - DICOM C-Store to HL7 ORU (Result) messages"; Types: full custom
 Name: "orm2dicom"; Description: "ORM2DICOM - HL7 ORMs (Orders) to DICOM Modality Worklist"; Types: full custom
+Name: "oru2dicom"; Description: "ORU2DICOM - HL7 ORU (Result) messages to DICOM C-STORE"; Types: full custom
 
 [Types]
 Name: "full"; Description: "Full installation (all components)"
@@ -65,11 +66,17 @@ Source: "..\ORM2DICOM\bin\Release\*.*"; DestDir: "{app}"; Flags: ignoreversion; 
 Source: "Input\ORM2DICOM.WinSW.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: orm2dicom
 Source: "..\ORM2DICOM\config.yaml"; DestDir: "{#MyAppDataDir}\ORM2DICOM"; DestName: config.yaml; Flags: onlyifdoesntexist confirmoverwrite; Components: orm2dicom
 
+; ORU2DICOM component
+Source: "..\ORU2DICOM\bin\Release\*.*"; DestDir: "{app}"; Flags: ignoreversion; Components: oru2dicom
+Source: "Input\ORU2DICOM.WinSW.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: oru2dicom
+Source: "..\ORU2DICOM\config.yaml"; DestDir: "{#MyAppDataDir}\ORU2DICOM"; DestName: config.yaml; Flags: onlyifdoesntexist confirmoverwrite; Components: oru2dicom
+
 [Run]
 ; DICOM2ORM Service Install
 Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORM"; Description: "Stopping existing DICOM2ORM service"; WorkingDir: {app}; Flags: runhidden;
 Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORU"; Description: "Stopping existing DICOM2ORU service"; WorkingDir: {app}; Flags: runhidden;
 Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORM2DICOM"; Description: "Stopping existing ORM2DICOM service"; WorkingDir: {app}; Flags: runhidden;
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORU2DICOM"; Description: "Stopping existing ORU2DICOM service"; WorkingDir: {app}; Flags: runhidden;
 
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_DICOM2ORM"; Description: "Removing existing DICOM2ORM service"; WorkingDir: {app}; Flags: runhidden; Components: dicom2orm;
 Filename: "{app}\WinSW-x64.exe"; Parameters: "install ""{app}\DICOM2ORM.WinSW.xml"""; Description: "Installing DICOM2ORM service"; WorkingDir: {app}; Flags: runhidden; Components: dicom2orm;
@@ -85,6 +92,11 @@ Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_ORM2DICOM"; Description: "R
 Filename: "{app}\WinSW-x64.exe"; Parameters: "install ""{app}\ORM2DICOM.WinSW.xml"""; Description: "Installing ORM2DICOM service"; WorkingDir: {app}; Flags: runhidden; Components: orm2dicom;
 Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_ORM2DICOM"; Description: "Starting ORM2DICOM service"; Flags: runhidden; WorkingDir: {app}; Components: orm2dicom;
 
+; ORU2DICOM Service Install
+Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_ORU2DICOM"; Description: "Removing existing ORU2DICOM service"; WorkingDir: {app}; Flags: runhidden; Components: oru2dicom;
+Filename: "{app}\WinSW-x64.exe"; Parameters: "install ""{app}\ORU2DICOM.WinSW.xml"""; Description: "Installing ORU2DICOM service"; WorkingDir: {app}; Flags: runhidden; Components: oru2dicom;
+Filename: "{sys}\sc.exe"; Parameters: "start DICOM7_ORU2DICOM"; Description: "Starting ORU2DICOM service"; Flags: runhidden; WorkingDir: {app}; Components: oru2dicom;
+
 [UninstallRun]
 ; Only try to uninstall services if they exist
 Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_DICOM2ORM";  Flags: runhidden;
@@ -95,6 +107,9 @@ Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_DICOM2ORU"; Flags: runhidde
 
 Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORM2DICOM"; Flags: runhidden;
 Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_ORM2DICOM"; Flags: runhidden;
+
+Filename: "{sys}\sc.exe"; Parameters: "stop DICOM7_ORU2DICOM"; Flags: runhidden;
+Filename: "{sys}\sc.exe"; Parameters: "delete DICOM7_ORU2DICOM"; Flags: runhidden;
 
 [Code]
 

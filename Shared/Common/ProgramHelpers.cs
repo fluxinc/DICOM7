@@ -27,7 +27,7 @@ namespace DICOM7.Shared.Common
     public static void ParseCommandLineArgs(string[] args, string applicationName)
     {
       // Check for application expiration
-      DateTime expirationDate = new DateTime(2025, 6, 1);
+      DateTime expirationDate = new DateTime(2026, 6, 1);
       if (DateTime.Now > expirationDate)
       {
         Console.WriteLine("This application has expired. Please contact support for a new version.");
