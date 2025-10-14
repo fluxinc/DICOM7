@@ -1,7 +1,7 @@
 ; DICOM7 Inno Setup Script
 
 #define MyAppName "DICOM7"
-#define MyAppVersion "2.1.0"
+#define MyAppVersion "2.1.1"
 #define MyAppPublisher "Flux Inc"
 #define MyAppURL "https://fluxinc.co/"
 #define MyAppExeName "DICOM2ORM.exe"
@@ -124,3 +124,4 @@ function InitializeSetup(): Boolean;
 begin
   Result := True;
 end;
+
