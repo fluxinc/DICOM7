@@ -4,6 +4,10 @@ All notable changes to the DICOM7 project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Switched Serilog file logging to a single size-rolled log per service for easier tailing and retention control
+
 ## [2.1.0] - 2025-10-14
 
 ### Added

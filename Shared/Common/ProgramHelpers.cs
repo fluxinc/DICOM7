@@ -65,7 +65,7 @@ namespace DICOM7.Shared.Common
     /// <param name="applicationName">The name of the application for log file naming</param>
     public static void ConfigureSerilog(string applicationName)
     {
-      string logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", $"dicom7-{applicationName.ToLowerInvariant()}-.log");
+      string logPath = Path.Combine(AppConfig.CommonAppFolder, "logs", $"dicom7-{applicationName.ToLowerInvariant()}.log");
       Log.Logger = new LoggerConfiguration()
 #if DEBUG
           .MinimumLevel.Debug()
@@ -74,12 +74,25 @@ namespace DICOM7.Shared.Common
 #endif
           .WriteTo.Console()
           .WriteTo.File(logPath,
-              rollingInterval: RollingInterval.Day,
               retainedFileCountLimit: 7,
               fileSizeLimitBytes: 1024 * 1024 * 10,
               rollOnFileSizeLimit: true
           )
           .CreateLogger();
+    }
+
+    /// <summary>
+    /// Logs the executing base directory and the resolved common application folder for the current service.
+    /// Helps clarify where binaries live versus writable storage.
+    /// </summary>
+    /// <param name="applicationName">The service name for contextual logging.</param>
+    public static void LogBasePaths(string applicationName)
+    {
+      string baseDirectory = AppContext.BaseDirectory ?? string.Empty;
+      string commonAppFolder = AppConfig.CommonAppFolder;
+
+      Log.Information("{ApplicationName} executable base directory: {BaseDirectory}", applicationName, baseDirectory);
+      Log.Information("{ApplicationName} common application folder: {CommonAppFolder}", applicationName, commonAppFolder);
     }
 
     /// <summary>

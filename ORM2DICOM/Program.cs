@@ -38,6 +38,9 @@ namespace DICOM7.ORM2DICOM
         // Initialize cache system
         ProgramHelpers.InitializeCache(_config, logCacheFolder: true);
 
+        // Log resolved base paths for clarity on runtime locations
+        ProgramHelpers.LogBasePaths(APPLICATION_NAME);
+
         // Register handlers for shutdown events
         Console.CancelKeyPress += OnCancelKeyPress;
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
