@@ -25,14 +25,17 @@ namespace DICOM7.ORU2DICOM
       {
         _config = ProgramHelpers.LoadConfiguration<Config>(APPLICATION_NAME);
         ProgramHelpers.InitializeCache(_config, defaultRetentionDays: _config.Cache != null ? _config.Cache.RetentionDays : 3, logCacheFolder: true);
+        // Log resolved base paths for clarity on runtime locations
+        ProgramHelpers.LogBasePaths(APPLICATION_NAME);
         CacheManager.Initialize(_config.Cache);
 
         _processor = new OruMessageProcessor(_config);
         _hl7Server = new Hl7Server(_config, _processor);
-        _cts = new CancellationTokenSource();
 
         Console.CancelKeyPress += OnCancelKeyPress;
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+        _cts = new CancellationTokenSource();
 
         _hl7Server.Start();
 
