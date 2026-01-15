@@ -58,6 +58,7 @@ riderModule.iml
 # Project specific
 cache/
 .stfolder/
+.cursor/
 .cursorrules
 
 # User-specific files

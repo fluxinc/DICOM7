@@ -92,6 +92,8 @@ msbuild DICOM7.sln /p:Configuration=Release /p:Platform="Any CPU"
 
 The script uses the environment variables from `.envrc` (or your shell) to locate the Windows host, run MSBuild remotely, and optionally package the installer after a successful build. Each application is designed to run continuously as a service, operating according to its configured parameters.
 
+When the target is `solution`, `all`, `rebuild`, or `orm2dicom`, the script automatically executes `ORM2DICOM.Tests` using the xUnit console runner (downloaded to `packages/` on-demand). Test results are collected under `TestResults/`.
+
 # Remote Environment Setup
 
 This repository uses `.envrc` to describe the remote Windows build host. Copy the template and adjust the paths for your VM:
@@ -121,6 +123,7 @@ Sync this solution to `%REMOTE_PROJECT_DIR%` on a Windows VM or remote workstati
   `"%INNO_SETUP_COMPILER%" installer\DICOM7Setup.iss`
 - Outputs land under `%REMOTE_PROJECT_DIR%\{Project}\bin\<Config>`; installer artifacts appear in `installer\Output`
 - Runtime assets (config, queue, logs) belong under `%REMOTE_RUN_DIR%`
+- Automated tests: the helper script (and manual MSBuild flow when targeting `ORM2DICOM`) will run the xUnit suite in `ORM2DICOM.Tests`; detailed results are emitted to `TestResults\`.
 
 ## Command Line Arguments
 
@@ -134,6 +137,14 @@ Example:
 DICOM2ORM.exe --path C:\CustomPath\DICOM2ORM
 ```
 
+## Testing
+
+- Automated coverage currently focuses on `ORM2DICOM.Tests`, which exercises core order-to-DICOM workflows.
+- Run tests manually on the remote Windows host with  
+  `"%VS_MSBUILD%" ORM2DICOM.Tests\ORM2DICOM.Tests.csproj /p:Configuration=Debug` followed by  
+  `packages\xunit.runner.console.2.1.0\tools\xunit.console.exe ORM2DICOM.Tests\bin\Debug\ORM2DICOM.Tests.dll`.
+- For broader validation, replay sample HL7 payloads from `samples/newman-abi/` through the matching services and inspect the generated DICOM/HL7 traffic in `run/logs`.
+
 ## Support
 
-For issues or questions, please contact the internal development team.
+For issues or questions, please create an issue, or contact Flux Inc. support at [support@fluxinc.co](mailto:support@fluxinc.co).
