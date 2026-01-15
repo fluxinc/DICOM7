@@ -31,30 +31,60 @@ namespace DICOM7.DICOM2ORM
     {
       DicomDataset ds = new DicomDataset
       {
+        // Patient-level attributes
         { DicomTag.PatientName, "" },
         { DicomTag.PatientID, "" },
         { DicomTag.PatientBirthDate, "" },
         { DicomTag.PatientSex, "" },
+
+        // Study-level attributes
         { DicomTag.StudyInstanceUID, "" },
         { DicomTag.AccessionNumber, "" },
-        { DicomTag.ReferringPhysicianName, "" }
+        { DicomTag.ReferringPhysicianName, "" },
+        { DicomTag.StudyDescription, "" },
+        { DicomTag.StudyDate, "" },
+        { DicomTag.StudyTime, "" },
+
+        // Requested Procedure attributes
+        { DicomTag.RequestedProcedureID, "" },
+        { DicomTag.RequestedProcedureDescription, "" }
       };
 
+      // Scheduled Procedure Step Sequence (0040,0100)
+      DicomDataset sps = new DicomDataset
+      {
+        // Required attributes - always request these
+        { DicomTag.ScheduledProcedureStepStartTime, "" },
+        { DicomTag.ScheduledPerformingPhysicianName, "" },
 
-      DicomDataset sps = new DicomDataset();
-      // Add ScheduledStationAETitle if configured
+        // Optional but commonly used attributes
+        { DicomTag.ScheduledProcedureStepDescription, "" },
+        { DicomTag.ScheduledProcedureStepID, "" },
+        { DicomTag.ScheduledStationName, "" },
+        { DicomTag.ScheduledProcedureStepLocation, "" }
+      };
+
+      // Add ScheduledStationAETitle if configured (filter), otherwise request all
       if (!string.IsNullOrEmpty(_config.Query.ScheduledStationAeTitle))
       {
         sps.Add(DicomTag.ScheduledStationAETitle, _config.Query.ScheduledStationAeTitle);
+      }
+      else
+      {
+        sps.Add(DicomTag.ScheduledStationAETitle, "");
       }
 
       // Add ScheduledProcedureStepStartDate
       sps.Add(DicomTag.ScheduledProcedureStepStartDate, GetScheduledDate(_config.Query.ScheduledProcedureStepStartDate));
 
-      // Add Modality if configured
+      // Add Modality if configured (filter), otherwise request all
       if (!string.IsNullOrEmpty(_config.Query.Modality))
       {
         sps.Add(DicomTag.Modality, _config.Query.Modality);
+      }
+      else
+      {
+        sps.Add(DicomTag.Modality, "");
       }
 
       ds.Add(DicomTag.ScheduledProcedureStepSequence, sps);
