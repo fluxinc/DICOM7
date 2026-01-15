@@ -4,6 +4,16 @@ All notable changes to the DICOM7 project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- ORM2DICOM: Added DEBUG-level logging for HL7 connection lifecycle (stream setup, byte chunks, MLLP frame assembly)
+- ORM2DICOM: Added message type validation to reject non-ORM messages with appropriate AR acknowledgments
+- ORM2DICOM: Added startup cleanup of expired ORM cache files (complements existing timer-based cleanup)
+
+### Changed
+
+- ORM2DICOM: Refactored acknowledgment sending into centralized `SendAcknowledgement` method
+
 ## [2.1.1] - 2025-10-14
 
 ### Changed
