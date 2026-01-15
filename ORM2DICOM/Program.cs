@@ -38,6 +38,13 @@ namespace DICOM7.ORM2DICOM
         // Initialize cache system
         ProgramHelpers.InitializeCache(_config, logCacheFolder: true);
 
+        // Trim any expired ORM files before accepting new messages
+        int removedOnStartup = CachedORM.RemoveExpired(_config.Order.ExpiryHours);
+        if (removedOnStartup > 0)
+        {
+          Log.Information("Removed {Count} expired ORM messages during startup", removedOnStartup);
+        }
+
         // Log resolved base paths for clarity on runtime locations
         ProgramHelpers.LogBasePaths(APPLICATION_NAME);
 

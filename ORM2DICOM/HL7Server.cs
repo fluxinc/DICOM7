@@ -239,16 +239,27 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         netStream = client.GetStream();
         netStream.ReadTimeout = 30000; // 30 second timeout
         netStream.WriteTimeout = 30000;
+#if DEBUG
+        Logger.Debug("Ready to receive HL7 data from {RemoteEndpoint} (ReadTimeout={ReadTimeout}ms, WriteTimeout={WriteTimeout}ms)",
+          endpoint, netStream.ReadTimeout, netStream.WriteTimeout);
+#endif
 
         // Keep receiving data until the client closes connection
         int bytesReceived;
         string hl7Data = string.Empty;
+        bool receivedAnyData = false;
 
         while (_isRunning && client.Connected && (bytesReceived = netStream.Read(receivedByteBuffer, 0, receivedByteBuffer.Length)) > 0)
         {
           Logger.Debug("Received {BytesReceived} bytes from {RemoteEndpoint}", bytesReceived, endpoint);
 
+#if DEBUG
+          Logger.Debug("Chunk of {Bytes} bytes received from {RemoteEndpoint}: {Preview}",
+            bytesReceived, endpoint, FormatPayloadPreview(receivedByteBuffer, bytesReceived));
+#endif
+
           hl7Data += Encoding.UTF8.GetString(receivedByteBuffer, 0, bytesReceived);
+          receivedAnyData = true;
 
           // Find start of MLLP frame (VT character)
           int startOfMllpEnvelope = hl7Data.IndexOf(START_OF_BLOCK);
@@ -257,6 +268,13 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
           {
             // Look for the end of the frame (FS character)
             int end = hl7Data.IndexOf(END_OF_BLOCK);
+#if DEBUG
+            if (end < 0)
+            {
+              Logger.Debug("Awaiting MLLP end marker from {RemoteEndpoint}. Buffered {BufferedCharacters} characters.",
+                endpoint, hl7Data.Length);
+            }
+#endif
             if (end >= startOfMllpEnvelope) // End of block received
             {
               // Extract the complete message
@@ -275,6 +293,12 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
             }
           }
         }
+#if DEBUG
+        if (!receivedAnyData)
+        {
+          Logger.Debug("Connection from {RemoteEndpoint} closed without transmitting HL7 payload", endpoint);
+        }
+#endif
       }
       catch (Exception ex)
       {
@@ -298,6 +322,36 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
 
     private void ProcessHl7Message(string hl7MessageData, NetworkStream netStream, string remoteEndpoint)
     {
+      if (!TryExtractMessageType(hl7MessageData, out string messageType))
+      {
+        Logger.Warning("Discarded payload from {RemoteEndpoint}: message did not include a valid MSH segment", remoteEndpoint);
+        try
+        {
+          SendAcknowledgement(netStream, CreateDefaultAcknowledgement(string.Empty, "AR", "Invalid HL7 message format"), remoteEndpoint);
+        }
+        catch (Exception ackEx)
+        {
+          Logger.Error(ackEx, "Failed to send invalid-format acknowledgment to {RemoteEndpoint}", remoteEndpoint);
+        }
+
+        return;
+      }
+
+      if (!IsSupportedMessageType(messageType))
+      {
+        Logger.Warning("Rejected HL7 message type {MessageType} from {RemoteEndpoint}", messageType, remoteEndpoint);
+        try
+        {
+          SendAcknowledgement(netStream, CreateAcknowledgementMessage(hl7MessageData, "AR", $"Unsupported message type {messageType}"), remoteEndpoint);
+        }
+        catch (Exception ackEx)
+        {
+          Logger.Error(ackEx, "Failed to send unsupported-type acknowledgment to {RemoteEndpoint}", remoteEndpoint);
+        }
+
+        return;
+      }
+
       try
       {
         // Create and save CachedORM
@@ -327,15 +381,7 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         string ackMessage = CreateAcknowledgementMessage(hl7MessageData, dicomDataset == null ? "AE" : "AA");
 
         // Send acknowledgment
-        if (netStream.CanWrite)
-        {
-          byte[] buffer = Encoding.UTF8.GetBytes(ackMessage);
-          netStream.Write(buffer, 0, buffer.Length);
-          Logger.Information("Sent acknowledgment to {RemoteEndpoint}", remoteEndpoint);
-          Logger.Debug("ACK Message: {Message}", ackMessage.Replace(START_OF_BLOCK.ToString(), "<SB>")
-            .Replace(END_OF_BLOCK.ToString(), "<EB>")
-            .Replace("\r", "\r\n"));
-        }
+        SendAcknowledgement(netStream, ackMessage, remoteEndpoint);
       }
       catch (Exception ex)
       {
@@ -344,13 +390,8 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         // Send error acknowledgment if stream is still writable
         try
         {
-          if (netStream.CanWrite)
-          {
-            string errorAck = CreateAcknowledgementMessage(hl7MessageData, "AR", ex.Message);
-            byte[] buffer = Encoding.UTF8.GetBytes(errorAck);
-            netStream.Write(buffer, 0, buffer.Length);
-            Logger.Information("Sent error acknowledgment to {RemoteEndpoint}", remoteEndpoint);
-          }
+          string errorAck = CreateAcknowledgementMessage(hl7MessageData, "AR", ex.Message);
+          SendAcknowledgement(netStream, errorAck, remoteEndpoint);
         }
         catch (Exception ackEx)
         {
@@ -471,7 +512,72 @@ OBR|1|20060307110114||003038^Urinalysis^L|||20060307110114
         return DateTime.Now.Ticks.ToString();
       }
     }
+
+#if DEBUG
+    private static string FormatPayloadPreview(byte[] buffer, int count)
+    {
+      string text = Encoding.UTF8.GetString(buffer, 0, count);
+      if (text.Length > 256)
+      {
+        text = text.Substring(0, 256) + "...";
+      }
+
+      return text
+        .Replace("\r", "\\r")
+        .Replace("\n", "\\n");
+    }
+#endif
+
+    private static void SendAcknowledgement(NetworkStream netStream, string ackMessage, string remoteEndpoint)
+    {
+      if (netStream == null || !netStream.CanWrite)
+      {
+        Logger.Warning("Cannot send acknowledgment to {RemoteEndpoint}: stream is not writable", remoteEndpoint);
+        return;
+      }
+
+      byte[] buffer = Encoding.UTF8.GetBytes(ackMessage);
+      netStream.Write(buffer, 0, buffer.Length);
+      Logger.Information("Sent acknowledgment to {RemoteEndpoint}", remoteEndpoint);
+      Logger.Debug("ACK Message: {Message}", ackMessage.Replace(START_OF_BLOCK.ToString(), "<SB>")
+        .Replace(END_OF_BLOCK.ToString(), "<EB>")
+        .Replace("\r", "\r\n"));
+    }
+
+    private static bool TryExtractMessageType(string hl7MessageData, out string messageType)
+    {
+      messageType = string.Empty;
+
+      if (string.IsNullOrWhiteSpace(hl7MessageData))
+      {
+        return false;
+      }
+
+      string[] segments = hl7MessageData.Split(CARRIAGE_RETURN);
+      if (segments.Length == 0 || !segments[0].StartsWith("MSH", StringComparison.OrdinalIgnoreCase))
+      {
+        return false;
+      }
+
+      string[] fields = segments[0].Split(FIELD_DELIMITER);
+      if (fields.Length <= 8)
+      {
+        return false;
+      }
+
+      messageType = fields[8].Trim();
+      return !string.IsNullOrEmpty(messageType);
+    }
+
+    private static bool IsSupportedMessageType(string messageType)
+    {
+      if (string.IsNullOrWhiteSpace(messageType))
+      {
+        return false;
+      }
+
+      string normalized = messageType.ToUpperInvariant();
+      return normalized.StartsWith("ORM", StringComparison.Ordinal);
+    }
   }
 }
-
-
