@@ -1,5 +1,5 @@
 {
-  "dotnet.preferCSharpExtension": false,
+  "dotnet.preferCSharpExtension": true,
   "dotrush.roslyn.projectOrSolutionFiles": [
     "${workspaceFolder}/DICOM7.sln",
     "${workspaceFolder}/DICOM2ORM/DICOM2ORM.csproj",

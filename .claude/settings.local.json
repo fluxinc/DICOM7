@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:dicom.nema.org)",
+      "Bash(./build.sh:*)",
+      "Bash(ssh windev:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

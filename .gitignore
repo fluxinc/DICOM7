@@ -71,3 +71,4 @@ installer/Output/*
 run/
 Flux.snk
 .envrc
+.DS_Store
