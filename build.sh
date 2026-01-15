@@ -118,18 +118,29 @@ msbuild_project() {
 }
 
 run_tests() {
-  local test_dll="ORM2DICOM.Tests\\bin\\${CONFIG}\\ORM2DICOM.Tests.dll"
   local test_results_dir="TestResults"
   local runner_path="packages\\xunit.runner.console.2.1.0\\tools\\xunit.console.exe"
 
   echo
-  echo "Running ORM2DICOM.Tests..."
+  echo "Setting up test environment..."
 
   remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${test_results_dir}\" mkdir \"${test_results_dir}\""
   remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${runner_path}\" (\"${NUGET_EXE}\" install xunit.runner.console -Version 2.1.0 -OutputDirectory packages)"
   remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${runner_path}\" (echo Missing xUnit runner: ${runner_path} & exit 1)"
-  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${test_dll}\" (echo Test assembly not found: ${test_dll} & exit 1)"
-  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${runner_path}\" \"${test_dll}\" -xml \"${test_results_dir}\\ORM2DICOM_${CONFIG}.xml\""
+
+  # Run ORM2DICOM.Tests
+  local orm2dicom_dll="ORM2DICOM.Tests\\bin\\${CONFIG}\\ORM2DICOM.Tests.dll"
+  echo
+  echo "Running ORM2DICOM.Tests..."
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${orm2dicom_dll}\" (echo Test assembly not found: ${orm2dicom_dll} & exit 1)"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${runner_path}\" \"${orm2dicom_dll}\" -xml \"${test_results_dir}\\ORM2DICOM_${CONFIG}.xml\""
+
+  # Run DICOM2ORM.Tests
+  local dicom2orm_dll="DICOM2ORM.Tests\\bin\\${CONFIG}\\DICOM2ORM.Tests.dll"
+  echo
+  echo "Running DICOM2ORM.Tests..."
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && if not exist \"${dicom2orm_dll}\" (echo Test assembly not found: ${dicom2orm_dll} & exit 1)"
+  remote_exec "cd \"${REMOTE_PROJECT_DIR}\" && \"${runner_path}\" \"${dicom2orm_dll}\" -xml \"${test_results_dir}\\DICOM2ORM_${CONFIG}.xml\""
 }
 
 case "${BUILD_TARGET}" in
@@ -177,7 +188,7 @@ echo "Build step completed successfully."
 
 should_run_tests=false
 case "${BUILD_TARGET}" in
-  solution|all|rebuild|orm2dicom)
+  solution|all|rebuild|orm2dicom|dicom2orm)
     should_run_tests=true
     ;;
 esac
